@@ -4,15 +4,15 @@ SRCDIR=.
 SRC=$(shell ls *.c | grep -v '^test')
 OBJS=$(SRC:%.c=$(OBJDIR)/%.o)
 
-all: $(BINDIR)/editor $(BINDIR)/test_gap_buffer
+all: $(BINDIR)/editor $(BINDIR)/test_edit_buffer
 
-$(BINDIR)/editor: $(OBJDIR)/editor.o $(OBJDIR)/gap_buffer.o
+$(BINDIR)/editor: $(OBJDIR)/editor.o $(OBJDIR)/edit_buffer.o
 	mkdir -p $(BINDIR)
 	gcc -std=c99 $^ -lncurses -o $@
 
-$(BINDIR)/test_gap_buffer: $(OBJDIR)/test_gap_buffer.o $(OBJDIR)/gap_buffer.o
+$(BINDIR)/test_edit_buffer: $(OBJDIR)/test_edit_buffer.o $(OBJDIR)/edit_buffer.o
 	mkdir -p $(BINDIR)
-	gcc -std=c99 $^ -lncurses -o $@
+	gcc -std=c99 $^ -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(OBJDIR)
