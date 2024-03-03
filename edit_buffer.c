@@ -71,11 +71,13 @@ void edit_buffer_gap_resize(EditBuffer *b, size_t new_size) {
     return;
   }
 
-  edit_buffer_reserve(b, b->size - b->gap_size + new_size);
+  size_t old_size = b->gap_size;
+  edit_buffer_reserve(b, b->size - old_size + new_size);
   memmove(b->buffer + b->gap_start + new_size,
-          b->buffer + b->gap_start + b->gap_size,
-          b->size - b->gap_start - b->gap_size);
+          b->buffer + b->gap_start + old_size,
+          b->size - b->gap_start - old_size);
 
+  b->size += new_size - old_size;
   b->gap_size = new_size;
 }
 
@@ -96,13 +98,9 @@ void edit_buffer_insert(EditBuffer *b, int c) {
     if (b->gap_used >= b->gap_size) {
       edit_buffer_gap_resize(b, b->gap_size * 2);
     }
-
-    b->buffer[b->gap_start + b->gap_used] = c;
-    b->gap_used++;
+    (b->buffer + b->gap_start)[b->gap_used++] = c;
   } else {
-    if (b->size >= b->capacity) {
-      edit_buffer_reserve(b, b->size + 1);
-    }
+    edit_buffer_reserve(b, b->size + 1);
     b->buffer[b->size++] = c;
   }
 }

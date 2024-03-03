@@ -72,7 +72,7 @@ void test_insert_extend_gap() {
 
   edit_buffer_insert(&buf, 0x04);
 
-  assert(buf.size == 4);
+  assert(buf.size == 5);
   assert(memcmp(buf.buffer, "\x00\x01\x02\x03\x04", 5) == 0);
 
   edit_buffer_free(&buf);

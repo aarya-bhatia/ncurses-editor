@@ -1,10 +1,11 @@
 #pragma once
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 typedef struct EditBuffer {
-  char *buffer;
+  uint8_t *buffer;
   size_t capacity;
   size_t size;
   size_t gap_start;
