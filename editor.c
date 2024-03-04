@@ -1,3 +1,4 @@
+#include "edit_buffer.h"
 #include <ncurses.h>
 #include <string.h>
 
@@ -9,12 +10,16 @@ int mode = INSERT_MODE;
 char input[1024] = {0};
 int y = 0, x = 0;
 
+EditBuffer edit_buffer;
+
 int main() {
   initscr();
   cbreak();
   noecho();
   notimeout(stdscr, true);
   keypad(stdscr, true);
+
+  memset(&edit_buffer, 0, sizeof edit_buffer);
 
   do {
     erase();
@@ -30,7 +35,7 @@ int main() {
       } else if (c == KEY_BACKSPACE) {
         input[strlen(input) - 1] = 0;
         x--;
-      } else if (c == '\n' || c == ('u'&0x1f)) {
+      } else if (c == '\n' || c == ('u' & 0x1f)) {
         input[0] = 0;
         x = 0;
       } else {

@@ -1,6 +1,7 @@
 #include "edit_buffer.h"
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 void test_open_gap() {
   EditBuffer buf;
@@ -95,11 +96,66 @@ void test_gap_after_append() {
   edit_buffer_free(&buf);
 }
 
+void test_backspace_inside_gap() {
+  EditBuffer b;
+  memset(&b, 0, sizeof b);
+  edit_buffer_insert(&b, 'h');
+  edit_buffer_insert(&b, 'o');
+
+  edit_buffer_open_gap(&b, 1, 1);
+  edit_buffer_insert(&b, 'e');
+  edit_buffer_insert(&b, 'l');
+  edit_buffer_insert(&b, 'n');
+  edit_buffer_backspace(&b);
+  edit_buffer_insert(&b, 'l');
+
+  edit_buffer_close_gap(&b);
+
+  assert(b.size == 5);
+  assert(memcmp(b.buffer, "hello", 5) == 0);
+  edit_buffer_free(&b);
+}
+
+void test_backspace_outside_gap() {
+  EditBuffer b;
+  memset(&b, 0, sizeof b);
+  edit_buffer_insert(&b, 'h');
+  edit_buffer_insert(&b, 'e');
+  edit_buffer_insert(&b, 'n');
+  edit_buffer_backspace(&b);
+  edit_buffer_insert(&b, 'l');
+  edit_buffer_insert(&b, 'x');
+  edit_buffer_backspace(&b);
+  edit_buffer_insert(&b, 'l');
+  edit_buffer_insert(&b, 'o');
+
+  assert(b.size == 5);
+  assert(memcmp(b.buffer, "hello", 5) == 0);
+  edit_buffer_free(&b);
+}
+
+void test_print_string() {
+  EditBuffer b;
+  memset(&b, 0, sizeof b);
+
+  const char *str = "hello\n";
+
+  for (int i = 0; i < strlen(str); i++) {
+    edit_buffer_insert(&b, str[i]);
+  }
+
+  edit_buffer_print_string(&b, printf);
+  edit_buffer_free(&b);
+}
+
 int main() {
   test_open_gap();
   test_insert_simple();
   test_insert_undo();
   test_insert_extend_gap();
   test_gap_after_append();
+  test_backspace_inside_gap();
+  test_backspace_outside_gap();
+  test_print_string();
   return 0;
 }

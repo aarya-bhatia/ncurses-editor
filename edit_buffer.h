@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef struct EditBuffer {
-  uint8_t *buffer;
+  char *buffer;
   size_t capacity;
   size_t size;
   size_t gap_start;
@@ -23,3 +23,7 @@ void edit_buffer_close_gap(EditBuffer *b);
 void edit_buffer_free(EditBuffer *b);
 void edit_buffer_insert(EditBuffer *b, int c);
 
+void edit_buffer_backspace(EditBuffer *b);
+
+typedef int (*printer)(const char *format, ...);
+void edit_buffer_print_string(EditBuffer *b, printer p);

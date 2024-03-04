@@ -104,3 +104,39 @@ void edit_buffer_insert(EditBuffer *b, int c) {
     b->buffer[b->size++] = c;
   }
 }
+
+void edit_buffer_backspace(EditBuffer *b) {
+  assert(b);
+
+  if (b->gap_enable) {
+    if (b->gap_used > 0) {
+      b->gap_used--;
+    } else if (b->gap_start > 0) {
+      b->gap_start--;
+      b->gap_size++;
+    }
+  } else {
+    b->size--;
+  }
+}
+
+void edit_buffer_print_string(EditBuffer *b, printer p) {
+  assert(b);
+
+  edit_buffer_reserve(b, b->size + 1);
+
+  if (!b->gap_enable) {
+    b->buffer[b->size] = 0;
+    p("%s", b->buffer);
+  } else {
+    if (b->gap_used == b->gap_size) {
+      b->buffer[b->size] = 0;
+      p("%s", b->buffer);
+    } else {
+      b->buffer[b->gap_start + b->gap_used] = 0;
+      p("%s", b->buffer);
+      b->buffer[b->size] = 0;
+      p("%s", b->buffer + b->gap_start + b->gap_size);
+    }
+  }
+}
