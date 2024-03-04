@@ -1,62 +1,43 @@
+#include "editor.h"
 #include "edit_buffer.h"
-#include <ncurses.h>
-#include <string.h>
+#include <assert.h>
 
-#define KEY_ESCAPE 27
+Editor *editor_alloc() {
+  Editor *editor = calloc(1, sizeof *editor);
+  editor->mode = INSERT_MODE;
+  editor->win_editor = newwin(LINES - 2, COLS, 0, 0);
+  editor->win_status = NULL;
+  // newwin(0, 0, LINES - 2, 0);
+  wrefresh(editor->win_editor);
+  wrefresh(editor->win_status);
+  return editor;
+}
 
-enum { NORMAL_MODE, INSERT_MODE };
+void editor_free(Editor *editor) {
+  if (!editor) {
+    return;
+  }
 
-int mode = INSERT_MODE;
-char input[1024] = {0};
-int y = 0, x = 0;
+  edit_buffer_free(&editor->line);
 
-EditBuffer edit_buffer;
-
-int main() {
-  initscr();
-  cbreak();
-  noecho();
-  notimeout(stdscr, true);
-  keypad(stdscr, true);
-
-  memset(&edit_buffer, 0, sizeof edit_buffer);
-
-  do {
-    erase();
-    printw("%s", input);
-    move(y, x);
-    refresh();
-
-    int c = getch();
-
-    if (mode == INSERT_MODE) {
-      if (c == KEY_ESCAPE) {
-        mode = NORMAL_MODE;
-      } else if (c == KEY_BACKSPACE) {
-        input[strlen(input) - 1] = 0;
-        x--;
-      } else if (c == '\n' || c == ('u' & 0x1f)) {
-        input[0] = 0;
-        x = 0;
-      } else {
-        size_t n = strlen(input);
-        if (n < sizeof(input) - 1) {
-          input[n] = c;
-          input[n + 1] = 0;
-        }
-        x++;
-      }
-    } else {
-      if (c == 'i') {
-        mode = INSERT_MODE;
-        x = strlen(input);
-      } else if ((c == 'h' || c == KEY_LEFT) && x > 0) {
-        x--;
-      } else if ((c == 'l' || c == KEY_RIGHT) && x < COLS - 1) {
-        x++;
-      }
-    }
-  } while (1);
-
+  delwin(editor->win_editor);
+  delwin(editor->win_status);
   endwin();
+
+  free(editor);
+}
+
+void editor_draw(Editor *editor) {
+  assert(editor);
+  edit_buffer_print_window(&editor->line, editor->win_editor);
+}
+
+int editor_input(Editor *editor) {
+  int c = wgetch(editor->win_editor);
+  edit_buffer_insert(&editor->line, c);
+  if (c == 'q') {
+    return -1;
+  }
+
+  return 0;
 }

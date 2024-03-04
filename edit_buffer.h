@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ncurses.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -24,6 +25,4 @@ void edit_buffer_free(EditBuffer *b);
 void edit_buffer_insert(EditBuffer *b, int c);
 
 void edit_buffer_backspace(EditBuffer *b);
-
-typedef int (*printer)(const char *format, ...);
-void edit_buffer_print_string(EditBuffer *b, printer p);
+void edit_buffer_print_window(EditBuffer *b, WINDOW *win);

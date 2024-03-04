@@ -1,7 +1,6 @@
 #include "edit_buffer.h"
 #include <assert.h>
 #include <string.h>
-#include <stdio.h>
 
 void test_open_gap() {
   EditBuffer buf;
@@ -134,19 +133,19 @@ void test_backspace_outside_gap() {
   edit_buffer_free(&b);
 }
 
-void test_print_string() {
-  EditBuffer b;
-  memset(&b, 0, sizeof b);
-
-  const char *str = "hello\n";
-
-  for (int i = 0; i < strlen(str); i++) {
-    edit_buffer_insert(&b, str[i]);
-  }
-
-  edit_buffer_print_string(&b, printf);
-  edit_buffer_free(&b);
-}
+// void test_print_string() {
+//   EditBuffer b;
+//   memset(&b, 0, sizeof b);
+//
+//   const char *str = "hello\n";
+//
+//   for (int i = 0; i < strlen(str); i++) {
+//     edit_buffer_insert(&b, str[i]);
+//   }
+//
+//   edit_buffer_print_string(&b, printf);
+//   edit_buffer_free(&b);
+// }
 
 int main() {
   test_open_gap();
@@ -156,6 +155,6 @@ int main() {
   test_gap_after_append();
   test_backspace_inside_gap();
   test_backspace_outside_gap();
-  test_print_string();
+  // test_print_string();
   return 0;
 }

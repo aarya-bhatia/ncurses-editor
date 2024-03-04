@@ -5,9 +5,12 @@ SRC=$(shell ls *.c | grep -v '^test')
 OBJS=$(SRC:%.c=$(OBJDIR)/%.o)
 LDFLAGS=-lncurses -lm
 
+EDITOR=editor.c vec2.c edit_buffer.c main.c
+EDITOR_OBJS=$(EDITOR:%.c=$(OBJDIR)/%.o)
+
 all: $(BINDIR)/editor $(BINDIR)/test_edit_buffer $(BINDIR)/test_vec
 
-$(BINDIR)/editor: $(OBJDIR)/editor.o $(OBJDIR)/edit_buffer.o
+$(BINDIR)/editor: $(EDITOR_OBJS)
 	mkdir -p $(BINDIR)
 	gcc -std=c99 $^ $(LDFLAGS) -o $@
 

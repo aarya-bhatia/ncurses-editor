@@ -1,5 +1,6 @@
 #include "edit_buffer.h"
 #include <assert.h>
+#include <stdio.h>
 #include <string.h>
 
 void edit_buffer_free(EditBuffer *b) {
@@ -120,23 +121,27 @@ void edit_buffer_backspace(EditBuffer *b) {
   }
 }
 
-void edit_buffer_print_string(EditBuffer *b, printer p) {
+void edit_buffer_print_window(EditBuffer *b, WINDOW *win) {
   assert(b);
+  assert(win);
 
+  werase(win);
   edit_buffer_reserve(b, b->size + 1);
 
   if (!b->gap_enable) {
     b->buffer[b->size] = 0;
-    p("%s", b->buffer);
+    wprintw(win, "%s", b->buffer);
   } else {
     if (b->gap_used == b->gap_size) {
       b->buffer[b->size] = 0;
-      p("%s", b->buffer);
+      wprintw(win, "%s", b->buffer);
     } else {
       b->buffer[b->gap_start + b->gap_used] = 0;
-      p("%s", b->buffer);
+      wprintw(win, "%s", b->buffer);
       b->buffer[b->size] = 0;
-      p("%s", b->buffer + b->gap_start + b->gap_size);
+      wprintw(win, "%s", b->buffer + b->gap_start + b->gap_size);
     }
   }
+
+  wrefresh(win);
 }
