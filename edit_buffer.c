@@ -145,3 +145,10 @@ void edit_buffer_print_window(EditBuffer *b, WINDOW *win) {
 
   wrefresh(win);
 }
+
+void edit_buffer_clear(EditBuffer *b) {
+  b->size = 0;
+  b->gap_enable = false;
+}
+
+int edit_buffer_size(EditBuffer *b) { return b->size; }

@@ -24,5 +24,7 @@ void edit_buffer_close_gap(EditBuffer *b);
 void edit_buffer_free(EditBuffer *b);
 void edit_buffer_insert(EditBuffer *b, int c);
 
+int edit_buffer_size(EditBuffer *b);
+void edit_buffer_clear(EditBuffer *b);
 void edit_buffer_backspace(EditBuffer *b);
 void edit_buffer_print_window(EditBuffer *b, WINDOW *win);

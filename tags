@@ -8,6 +8,7 @@
 !_TAG_FIELD_DESCRIPTION	name	/tag name/
 !_TAG_FIELD_DESCRIPTION	pattern	/pattern/
 !_TAG_FIELD_DESCRIPTION	typeref	/Type and name of a variable or typedef/
+!_TAG_FIELD_DESCRIPTION!C++	name	/aliased names/
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
 !_TAG_KIND_DESCRIPTION!C	d,macro	/macro definitions/
@@ -20,11 +21,28 @@
 !_TAG_KIND_DESCRIPTION!C	t,typedef	/typedefs/
 !_TAG_KIND_DESCRIPTION!C	u,union	/union names/
 !_TAG_KIND_DESCRIPTION!C	v,variable	/variable definitions/
+!_TAG_KIND_DESCRIPTION!C++	c,class	/classes/
+!_TAG_KIND_DESCRIPTION!C++	d,macro	/macro definitions/
+!_TAG_KIND_DESCRIPTION!C++	e,enumerator	/enumerators (values inside an enumeration)/
+!_TAG_KIND_DESCRIPTION!C++	f,function	/function definitions/
+!_TAG_KIND_DESCRIPTION!C++	g,enum	/enumeration names/
+!_TAG_KIND_DESCRIPTION!C++	h,header	/included header files/
+!_TAG_KIND_DESCRIPTION!C++	m,member	/class, struct, and union members/
+!_TAG_KIND_DESCRIPTION!C++	n,namespace	/namespaces/
+!_TAG_KIND_DESCRIPTION!C++	s,struct	/structure names/
+!_TAG_KIND_DESCRIPTION!C++	t,typedef	/typedefs/
+!_TAG_KIND_DESCRIPTION!C++	u,union	/union names/
+!_TAG_KIND_DESCRIPTION!C++	v,variable	/variable definitions/
+!_TAG_KIND_DESCRIPTION!Make	I,makefile	/makefiles/
+!_TAG_KIND_DESCRIPTION!Make	m,macro	/macros/
+!_TAG_KIND_DESCRIPTION!Make	t,target	/targets/
 !_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
 !_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
 !_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
 !_TAG_OUTPUT_VERSION	0.0	/current.age/
 !_TAG_PARSER_VERSION!C	1.1	/current.age/
+!_TAG_PARSER_VERSION!C++	1.1	/current.age/
+!_TAG_PARSER_VERSION!Make	0.0	/current.age/
 !_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
 !_TAG_PROC_CWD	/home/aarya/repos/aarya-bhatia/ncurses-editor/	//
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
@@ -36,20 +54,79 @@
 !_TAG_ROLE_DESCRIPTION!C!header	system	/system header/
 !_TAG_ROLE_DESCRIPTION!C!macro	undef	/undefined/
 !_TAG_ROLE_DESCRIPTION!C!struct	foreigndecl	/declared in foreign languages/
+!_TAG_ROLE_DESCRIPTION!C++!header	local	/local header/
+!_TAG_ROLE_DESCRIPTION!C++!header	system	/system header/
+!_TAG_ROLE_DESCRIPTION!C++!macro	undef	/undefined/
+!_TAG_ROLE_DESCRIPTION!Make!makefile	included	/included/
+!_TAG_ROLE_DESCRIPTION!Make!makefile	optional	/optionally included/
+$(BINDIR)/editor	Makefile	/^$(BINDIR)\/editor: $(EDITOR_OBJS)$/;"	t
+$(BINDIR)/test_edit_buffer	Makefile	/^$(BINDIR)\/test_edit_buffer: $(OBJDIR)\/test_edit_buffer.o $(OBJDIR)\/edit_buffer.o$/;"	t
+$(BINDIR)/test_vec	Makefile	/^$(BINDIR)\/test_vec: $(OBJDIR)\/test_vec.o $(OBJDIR)\/vec2.o$/;"	t
+$(OBJDIR)/%.o	Makefile	/^$(OBJDIR)\/%.o: $(SRCDIR)\/%.c$/;"	t
+BINDIR	Makefile	/^BINDIR=bin$/;"	m
+COMMAND_MODE	editor.h	/^enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };$/;"	e	enum:__anonc0cb90020103
+EDITOR	Makefile	/^EDITOR=editor.c vec2.c edit_buffer.c main.c keyboard.c$/;"	m
+EDITOR_OBJS	Makefile	/^EDITOR_OBJS=$(EDITOR:%.c=$(OBJDIR)\/%.o)$/;"	m
+EditBuffer	edit_buffer.h	/^typedef struct EditBuffer {$/;"	s
+EditBuffer	edit_buffer.h	/^} EditBuffer;$/;"	t	typeref:struct:EditBuffer
+Editor	editor.h	/^typedef struct Editor {$/;"	s
+Editor	editor.h	/^} Editor;$/;"	t	typeref:struct:Editor
+INSERT_MODE	editor.h	/^enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };$/;"	e	enum:__anonc0cb90020103
+KEY_CONTROL	keyboard.h	/^#define KEY_CONTROL(/;"	d
+KEY_ESCAPE	keyboard.h	/^#define KEY_ESCAPE /;"	d
+KeyEvent	keyboard.h	/^typedef struct KeyEvent {$/;"	s
+KeyEvent	keyboard.h	/^} KeyEvent;$/;"	t	typeref:struct:KeyEvent
+Keyboard	keyboard.h	/^typedef struct Keyboard {$/;"	s
+Keyboard	keyboard.h	/^} Keyboard;$/;"	t	typeref:struct:Keyboard
+LDFLAGS	Makefile	/^LDFLAGS=-lncurses -lm$/;"	m
+MAX_KEY_CHORD_LENGTH	keyboard.h	/^#define MAX_KEY_CHORD_LENGTH /;"	d
+NORMAL_MODE	editor.h	/^enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };$/;"	e	enum:__anonc0cb90020103
+OBJDIR	Makefile	/^OBJDIR=.obj$/;"	m
+OBJS	Makefile	/^OBJS=$(SRC:%.c=$(OBJDIR)\/%.o)$/;"	m
+SRC	Makefile	/^SRC=$(shell ls *.c | grep -v '^test')$/;"	m
+SRCDIR	Makefile	/^SRCDIR=.$/;"	m
+Vec2	vec2.h	/^typedef struct Vec2 {$/;"	s
+Vec2	vec2.h	/^} Vec2;$/;"	t	typeref:struct:Vec2
+__anonc0cb90020103	editor.h	/^enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };$/;"	g
+all	Makefile	/^all: $(BINDIR)\/editor $(BINDIR)\/test_edit_buffer $(BINDIR)\/test_vec$/;"	t
+args	keyboard.h	/^  void *args;$/;"	m	struct:Keyboard	typeref:typename:void *
+buffer	edit_buffer.h	/^  char *buffer;$/;"	m	struct:EditBuffer	typeref:typename:char *
+capacity	edit_buffer.h	/^  size_t capacity;$/;"	m	struct:EditBuffer	typeref:typename:size_t
+clean	Makefile	/^clean:$/;"	t
+cursor	editor.h	/^  Vec2 cursor;$/;"	m	struct:Editor	typeref:typename:Vec2
 edit_buffer_backspace	edit_buffer.c	/^void edit_buffer_backspace(EditBuffer *b) {$/;"	f	typeref:typename:void
+edit_buffer_clear	edit_buffer.c	/^void edit_buffer_clear(EditBuffer *b) {$/;"	f	typeref:typename:void
 edit_buffer_close_gap	edit_buffer.c	/^void edit_buffer_close_gap(EditBuffer *b) {$/;"	f	typeref:typename:void
 edit_buffer_free	edit_buffer.c	/^void edit_buffer_free(EditBuffer *b) {$/;"	f	typeref:typename:void
 edit_buffer_gap_clear	edit_buffer.c	/^void edit_buffer_gap_clear(EditBuffer *b) {$/;"	f	typeref:typename:void
 edit_buffer_gap_resize	edit_buffer.c	/^void edit_buffer_gap_resize(EditBuffer *b, size_t new_size) {$/;"	f	typeref:typename:void
 edit_buffer_insert	edit_buffer.c	/^void edit_buffer_insert(EditBuffer *b, int c) {$/;"	f	typeref:typename:void
 edit_buffer_open_gap	edit_buffer.c	/^void edit_buffer_open_gap(EditBuffer *b, size_t start, size_t size) {$/;"	f	typeref:typename:void
-edit_buffer_print_string	edit_buffer.c	/^void edit_buffer_print_string(EditBuffer *b, printer p) {$/;"	f	typeref:typename:void
+edit_buffer_print_window	edit_buffer.c	/^void edit_buffer_print_window(EditBuffer *b, WINDOW *win) {$/;"	f	typeref:typename:void
 edit_buffer_reserve	edit_buffer.c	/^void edit_buffer_reserve(EditBuffer *b, size_t size) {$/;"	f	typeref:typename:void
-editor_draw	editor.c	/^void editor_draw(Editor *editor) {$/;"	f	typeref:typename:void
+edit_buffer_size	edit_buffer.c	/^int edit_buffer_size(EditBuffer *b) { return b->size; }$/;"	f	typeref:typename:int
+editor_alloc	editor.c	/^Editor *editor_alloc() {$/;"	f	typeref:typename:Editor *
+editor_free	editor.c	/^void editor_free(Editor *editor) {$/;"	f	typeref:typename:void
+editor_start	editor.c	/^void editor_start(Editor *editor) {$/;"	f	typeref:typename:void
+gap_enable	edit_buffer.h	/^  bool gap_enable;$/;"	m	struct:EditBuffer	typeref:typename:bool
+gap_size	edit_buffer.h	/^  size_t gap_size;$/;"	m	struct:EditBuffer	typeref:typename:size_t
+gap_start	edit_buffer.h	/^  size_t gap_start;$/;"	m	struct:EditBuffer	typeref:typename:size_t
+gap_used	edit_buffer.h	/^  size_t gap_used;$/;"	m	struct:EditBuffer	typeref:typename:size_t
+key_handler	editor.c	/^void key_handler(KeyEvent ev, void *args) {$/;"	f	typeref:typename:void
+key_handler	keyboard.h	/^  void (*key_handler)(KeyEvent ev, void *args);$/;"	m	struct:Keyboard	typeref:typename:void (*)(KeyEvent ev,void * args)
+key_listener	editor.h	/^  pthread_t key_listener;$/;"	m	struct:Editor	typeref:typename:pthread_t
+keyboard	editor.h	/^  Keyboard keyboard;$/;"	m	struct:Editor	typeref:typename:Keyboard
+keys	keyboard.h	/^  char keys[MAX_KEY_CHORD_LENGTH];$/;"	m	struct:KeyEvent	typeref:typename:char[]
+len	keyboard.h	/^  int len;$/;"	m	struct:KeyEvent	typeref:typename:int
+line	editor.h	/^  EditBuffer line;$/;"	m	struct:Editor	typeref:typename:EditBuffer
 main	main.c	/^int main() {$/;"	f	typeref:typename:int
+main	playground/hello.c	/^int main() {$/;"	f	typeref:typename:int
 main	test_edit_buffer.c	/^int main() {$/;"	f	typeref:typename:int
 main	test_vec.c	/^int main(void) {$/;"	f	typeref:typename:int
-print1	editor.c	/^int print1(const char *format, ...) {$/;"	f	typeref:typename:int
+mode	editor.h	/^  int mode;$/;"	m	struct:Editor	typeref:typename:int
+mutex	keyboard.h	/^  pthread_mutex_t mutex;$/;"	m	struct:Keyboard	typeref:typename:pthread_mutex_t
+size	edit_buffer.h	/^  size_t size;$/;"	m	struct:EditBuffer	typeref:typename:size_t
+start_key_listener	keyboard.c	/^void *start_key_listener(void *args) {$/;"	f	typeref:typename:void *
 test_backspace_inside_gap	test_edit_buffer.c	/^void test_backspace_inside_gap() {$/;"	f	typeref:typename:void
 test_backspace_outside_gap	test_edit_buffer.c	/^void test_backspace_outside_gap() {$/;"	f	typeref:typename:void
 test_gap_after_append	test_edit_buffer.c	/^void test_gap_after_append() {$/;"	f	typeref:typename:void
@@ -57,11 +134,13 @@ test_insert_extend_gap	test_edit_buffer.c	/^void test_insert_extend_gap() {$/;"	
 test_insert_simple	test_edit_buffer.c	/^void test_insert_simple() {$/;"	f	typeref:typename:void
 test_insert_undo	test_edit_buffer.c	/^void test_insert_undo() {$/;"	f	typeref:typename:void
 test_open_gap	test_edit_buffer.c	/^void test_open_gap() {$/;"	f	typeref:typename:void
-test_print_string	test_edit_buffer.c	/^void test_print_string() {$/;"	f	typeref:typename:void
 vec2_add	vec2.c	/^Vec2 vec2_add(Vec2 u, Vec2 v) { return (Vec2){u.x + v.x, u.y + v.y}; }$/;"	f	typeref:typename:Vec2
 vec2_dist	vec2.c	/^double vec2_dist(Vec2 v) { return sqrt((v.x * v.x) + (v.y * v.y)); }$/;"	f	typeref:typename:double
 vec2_equal	vec2.c	/^bool vec2_equal(Vec2 u, Vec2 v) { return u.x == v.x && u.y == v.y; }$/;"	f	typeref:typename:bool
 vec2_mul	vec2.c	/^Vec2 vec2_mul(Vec2 u, int scalar) { return (Vec2){u.x * scalar, u.y * scalar}; }$/;"	f	typeref:typename:Vec2
 vec2_sub	vec2.c	/^Vec2 vec2_sub(Vec2 u, Vec2 v) { return (Vec2){u.x - v.x, u.y - v.y}; }$/;"	f	typeref:typename:Vec2
-win_editor	main.c	/^WINDOW *win_editor = NULL;$/;"	v	typeref:typename:WINDOW *
-win_status	main.c	/^WINDOW *win_status = NULL;$/;"	v	typeref:typename:WINDOW *
+win_editor	editor.h	/^  WINDOW *win_editor;$/;"	m	struct:Editor	typeref:typename:WINDOW *
+win_editor	keyboard.h	/^  WINDOW *win_editor;$/;"	m	struct:Keyboard	typeref:typename:WINDOW *
+win_status	editor.h	/^  WINDOW *win_status;$/;"	m	struct:Editor	typeref:typename:WINDOW *
+x	vec2.h	/^  int x;$/;"	m	struct:Vec2	typeref:typename:int
+y	vec2.h	/^  int y;$/;"	m	struct:Vec2	typeref:typename:int

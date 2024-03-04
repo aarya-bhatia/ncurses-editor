@@ -3,9 +3,10 @@ BINDIR=bin
 SRCDIR=.
 SRC=$(shell ls *.c | grep -v '^test')
 OBJS=$(SRC:%.c=$(OBJDIR)/%.o)
+CFLAGS=-c -std=c99 -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
 
-EDITOR=editor.c vec2.c edit_buffer.c main.c
+EDITOR=editor.c vec2.c edit_buffer.c main.c keyboard.c
 EDITOR_OBJS=$(EDITOR:%.c=$(OBJDIR)/%.o)
 
 all: $(BINDIR)/editor $(BINDIR)/test_edit_buffer $(BINDIR)/test_vec
@@ -24,7 +25,7 @@ $(BINDIR)/test_vec: $(OBJDIR)/test_vec.o $(OBJDIR)/vec2.o
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	mkdir -p $(OBJDIR)
-	gcc -Wall -Werror -pedantic -std=c99 -g -c $< -o $@
+	gcc $(CFLAGS) $< -o $@
 
 clean:
 	/bin/rm -rf $(OBJDIR) $(BINDIR)
