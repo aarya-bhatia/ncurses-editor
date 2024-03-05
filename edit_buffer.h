@@ -28,3 +28,5 @@ int edit_buffer_size(EditBuffer *b);
 void edit_buffer_clear(EditBuffer *b);
 void edit_buffer_backspace(EditBuffer *b);
 void edit_buffer_print_window(EditBuffer *b, WINDOW *win);
+
+const char *edit_buffer_to_string(EditBuffer *b);

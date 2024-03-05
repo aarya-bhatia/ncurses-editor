@@ -7,16 +7,11 @@
 
 enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };
 
-typedef struct Editor {
-  WINDOW *win_status;
-  WINDOW *win_editor;
-  EditBuffer line;
-  Keyboard keyboard;
-  Vec2 cursor;
-  int mode;
-  pthread_t key_listener;
-} Editor;
+typedef struct View {
+    WINDOW *window;
+    EditBuffer line;
+} View;
 
-Editor *editor_alloc();
-void editor_free(Editor *editor);
-void editor_start(Editor *editor);
+void init();
+void destroy();
+void update();

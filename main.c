@@ -1,45 +1,38 @@
 #include "editor.h"
 #include <ncurses.h>
+#include <string.h>
 
-int main() {
-  initscr();
-  raw();
-  noecho();
-  notimeout(stdscr, true);
-  keypad(stdscr, true);
+extern int editor_mode;
 
-  Editor *editor = editor_alloc();
+void insert_mode_key_event(unsigned);
+void normal_mode_key_event(unsigned);
+void command_mode_key_event(unsigned);
 
-  editor_start(editor);
+int main()
+{
+    init();
+	notimeout(stdscr, TRUE);
 
-  // if (mode == INSERT_MODE) {
-  //   if (c == KEY_ESCAPE) {
-  //     mode = NORMAL_MODE;
-  //   } else if (c == KEY_BACKSPACE) {
-  //     input[strlen(input) - 1] = 0;
-  //     x--;
-  //   } else if (c == '\n' || c == ('u' & 0x1f)) {
-  //     input[0] = 0;
-  //     x = 0;
-  //   } else {
-  //     size_t n = strlen(input);
-  //     if (n < sizeof(input) - 1) {
-  //       input[n] = c;
-  //       input[n + 1] = 0;
-  //     }
-  //     x++;
-  //   }
-  // } else {
-  //   if (c == 'i') {
-  //     mode = INSERT_MODE;
-  //     x = strlen(input);
-  //   } else if ((c == 'h' || c == KEY_LEFT) && x > 0) {
-  //     x--;
-  //   } else if ((c == 'l' || c == KEY_RIGHT) && x < COLS - 1) {
-  //     x++;
-  //   }
-  // }
+	while (1) {
+		int c = getch();
 
-  editor_free(editor);
-  return 0;
+        if (c == CTRL_C) {
+            destroy();
+            exit(0);
+        }
+
+        if (editor_mode == INSERT_MODE) {
+            insert_mode_key_event(c);
+        } else if (editor_mode == NORMAL_MODE) {
+            normal_mode_key_event(c);
+        } else if (editor_mode == COMMAND_MODE) {
+            command_mode_key_event(c);
+        }
+
+        update();
+	}
+
+
+    destroy();
+    return 0;
 }

@@ -47,11 +47,3 @@ typedef struct KeyEvent {
   int len;
 } KeyEvent;
 
-typedef struct Keyboard {
-  WINDOW *win_editor;
-  void (*key_handler)(KeyEvent ev, void *args);
-  void *args;
-  pthread_mutex_t mutex;
-} Keyboard;
-
-void *start_key_listener(void *args);
