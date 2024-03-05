@@ -11,10 +11,10 @@ void command_mode_key_event(unsigned);
 int main()
 {
     init();
-	notimeout(stdscr, TRUE);
+    notimeout(stdscr, TRUE);
 
-	while (1) {
-		int c = getch();
+    while (1) {
+        int c = getch();
 
         if (c == CTRL_C) {
             destroy();
@@ -30,8 +30,7 @@ int main()
         }
 
         update();
-	}
-
+    }
 
     destroy();
     return 0;

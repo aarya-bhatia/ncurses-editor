@@ -11,6 +11,14 @@ View view_status;
 int editor_mode;
 Vec2 cursor;
 
+void handle_command(const char *command)
+{
+    if (strcmp(command, "q") == 0) {
+        destroy();
+        exit(0);
+    }
+}
+
 void draw_view_edit()
 {
     werase(view_edit.window);
@@ -132,6 +140,7 @@ void command_mode_key_event(unsigned c)
     switch (c) {
         case CTRL_ENTER:
             editor_mode = NORMAL_MODE;
+            handle_command(edit_buffer_to_string(&view_mode.line));
             break;
 
         default:
@@ -154,12 +163,14 @@ void init()
     initscr();
     raw();
     noecho();
-    keypad(stdscr, TRUE);
-    scrollok(stdscr, TRUE);
+    notimeout(stdscr, TRUE);
+    // keypad(stdscr, TRUE);
+    // scrollok(stdscr, TRUE);
 
-    editor_mode = INSERT_MODE;
     cursor.x = 0;
     cursor.y = 0;
+
+    editor_mode = NORMAL_MODE;
 
     memset(&view_edit, 0, sizeof view_edit);
     memset(&view_mode, 0, sizeof view_edit);
