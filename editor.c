@@ -45,10 +45,12 @@ void draw_view_status(const char *format, ...)
 {
     werase(view_status.window);
 
-    va_list args;
-    va_start(args, format);
-    vw_printw(view_status.window, format, args);
-    va_end(args);
+    if (format) {
+        va_list args;
+        va_start(args, format);
+        vw_printw(view_status.window, format, args);
+        va_end(args);
+    }
 
     wrefresh(view_status.window);
 }
@@ -106,6 +108,7 @@ void normal_mode_key_event(unsigned c)
     switch (c) {
         case CTRL_ESCAPE:
             draw_view_status(NULL); // clear status
+			break;
 
         case 'i':
             edit_buffer_open_gap(&view_mode.line, cursor.x, 1);
@@ -147,7 +150,6 @@ void command_mode_key_event(unsigned c)
             if (PRINTABLE(c)) {
                 edit_buffer_insert(&view_mode.line, c);
             }
-            break;
     }
 }
 
