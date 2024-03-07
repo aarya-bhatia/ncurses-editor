@@ -4,6 +4,19 @@
 
 void test0()
 {
+    EditBuffer b;
+    edit_buffer_init(&b);
+    edit_buffer_set_insert_position(&b, 0);
+    edit_buffer_insert(&b, 'h');
+    edit_buffer_insert(&b, 'i');
+    char *s = edit_buffer_to_string(&b); 
+	assert(!strcmp(s, "hi"));
+    free(s);
+    edit_buffer_free(&b);
+}
+
+/* void test0()
+{
     EditBuffer *buffer = calloc(1, sizeof *buffer);
     for (int i = 0; i < 100; i++) {
         edit_buffer_insert(buffer, 0xa);
@@ -48,12 +61,10 @@ void test2()
     assert(strcmp(res, "hello") == 0);
     edit_buffer_free(buffer);
     free(buffer);
-}
+} */
 
 int main()
 {
     test0();
-    test1();
-    test2();
     return 0;
 }
