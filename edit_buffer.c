@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ * Make size be the nearest power of 2
+ */
 size_t align_size(size_t size)
 {
     size_t new_size = 1;
@@ -13,6 +16,9 @@ size_t align_size(size_t size)
     return new_size;
 }
 
+/**
+ * Reserve gap space in the buffer and possibly reallocate it.
+ */
 void edit_buffer_gap_reserve(EditBuffer *b, size_t size)
 {
     size = align_size(size);
@@ -29,16 +35,23 @@ void edit_buffer_gap_reserve(EditBuffer *b, size_t size)
     b->gap_size = size;
 }
 
-void edit_buffer_set_position(EditBuffer *b, size_t index)
+/**
+ * Set insert position to the index-th character of the buffer.
+ */
+size_t edit_buffer_set_position(EditBuffer *b, size_t index)
 {
+    size_t used = b->capacity - b->gap_size + b->gap_used;
+
+    // translate index so that it is gap aware
+    assert(index <= used);
+    if (index >= b->gap_start + b->gap_used) {
+        size_t back_index = (index - b->gap_used - b->gap_start);
+        index = b->capacity - back_index;
+        fprintf(stderr, "index=%zu\n", index);
+    }
+
     // available space in buffer
     size_t avail = b->gap_size - b->gap_used;
-
-	// used space in buffer
-	size_t used = b->capacity - avail;
-
-	// cursor should not move past the end
-	if(index > used) { index = used; }
 
     // collpase prev gap at position `gap_start` of size `gap_size`
     memmove(b->buffer + b->gap_start + b->gap_used, b->buffer + b->gap_start + b->gap_size,
@@ -50,8 +63,13 @@ void edit_buffer_set_position(EditBuffer *b, size_t index)
     b->gap_start = index;
     b->gap_used = 0;
     b->gap_size = avail;
+
+    return index;
 }
 
+/**
+ * Insert character at current position in the buffer gap
+ */
 void edit_buffer_insert(EditBuffer *b, char value)
 {
     // ensure space for new byte in current gap
@@ -60,6 +78,9 @@ void edit_buffer_insert(EditBuffer *b, char value)
     b->gap_used++;
 }
 
+/**
+ * Erase and empty buffer
+ */
 void edit_buffer_clear(EditBuffer *b)
 {
     // entire buffer is one big gap
@@ -68,14 +89,22 @@ void edit_buffer_clear(EditBuffer *b)
     b->gap_start = 0;
 }
 
+/**
+ * Flushes the gap and null terminates buffer.
+ * Internally, the gap is shifted to the end of the buffer.
+ */
 const char *edit_buffer_flush(EditBuffer *b)
 {
-    edit_buffer_set_position(b, b->capacity);
+    size_t used = b->capacity - b->gap_size + b->gap_used;
+    edit_buffer_set_position(b, used);
     edit_buffer_gap_reserve(b, 1);
     b->buffer[b->gap_start + b->gap_used] = 0;
     return b->buffer;
 }
 
+/**
+ * Destructor
+ */
 void edit_buffer_free(EditBuffer *b)
 {
     if (b) {

@@ -14,7 +14,7 @@ typedef struct EditBuffer {
 } EditBuffer;
 
 void edit_buffer_gap_reserve(EditBuffer *b, size_t size);
-void edit_buffer_set_position(EditBuffer *b, size_t index);
+size_t edit_buffer_set_position(EditBuffer *b, size_t index);
 void edit_buffer_insert(EditBuffer *b, char value);
 void edit_buffer_clear(EditBuffer *b);
 void edit_buffer_free(EditBuffer *b);

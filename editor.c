@@ -66,6 +66,9 @@ void insert_mode_key_event(unsigned c)
         case CTRL_ESCAPE:
             edit_buffer_close_gap(&view_edit.line);
             editor_mode = NORMAL_MODE;
+			if(cursor.x >= edit_buffer_size(&view_edit.line)) {
+				cursor.x = edit_buffer_size(&view_edit.line) - 1;
+			}
             break;
 
         case CTRL_BACKSPACE:
@@ -77,6 +80,10 @@ void insert_mode_key_event(unsigned c)
             break;
 
         case CTRL_U:
+			// edit_buffer_delete_range(&view_edit.line, 0, cursor.x);
+			cursor.x = 0;
+			break;
+
         case CTRL_ENTER:
             edit_buffer_clear(&view_edit.line);
             cursor.x = 0;
@@ -124,7 +131,7 @@ void normal_mode_key_event(unsigned c)
             break;
 
         case 'l':
-            if (cursor.x < edit_buffer_size(&view_edit.line)) {
+            if (cursor.x < edit_buffer_size(&view_edit.line) - 1) {
                 cursor.x++;
             }
             draw_view_status("move right");
