@@ -2,6 +2,16 @@
 #include <assert.h>
 #include <string.h>
 
+void test0()
+{
+    EditBuffer *buffer = calloc(1, sizeof *buffer);
+    for (int i = 0; i < 100; i++) {
+        edit_buffer_insert(buffer, 0xa);
+    }
+    edit_buffer_free(buffer);
+    free(buffer);
+}
+
 void test1()
 {
     EditBuffer *buffer = calloc(1, sizeof *buffer);
@@ -42,7 +52,8 @@ void test2()
 
 int main()
 {
+    test0();
     test1();
-    // test2();
+    test2();
     return 0;
 }

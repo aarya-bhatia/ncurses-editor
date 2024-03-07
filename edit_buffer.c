@@ -17,54 +17,62 @@ size_t align_size(size_t size)
 }
 
 /**
- * Reserve gap space in the buffer and possibly reallocate it.
+ * Ensures buffer gap is at least `size` bytes wide
  */
-void edit_buffer_gap_reserve(EditBuffer *b, size_t size)
+void _edit_buffer_gap_reserve(EditBuffer *b, size_t size)
 {
-    size = align_size(size);
     if (b->gap_size >= size) {
         return;
     }
 
-    b->buffer = realloc(b->buffer, b->capacity - b->gap_size + size);
-    b->capacity = b->capacity - b->gap_size + size;
+    _edit_buffer_gap_resize(b, align_size(size));
+}
 
-    memmove(b->buffer + b->gap_start + size, b->buffer + b->gap_start + b->gap_size,
-            b->capacity - b->gap_start - b->gap_size);
+/**
+ * Resize gap to _exactly_ `size` bytes and possibly reallocates buffer.
+ */
+void _edit_buffer_gap_resize(EditBuffer *b, size_t size)
+{
+    // calc new capacity after resizing gap to `size` bytes
+    if (b->capacity - b->gap_size + size > b->capacity) {
+        b->capacity = b->capacity - b->gap_size + size;
+        b->buffer = realloc(b->buffer, b->capacity);
+    }
+
+    // move bytes on right of old gap, to be on right of new gap
+    size_t msize = b->capacity - b->gap_start - b->gap_size;
+    memmove(b->buffer + b->gap_start + size, b->buffer + b->gap_start + b->gap_size, msize);
 
     b->gap_size = size;
 }
 
 /**
  * Set insert position to the index-th character of the buffer.
+ * Note that, 0 <= index <= used
  */
-size_t edit_buffer_set_position(EditBuffer *b, size_t index)
+void edit_buffer_set_position(EditBuffer *b, size_t index)
 {
-    size_t used = b->capacity - b->gap_size + b->gap_used;
+    assert(index <= b->used);
 
-    // translate index so that it is gap aware
-    assert(index <= used);
-    if (index >= b->gap_start + b->gap_used) {
-        size_t back_index = (index - b->gap_used - b->gap_start);
-        index = b->capacity - back_index;
-        fprintf(stderr, "index=%zu\n", index);
+    // nothing to be done
+    if (index == b->gap_start) {
+        return;
     }
 
+    // collapse the current gap
+    _edit_buffer_gap_resize(b, b->gap_used);
+    assert(b->gap_size == b->gap_used);
+
     // available space in buffer
-    size_t avail = b->gap_size - b->gap_used;
+    size_t avail = b->capacity - b->used;
 
-    // collpase prev gap at position `gap_start` of size `gap_size`
-    memmove(b->buffer + b->gap_start + b->gap_used, b->buffer + b->gap_start + b->gap_size,
-            b->capacity - b->gap_start - b->gap_size);
-
-    // create new gap of size `avail` at position `index`
-    memmove(b->buffer + index + avail, b->buffer + index, b->capacity - index - avail);
+    // create gap with all free space in buffer at the given index
+    assert(b->capacity >= index + avail);
+    memmove(b->buffer + index + avail, b->buffer + index, b->used - index);
 
     b->gap_start = index;
     b->gap_used = 0;
     b->gap_size = avail;
-
-    return index;
 }
 
 /**
@@ -72,10 +80,11 @@ size_t edit_buffer_set_position(EditBuffer *b, size_t index)
  */
 void edit_buffer_insert(EditBuffer *b, char value)
 {
-    // ensure space for new byte in current gap
-    edit_buffer_gap_reserve(b, b->gap_used + 1);
+    // ensure space for next byte in gap
+    _edit_buffer_gap_reserve(b, b->gap_used + 1);
     b->buffer[b->gap_start + b->gap_used] = value;
     b->gap_used++;
+    b->used++;
 }
 
 /**
@@ -83,10 +92,11 @@ void edit_buffer_insert(EditBuffer *b, char value)
  */
 void edit_buffer_clear(EditBuffer *b)
 {
-    // entire buffer is one big gap
+    // make buffer one big gap
     b->gap_size = b->capacity;
     b->gap_used = 0;
     b->gap_start = 0;
+    b->used = 0;
 }
 
 /**
@@ -95,10 +105,16 @@ void edit_buffer_clear(EditBuffer *b)
  */
 const char *edit_buffer_flush(EditBuffer *b)
 {
-    size_t used = b->capacity - b->gap_size + b->gap_used;
-    edit_buffer_set_position(b, used);
-    edit_buffer_gap_reserve(b, 1);
-    b->buffer[b->gap_start + b->gap_used] = 0;
+    // move cursor to last character of buffer
+    edit_buffer_set_position(b, b->used);
+    assert(b->gap_start == b->used);
+    assert(b->gap_used == 0);
+
+    // create new gap at cursor
+    _edit_buffer_gap_reserve(b, 1);
+    assert(b->gap_size > 0);
+
+    b->buffer[b->used] = 0; // null terminate the buffer
     return b->buffer;
 }
 
