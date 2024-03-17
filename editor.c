@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include <string.h>
 #include <sys/types.h>
+#include "log.h"
 
 #define PRINTABLE(c) ((c) > 0x1f && (c) < 0x7f)
 
@@ -136,14 +137,12 @@ void normal_mode_key_event(unsigned c)
             if (cursor.x > 0) {
                 cursor.x--;
             }
-            draw_view_status("move left");
             break;
 
         case 'l':
             if (edit_buffer_size(&view_edit.line) && cursor.x < edit_buffer_size(&view_edit.line) - 1) {
                 cursor.x++;
             }
-            draw_view_status("move right");
             break;
 
         case ':':
@@ -171,10 +170,14 @@ void command_mode_key_event(unsigned c)
 
 void update()
 {
-    draw_view_mode();
+    if (editor_mode == COMMAND_MODE) {
+        draw_view_mode();
+    }
+
     if (editor_mode == INSERT_MODE) {
         draw_view_edit();
     }
+
     draw_cursor();
 }
 
@@ -202,7 +205,9 @@ void init()
     view_status.window = newwin(2, COLS / 2, LINES - 2, COLS / 2);
 
     refresh();
-    update();
+
+	draw_view_mode();
+	draw_cursor();
 }
 
 void destroy()
@@ -220,8 +225,9 @@ void destroy()
 
 void on_insert_enter()
 {
-    draw_view_status("enter insert mode");
     editor_mode = INSERT_MODE;
+    log_debug("enter insert mode");
+    draw_view_mode();
 
     cursor.x = MAX(0, MIN(cursor.x, edit_buffer_size(&view_edit.line) - 1));
     cursor.y = MAX(cursor.y, 0);
@@ -231,13 +237,14 @@ void on_insert_enter()
 
 void on_insert_leave()
 {
-    draw_view_status("leave insert mode");
+    log_debug("leave insert mode");
 }
 
 void on_normal_enter()
 {
     editor_mode = NORMAL_MODE;
-    draw_view_status("enter normal mode");
+    log_debug("enter normal mode");
+    draw_view_mode();
     if (edit_buffer_size(&view_edit.line) > 0 && cursor.x >= edit_buffer_size(&view_edit.line)) {
         cursor.x = edit_buffer_size(&view_edit.line) - 1;
     }
@@ -245,19 +252,20 @@ void on_normal_enter()
 
 void on_normal_leave()
 {
-    draw_view_status("leave normal mode");
+    log_debug("leave normal mode");
 }
 
 void on_command_enter()
 {
     editor_mode = COMMAND_MODE;
-    draw_view_status("enter command mode");
+    log_debug("enter command mode");
+    draw_view_mode();
     edit_buffer_clear(&view_mode.line);
     edit_buffer_set_insert_position(&view_mode.line, 0);
 }
 
 void on_command_leave()
 {
-    draw_view_status("leave command mode");
+    log_debug("leave command mode");
     handle_command(edit_buffer_to_string(&view_mode.line));
 }

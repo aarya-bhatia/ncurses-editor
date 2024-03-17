@@ -6,7 +6,7 @@ OBJS=$(SRC:%.c=$(OBJDIR)/%.o)
 CFLAGS=-c -std=c99 -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
 
-COMMON=edit_node.c edit_buffer.c vec2.c
+COMMON=edit_node.c edit_buffer.c vec2.c log.c
 COMMON_OBJ=$(COMMON:%.c=$(OBJDIR)/%.o)
 
 EDITOR=editor.c main.c
@@ -33,4 +33,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 clean:
 	/bin/rm -rf $(OBJDIR) $(BINDIR)
 
-.PHONY: clean
+tags:
+	ctags -R --languages=C *
+
+.PHONY: clean tags
+

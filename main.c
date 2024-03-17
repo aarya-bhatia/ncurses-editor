@@ -1,5 +1,7 @@
 #include "editor.h"
-#include <ncurses.h>
+#include "log.h"
+#include <fcntl.h>
+#include <unistd.h>
 
 extern int editor_mode;
 
@@ -11,6 +13,11 @@ int main()
 {
     init();
     notimeout(stdscr, TRUE);
+
+    int logfile = open("stderr.log", O_CREAT | O_TRUNC | O_WRONLY, 0640);
+    dup2(logfile, 2);
+    close(logfile);
+    log_info("hello world");
 
     while (1) {
         int c = getch();
@@ -32,5 +39,6 @@ int main()
     }
 
     destroy();
+
     return 0;
 }
