@@ -56,13 +56,27 @@ typedef struct View {
     EditBuffer line;
 } View;
 
-void init();
-void destroy();
-void update();
+extern View view_edit;
+extern View view_mode;
+extern View view_status;
+extern int editor_mode;
+extern Vec2 cursor;
 
+void command_mode_key_event(unsigned c);
+void destroy();
+void draw_cursor();
+void draw_view_edit();
+void draw_view_mode();
+void draw_view_status(const char *format, ...);
+void handle_command(const char *command);
+void init();
+void insert_mode_key_event(unsigned c);
+void normal_mode_key_event(unsigned c);
+void on_command_enter();
+void on_command_leave();
 void on_insert_enter();
 void on_insert_leave();
 void on_normal_enter();
 void on_normal_leave();
-void on_command_enter();
-void on_command_leave();
+void print_buffer(EditBuffer *b, WINDOW *win);
+void update();

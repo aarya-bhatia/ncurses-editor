@@ -30,6 +30,8 @@ void handle_command(const char *command)
     if (strcmp(command, "q") == 0) {
         destroy();
         exit(0);
+    } else {
+        draw_view_status("command not found: %s", command);
     }
 }
 
