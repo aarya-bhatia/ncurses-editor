@@ -17,4 +17,3 @@ typedef struct _EditNode {
 EditNode *edit_node_new();
 void edit_node_free(EditNode *node);
 void edit_node_append(EditNode *node, char value);
-EditNode *edit_node_split(EditNode *node, size_t new_size);

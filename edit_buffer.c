@@ -90,9 +90,6 @@ EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
 {
     if (!b->head && !b->tail) {
         EditNode *first = edit_node_new();
-        first->buffer = calloc(MIN_CAPACITY, 1);
-        first->size = 0;
-        first->capacity = MIN_CAPACITY;
         edit_buffer_append_node(b, first);
         return b->current = first;
     }
@@ -107,7 +104,7 @@ EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
         if (index == accum + node->size) {
             return b->current = node;
         } else if (index >= accum && index < accum + node->size) {
-            EditNode *split_node = edit_node_new();
+            EditNode *split_node = calloc(1, sizeof *split_node);
             split_node->next = node->next;
             node->next = split_node;
 
@@ -126,6 +123,8 @@ EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
 
             return b->current = node;
         }
+
+        accum += node->size;
     }
 
     exit(1); // never come here

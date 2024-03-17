@@ -3,7 +3,10 @@
 
 EditNode *edit_node_new()
 {
-    return calloc(1, sizeof(EditNode));
+    EditNode *node = calloc(1, sizeof *node);
+    node->buffer = calloc(MIN_CAPACITY, 1);
+    node->capacity = MIN_CAPACITY;
+    return node;
 }
 
 void edit_node_free(EditNode *node)
@@ -20,8 +23,7 @@ void edit_node_append(EditNode *node, char value)
 {
     assert(node);
 
-    node->capacity = MAX(node->capacity, MAX(node->size + 2, MIN_CAPACITY));
-    assert(node->capacity >= MIN_CAPACITY);
+    node->capacity = MAX(node->capacity, node->size + 2);
     node->buffer = realloc(node->buffer, node->capacity);
     node->buffer[node->size++] = value;
     node->buffer[node->size] = 0;

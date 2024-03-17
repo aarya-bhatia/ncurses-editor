@@ -16,7 +16,6 @@ Vec2 cursor;
 void print_buffer(EditBuffer *b, WINDOW *win)
 {
     werase(win);
-	wclear(win);
 
     for (EditNode *node = b->head; node != NULL; node = node->next) {
         wprintw(win, "%s", node->buffer);
@@ -173,7 +172,9 @@ void command_mode_key_event(unsigned c)
 void update()
 {
     draw_view_mode();
-    draw_view_edit();
+    if (editor_mode == INSERT_MODE) {
+        draw_view_edit();
+    }
     draw_cursor();
 }
 
@@ -222,8 +223,7 @@ void on_insert_enter()
     draw_view_status("enter insert mode");
     editor_mode = INSERT_MODE;
 
-    cursor.x = MIN(cursor.x, edit_buffer_size(&view_edit.line) - 1);
-    cursor.x = MAX(cursor.x, 0);
+    cursor.x = MAX(0, MIN(cursor.x, edit_buffer_size(&view_edit.line) - 1));
     cursor.y = MAX(cursor.y, 0);
 
     edit_buffer_set_insert_position(&view_edit.line, cursor.x);
