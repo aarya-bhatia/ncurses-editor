@@ -127,5 +127,48 @@ EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
         accum += node->size;
     }
 
-    exit(1); // never come here
+    assert(0); // never come here
+    return NULL;
+}
+
+/**
+ * delete previously inserted byte from buffer
+ */
+void edit_buffer_backspace(EditBuffer *b)
+{
+    if (edit_buffer_size(b) == 0 || !b->current) {
+        return;
+    }
+
+    if (b->current->size > 0) {
+        b->current->buffer[b->current->size - 1] = 0;
+        b->current->size--;
+        return;
+    }
+
+    if (b->tail == b->current && b->head == b->current) {
+        return;
+    }
+
+    if (b->current == b->head) {
+        b->head = b->current->next;
+        edit_node_free(b->current);
+        b->current = b->head;
+        return;
+    }
+
+    for (EditNode *node = b->head; node != NULL; node = node->next) {
+        if (node->next == b->current) {
+            node->next = node->next->next;
+            edit_node_free(b->current);
+            b->current = node;
+            if (b->current == b->tail) {
+                b->tail = node;
+            }
+            edit_buffer_backspace(b);
+            return;
+        }
+    }
+
+    assert(0); // never come here
 }

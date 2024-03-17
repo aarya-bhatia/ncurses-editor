@@ -1,10 +1,10 @@
 #include "editor.h"
 #include "edit_buffer.h"
+#include "log.h"
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>
 #include <sys/types.h>
-#include "log.h"
 
 #define PRINTABLE(c) ((c) > 0x1f && (c) < 0x7f)
 
@@ -88,7 +88,10 @@ void insert_mode_key_event(unsigned c)
         case CTRL_DEL:
         case KEY_BACKSPACE:
         case KEY_DC:
-            // TODO
+            if (cursor.x > 0) {
+                edit_buffer_backspace(&view_edit.line);
+                cursor.x--;
+            }
             break;
 
         case CTRL_U:
@@ -206,8 +209,8 @@ void init()
 
     refresh();
 
-	draw_view_mode();
-	draw_cursor();
+    draw_view_mode();
+    draw_cursor();
 }
 
 void destroy()
