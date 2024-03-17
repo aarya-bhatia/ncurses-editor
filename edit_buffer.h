@@ -1,17 +1,10 @@
 #pragma once
 
-#include <ncurses.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct _EditNode {
-    char *buffer;
-    size_t size;
-    size_t capacity;
-    size_t index;
-    struct _EditNode *next;
-} EditNode;
+#include "edit_node.h"
 
 typedef struct EditBuffer {
     EditNode *head;
@@ -19,12 +12,18 @@ typedef struct EditBuffer {
     EditNode *current;
 } EditBuffer;
 
-size_t edit_buffer_size(EditBuffer *b);
-void edit_buffer_insert(EditBuffer *b, char value);
-void edit_buffer_clear(EditBuffer *b);
+// public
 void edit_buffer_init(EditBuffer *b);
-void edit_buffer_free(EditBuffer *b);
-void edit_buffer_set_insert_position(EditBuffer *b, size_t index);
-char *edit_buffer_to_string(EditBuffer *b);
+void edit_buffer_clear(EditBuffer *b);
+size_t edit_buffer_size(EditBuffer *b);
 
+void edit_buffer_insert(EditBuffer *b, char value);
+char *edit_buffer_to_string(EditBuffer *b);
+EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index);
+
+// private
+EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node);
+EditNode *edit_buffer_find_insert_node(EditBuffer *b, size_t index);
+
+// todo
 // const char *edit_buffer_flush(EditBuffer *b);

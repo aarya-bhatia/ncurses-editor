@@ -2,59 +2,32 @@
 #include <assert.h>
 #include <string.h>
 
+/**
+ * constructor
+ */
 void edit_buffer_init(EditBuffer *b)
 {
     memset(b, 0, sizeof *b);
 }
 
-EditNode *edit_buffer_find_insert_node(EditBuffer *b, size_t index)
+/**
+ * empty the buffer
+ */
+void edit_buffer_clear(EditBuffer *b)
 {
-    size_t accum = 0;
-    for (EditNode *node = b->head; node; node = node->next) {
-        if (accum <= index && index < accum + node->size) {
-            return node;
-        }
+    EditNode *tmp = NULL;
+
+    for (EditNode *node = b->head; node; node = tmp) {
+        tmp = node->next;
+        edit_node_free(node);
     }
 
-    return NULL;
+    b->head = b->tail = b->current = NULL;
 }
 
-void edit_buffer_set_insert_position(EditBuffer *b, size_t index)
-{
-    if (!b->head && !b->tail) {
-        EditNode *new_node = calloc(1, sizeof *new_node);
-        b->head = b->tail = new_node;
-        b->current = new_node;
-        return;
-    }
-
-    EditNode *node = edit_buffer_find_insert_node(b, index);
-
-    if (!node) {
-        EditNode *new_node = calloc(1, sizeof *new_node);
-        new_node->index = b->tail->index + b->tail->size;
-        b->tail->next = new_node;
-        b->tail = new_node;
-        b->current = new_node;
-        return;
-    }
-
-    EditNode *new_node = calloc(1, sizeof *new_node);
-    node->next = new_node;
-    new_node->next = node->next;
-    new_node->buffer = strdup(node->buffer + index - node->index);
-    new_node->size = strlen(new_node->buffer);
-    new_node->capacity = new_node->size + 1;
-
-    node->buffer = realloc(node->buffer, index - node->index + 1);
-    node->buffer[index - node->index] = 0;
-    node->size = strlen(node->buffer);
-    node->capacity = node->size + 1;
-
-    new_node->index = node->index + node->size;
-    b->current = new_node;
-}
-
+/**
+ * returns number of bytes in buffer
+ */
 size_t edit_buffer_size(EditBuffer *b)
 {
     size_t len = 0;
@@ -64,6 +37,9 @@ size_t edit_buffer_size(EditBuffer *b)
     return len;
 }
 
+/**
+ * returns buffer as string
+ */
 char *edit_buffer_to_string(EditBuffer *b)
 {
     size_t len = edit_buffer_size(b);
@@ -77,32 +53,81 @@ char *edit_buffer_to_string(EditBuffer *b)
     return res;
 }
 
+/**
+ * add node to tail
+ */
+EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node)
+{
+    assert(b);
+    assert(node);
+
+    if (!b->head && !b->tail) {
+        b->head = b->tail = node;
+    } else {
+        b->tail->next = node;
+        b->tail = node;
+    }
+
+    return node;
+}
+
+/**
+ * insert byte at current position in buffer
+ */
 void edit_buffer_insert(EditBuffer *b, char value)
 {
-    if (b->current->size + 1 >= b->current->capacity) {
-        b->current->capacity = (b->current->capacity + 1) * 2;
-        b->current->buffer = realloc(b->current->buffer, b->current->capacity);
+    if (!b->current) {
+        edit_buffer_set_insert_position(b, 0);
     }
-
-    b->current->buffer[b->current->size++] = value;
-    b->current->buffer[b->current->size] = 0;
+    edit_node_append(b->current, value);
 }
 
-void edit_buffer_clear(EditBuffer *b)
+/**
+ * Finds the node where the index-th bytes is located
+ * Returns Null if index >= buffer size.
+ */
+EditNode *edit_buffer_find_insert_node(EditBuffer *b, size_t index)
 {
-	EditNode *tmp = NULL;
-    for (EditNode *node = b->head; node; node = tmp) {
-		tmp = node->next;
-        free(node->buffer);
-        free(node);
+    size_t accum = 0;
+    for (EditNode *node = b->head; node; node = node->next) {
+        assert(node->index == accum);
+        if (accum <= index && index < accum + node->size) {
+            return node;
+        }
     }
 
-    b->head = b->tail = b->current = NULL;
+    return NULL;
 }
 
-void edit_buffer_free(EditBuffer *b)
+/**
+ * set current buffer position at the index-th byte in buffer
+ * returns the current edit node
+ */
+EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
 {
-    if (b) {
-        edit_buffer_clear(b);
+    assert(index <= edit_buffer_size(b));
+
+    EditNode *node = edit_buffer_find_insert_node(b, index);
+
+    if (!node) {
+        node = edit_node_new(index);
+        edit_buffer_append_node(b, node);
+    } else if (index >= node->index && index < node->index + node->size) {
+        EditNode *split_node = edit_node_new(node->size - node->index - index);
+        split_node->next = node->next;
+        node->next = split_node;
+
+        split_node->buffer = strdup(node->buffer + index);
+        split_node->size = strlen(split_node->buffer);
+        split_node->capacity = split_node->size + 1;
+
+        node->buffer[index] = 0;
+        node->size = strlen(node->buffer);
+
+        // EditNode *new_node = edit_node_split(node, node->size - node->index - index);
+        // new_node->next = node->next;
+        // node->next = new_node;
     }
+
+    return b->current = node;
 }
