@@ -1,7 +1,9 @@
 #include "editor.h"
 #include "edit_buffer.h"
 #include <curses.h>
+#include <ncurses.h>
 #include <string.h>
+#include <sys/types.h>
 
 #define PRINTABLE(c) ((c) > 0x1f && (c) < 0x7f)
 
@@ -10,6 +12,18 @@ View view_mode;
 View view_status;
 int editor_mode;
 Vec2 cursor;
+
+void print_buffer(EditBuffer *b, WINDOW *win)
+{
+    werase(win);
+	wclear(win);
+
+    for (EditNode *node = b->head; node != NULL; node = node->next) {
+        wprintw(win, "%s", node->buffer);
+    }
+
+    wrefresh(win);
+}
 
 void handle_command(const char *command)
 {
@@ -21,9 +35,7 @@ void handle_command(const char *command)
 
 void draw_view_edit()
 {
-    werase(view_edit.window);
-    edit_buffer_print_window(&view_edit.line, view_edit.window);
-    wrefresh(view_edit.window);
+    print_buffer(&view_edit.line, view_edit.window);
 }
 
 void draw_view_mode()
@@ -35,7 +47,11 @@ void draw_view_mode()
     } else if (editor_mode == NORMAL_MODE) {
         wprintw(view_mode.window, "-- NORMAL --");
     } else if (editor_mode == COMMAND_MODE) {
-        wprintw(view_mode.window, ":%s", edit_buffer_to_string(&view_mode.line));
+        if (view_mode.line.head == NULL) {
+            wprintw(view_mode.window, ":");
+        } else {
+            wprintw(view_mode.window, ":%s", view_mode.line.head->buffer);
+        }
     }
 
     wrefresh(view_mode.window);
@@ -64,40 +80,35 @@ void insert_mode_key_event(unsigned c)
 {
     switch (c) {
         case CTRL_ESCAPE:
-            edit_buffer_close_gap(&view_edit.line);
-            editor_mode = NORMAL_MODE;
-			if(cursor.x >= edit_buffer_size(&view_edit.line)) {
-				cursor.x = edit_buffer_size(&view_edit.line) - 1;
-			}
+            on_insert_leave();
+            on_normal_enter();
             break;
 
         case CTRL_BACKSPACE:
         case CTRL_DEL:
         case KEY_BACKSPACE:
         case KEY_DC:
-            edit_buffer_backspace(&view_edit.line);
-            cursor.x--;
+            // TODO
             break;
 
         case CTRL_U:
-			// edit_buffer_delete_range(&view_edit.line, 0, cursor.x);
-			cursor.x = 0;
-			break;
+            // TODO
+            break;
 
         case CTRL_ENTER:
             edit_buffer_clear(&view_edit.line);
             cursor.x = 0;
+            edit_buffer_set_insert_position(&view_edit.line, 0);
             break;
 
         case CTRL_A:
-            edit_buffer_open_gap(&view_edit.line, 0, 1);
+            edit_buffer_set_insert_position(&view_edit.line, 0);
             cursor.x = 0;
             break;
 
         case CTRL_E:
-            edit_buffer_close_gap(&view_edit.line);
-            edit_buffer_open_gap(&view_edit.line, edit_buffer_size(&view_edit.line), 1);
-            cursor.x = edit_buffer_size(&view_edit.line) - 1;
+            edit_buffer_set_insert_position(&view_edit.line, edit_buffer_size(&view_edit.line));
+            cursor.x = edit_buffer_size(&view_edit.line);
             break;
 
         default:
@@ -115,12 +126,11 @@ void normal_mode_key_event(unsigned c)
     switch (c) {
         case CTRL_ESCAPE:
             draw_view_status(NULL); // clear status
-			break;
+            break;
 
         case 'i':
-            edit_buffer_open_gap(&view_mode.line, cursor.x, 1);
-            editor_mode = INSERT_MODE;
-            draw_view_status("leave normal mode");
+            on_normal_leave();
+            on_insert_enter();
             break;
 
         case 'h':
@@ -131,16 +141,15 @@ void normal_mode_key_event(unsigned c)
             break;
 
         case 'l':
-            if (cursor.x < edit_buffer_size(&view_edit.line) - 1) {
+            if (edit_buffer_size(&view_edit.line) && cursor.x < edit_buffer_size(&view_edit.line) - 1) {
                 cursor.x++;
             }
             draw_view_status("move right");
             break;
 
         case ':':
-            editor_mode = COMMAND_MODE;
-            edit_buffer_clear(&view_mode.line);
-            draw_view_status("leave normal mode");
+            on_normal_leave();
+            on_command_enter();
             break;
     }
 }
@@ -150,7 +159,8 @@ void command_mode_key_event(unsigned c)
     switch (c) {
         case CTRL_ENTER:
             editor_mode = NORMAL_MODE;
-            handle_command(edit_buffer_to_string(&view_mode.line));
+            on_command_leave();
+            on_normal_enter();
             break;
 
         default:
@@ -173,6 +183,7 @@ void init()
     raw();
     noecho();
     notimeout(stdscr, TRUE);
+
     // keypad(stdscr, TRUE);
     // scrollok(stdscr, TRUE);
 
@@ -181,9 +192,9 @@ void init()
 
     editor_mode = NORMAL_MODE;
 
-    memset(&view_edit, 0, sizeof view_edit);
-    memset(&view_mode, 0, sizeof view_edit);
-    memset(&view_status, 0, sizeof view_edit);
+    edit_buffer_init(&view_edit.line);
+    edit_buffer_init(&view_mode.line);
+    edit_buffer_init(&view_status.line);
 
     view_edit.window = newwin(LINES / 2, COLS, 0, 0);
     view_mode.window = newwin(2, COLS / 2, LINES - 2, 0);
@@ -195,13 +206,58 @@ void init()
 
 void destroy()
 {
-    edit_buffer_free(&view_edit.line);
-    edit_buffer_free(&view_mode.line);
-    edit_buffer_free(&view_status.line);
+    edit_buffer_clear(&view_edit.line);
+    edit_buffer_clear(&view_mode.line);
+    edit_buffer_clear(&view_status.line);
 
     delwin(view_edit.window);
     delwin(view_mode.window);
     delwin(view_status.window);
 
     endwin();
+}
+
+void on_insert_enter()
+{
+    draw_view_status("enter insert mode");
+    editor_mode = INSERT_MODE;
+
+    cursor.x = MIN(cursor.x, edit_buffer_size(&view_edit.line) - 1);
+    cursor.x = MAX(cursor.x, 0);
+    cursor.y = MAX(cursor.y, 0);
+
+    edit_buffer_set_insert_position(&view_edit.line, cursor.x);
+}
+
+void on_insert_leave()
+{
+    draw_view_status("leave insert mode");
+}
+
+void on_normal_enter()
+{
+    editor_mode = NORMAL_MODE;
+    draw_view_status("enter normal mode");
+    if (edit_buffer_size(&view_edit.line) > 0 && cursor.x >= edit_buffer_size(&view_edit.line)) {
+        cursor.x = edit_buffer_size(&view_edit.line) - 1;
+    }
+}
+
+void on_normal_leave()
+{
+    draw_view_status("leave normal mode");
+}
+
+void on_command_enter()
+{
+    editor_mode = COMMAND_MODE;
+    draw_view_status("enter command mode");
+    edit_buffer_clear(&view_mode.line);
+    edit_buffer_set_insert_position(&view_mode.line, 0);
+}
+
+void on_command_leave()
+{
+    draw_view_status("leave command mode");
+    handle_command(edit_buffer_to_string(&view_mode.line));
 }

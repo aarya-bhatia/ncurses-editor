@@ -46,15 +46,23 @@
 
 enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };
 
+typedef struct KeyEvent {
+    char keys[MAX_KEY_CHORD_LENGTH];
+    int len;
+} KeyEvent;
+
 typedef struct View {
     WINDOW *window;
     EditBuffer line;
 } View;
 
-typedef struct KeyEvent {
-    char keys[MAX_KEY_CHORD_LENGTH];
-    int len;
-} KeyEvent;
 void init();
 void destroy();
 void update();
+
+void on_insert_enter();
+void on_insert_leave();
+void on_normal_enter();
+void on_normal_leave();
+void on_command_enter();
+void on_command_leave();

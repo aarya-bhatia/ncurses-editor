@@ -1,6 +1,5 @@
 #include "editor.h"
 #include <ncurses.h>
-#include <string.h>
 
 extern int editor_mode;
 
