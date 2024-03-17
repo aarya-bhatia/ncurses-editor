@@ -51,6 +51,7 @@ draw_view_edit	editor.c	/^void draw_view_edit()$/;"	f	typeref:typename:void
 draw_view_mode	editor.c	/^void draw_view_mode()$/;"	f	typeref:typename:void
 draw_view_status	editor.c	/^void draw_view_status(const char *format, ...)$/;"	f	typeref:typename:void
 edit_buffer_append_node	edit_buffer.c	/^EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node)$/;"	f	typeref:typename:EditNode *
+edit_buffer_backspace	edit_buffer.c	/^void edit_buffer_backspace(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_clear	edit_buffer.c	/^void edit_buffer_clear(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_init	edit_buffer.c	/^void edit_buffer_init(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_insert	edit_buffer.c	/^void edit_buffer_insert(EditBuffer *b, char value)$/;"	f	typeref:typename:void
