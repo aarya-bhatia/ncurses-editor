@@ -28,3 +28,11 @@ void edit_node_append(EditNode *node, char value)
     node->buffer[node->size++] = value;
     node->buffer[node->size] = 0;
 }
+
+void edit_node_clear(EditNode *node)
+{
+    node->capacity = MIN_CAPACITY;
+    node->buffer = realloc(node->buffer, MIN_CAPACITY);
+    node->size = 0;
+    node->buffer[0] = 0;
+}

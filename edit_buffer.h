@@ -20,6 +20,7 @@ char *edit_buffer_to_string(EditBuffer *b);
 EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index);
 EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node);
 void edit_buffer_backspace(EditBuffer *b);
+void edit_buffer_clear_till_beginning(EditBuffer *b);
 
 // todo
 // const char *edit_buffer_flush(EditBuffer *b);

@@ -172,3 +172,23 @@ void edit_buffer_backspace(EditBuffer *b)
 
     assert(0); // never come here
 }
+
+/**
+ * delete all bytes from beginning till cursor
+ */
+void edit_buffer_clear_till_beginning(EditBuffer *b)
+{
+    if (edit_buffer_size(b) == 0 || !b->current) {
+        return;
+    }
+
+    EditNode *itr = b->head;
+    while (itr != b->current) {
+        EditNode *tmp = itr->next;
+        edit_node_free(itr);
+        itr = tmp;
+    }
+
+    edit_node_clear(b->current);
+    b->head = b->current;
+}

@@ -97,7 +97,8 @@ void insert_mode_key_event(unsigned c)
             break;
 
         case CTRL_U:
-            // TODO
+            edit_buffer_clear_till_beginning(&view_edit.line);
+            cursor.x = 0;
             break;
 
         case CTRL_ENTER:
