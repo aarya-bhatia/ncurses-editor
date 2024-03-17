@@ -20,56 +20,73 @@ void test0()
     edit_buffer_clear(&b);
 }
 
-/* void test0()
-{
-    EditBuffer *buffer = calloc(1, sizeof *buffer);
-    for (int i = 0; i < 100; i++) {
-        edit_buffer_insert(buffer, 0xa);
-    }
-    edit_buffer_free(buffer);
-    free(buffer);
-}
-
 void test1()
 {
-    EditBuffer *buffer = calloc(1, sizeof *buffer);
+    EditBuffer buffer;
+    edit_buffer_init(&buffer);
 
-    edit_buffer_insert(buffer, 'h');
-    edit_buffer_insert(buffer, 'e');
-    edit_buffer_insert(buffer, 'l');
-    edit_buffer_insert(buffer, 'l');
-    edit_buffer_insert(buffer, 'o');
+    for (int i = 0; i < 100; i++) {
+        edit_buffer_insert(&buffer, 'a');
+    }
 
-    const char *res = edit_buffer_flush(buffer);
-    puts(res);
-    assert(strcmp(res, "hello") == 0);
-    edit_buffer_free(buffer);
-    free(buffer);
+    char *s = edit_buffer_to_string(&buffer);
+    puts(s);
+    free(s);
+
+    edit_buffer_clear(&buffer);
 }
 
 void test2()
 {
-    EditBuffer *buffer = calloc(1, sizeof *buffer);
+    EditBuffer buffer;
+    edit_buffer_init(&buffer);
 
-    edit_buffer_insert(buffer, 'h');
-    edit_buffer_insert(buffer, 'l');
+    edit_buffer_insert(&buffer, 'h');
+    edit_buffer_insert(&buffer, 'e');
+    edit_buffer_insert(&buffer, 'o');
 
-    edit_buffer_set_position(buffer, 1);
-    edit_buffer_insert(buffer, 'e');
+    edit_buffer_set_insert_position(&buffer, 2);
+    edit_buffer_insert(&buffer, 'l');
+    edit_buffer_insert(&buffer, 'l');
 
-    edit_buffer_set_position(buffer, 3);
-    edit_buffer_insert(buffer, 'l');
-    edit_buffer_insert(buffer, 'o');
+    edit_buffer_set_insert_position(&buffer, 5);
 
-    const char *res = edit_buffer_flush(buffer);
+    char *res = edit_buffer_to_string(&buffer);
     puts(res);
     assert(strcmp(res, "hello") == 0);
-    edit_buffer_free(buffer);
-    free(buffer);
-} */
+    free(res);
+
+    edit_buffer_clear(&buffer);
+}
+
+void test3()
+{
+    EditBuffer buffer;
+    edit_buffer_init(&buffer);
+
+    edit_buffer_insert(&buffer, 'h');
+    edit_buffer_insert(&buffer, 'l');
+
+    edit_buffer_set_insert_position(&buffer, 1);
+    edit_buffer_insert(&buffer, 'e');
+
+    edit_buffer_set_insert_position(&buffer, 3);
+    edit_buffer_insert(&buffer, 'l');
+    edit_buffer_insert(&buffer, 'o');
+
+    char *res = edit_buffer_to_string(&buffer);
+    puts(res);
+    assert(strcmp(res, "hello") == 0);
+    free(res);
+
+    edit_buffer_clear(&buffer);
+}
 
 int main()
 {
     test0();
+    test1();
+    test2();
+    test3();
     return 0;
 }

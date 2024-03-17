@@ -83,51 +83,47 @@ void edit_buffer_insert(EditBuffer *b, char value)
 }
 
 /**
- * Finds the node where the index-th bytes is located
- * Returns Null if index >= buffer size.
- */
-EditNode *edit_buffer_find_insert_node(EditBuffer *b, size_t index)
-{
-    size_t accum = 0;
-    for (EditNode *node = b->head; node; node = node->next) {
-        assert(node->index == accum);
-        if (accum <= index && index < accum + node->size) {
-            return node;
-        }
-    }
-
-    return NULL;
-}
-
-/**
  * set current buffer position at the index-th byte in buffer
  * returns the current edit node
  */
 EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
 {
-    assert(index <= edit_buffer_size(b));
-
-    EditNode *node = edit_buffer_find_insert_node(b, index);
-
-    if (!node) {
-        node = edit_node_new(index);
-        edit_buffer_append_node(b, node);
-    } else if (index >= node->index && index < node->index + node->size) {
-        EditNode *split_node = edit_node_new(node->size - node->index - index);
-        split_node->next = node->next;
-        node->next = split_node;
-
-        split_node->buffer = strdup(node->buffer + index);
-        split_node->size = strlen(split_node->buffer);
-        split_node->capacity = split_node->size + 1;
-
-        node->buffer[index] = 0;
-        node->size = strlen(node->buffer);
-
-        // EditNode *new_node = edit_node_split(node, node->size - node->index - index);
-        // new_node->next = node->next;
-        // node->next = new_node;
+    if (!b->head && !b->tail) {
+        EditNode *first = edit_node_new();
+        edit_buffer_append_node(b, first);
+        return b->current = first;
     }
 
-    return b->current = node;
+    if (index >= edit_buffer_size(b)) {
+        return b->current = b->tail;
+    }
+
+    size_t accum = 0;
+
+    for (EditNode *node = b->head; node; node = node->next) {
+        if (index == accum + node->size) {
+            return b->current = node;
+        } else if (index >= accum && index < accum + node->size) {
+            EditNode *split_node = edit_node_new();
+            split_node->next = node->next;
+            node->next = split_node;
+
+            size_t offset = index - accum;
+
+            split_node->buffer = strdup(node->buffer + offset);
+            split_node->size = strlen(split_node->buffer);
+            split_node->capacity = split_node->size + 1;
+
+            node->buffer[offset] = 0;
+            node->size = strlen(node->buffer);
+
+			if(node == b->tail) {
+				b->tail = split_node;
+			}
+
+            return b->current = node;
+        }
+    }
+
+    exit(1); // never come here
 }

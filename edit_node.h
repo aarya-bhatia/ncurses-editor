@@ -11,11 +11,10 @@ typedef struct _EditNode {
     char *buffer;
     size_t size;
     size_t capacity;
-    size_t index;
     struct _EditNode *next;
 } EditNode;
 
-EditNode *edit_node_new(int index);
+EditNode *edit_node_new();
 void edit_node_free(EditNode *node);
 void edit_node_append(EditNode *node, char value);
 EditNode *edit_node_split(EditNode *node, size_t new_size);
