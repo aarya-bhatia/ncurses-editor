@@ -12,6 +12,7 @@ typedef struct _EditNode {
     size_t size;
     size_t capacity;
     struct _EditNode *next;
+    struct _EditNode *prev;
 } EditNode;
 
 EditNode *edit_node_new();

@@ -19,9 +19,8 @@ void print_buffer(EditBuffer *b, WINDOW *win)
 {
     werase(win);
 
-    for (EditNode *node = b->head; node != NULL; node = node->next) {
-        wprintw(win, "%s", node->buffer);
-    }
+    EditNode *node;
+    LIST_FOR_EACH(b, node, { wprintw(win, "%s", node->buffer); });
 
     wrefresh(win);
 }
@@ -50,10 +49,10 @@ void draw_view_mode()
     } else if (editor_mode == NORMAL_MODE) {
         wprintw(view_mode.window, "-- NORMAL --");
     } else if (editor_mode == COMMAND_MODE) {
-        if (view_mode.line.head == NULL) {
+        if (LIST_EMPTY(&view_mode.line)) {
             wprintw(view_mode.window, ":");
         } else {
-            wprintw(view_mode.window, ":%s", view_mode.line.head->buffer);
+            wprintw(view_mode.window, ":%s", LIST_BEGIN(&view_mode.line)->buffer);
         }
     }
 
@@ -131,7 +130,7 @@ void insert_mode_key_event(unsigned c)
 int edit_buffer_get_first_nonspace(EditBuffer *b)
 {
     int cur = 0;
-    for (EditNode *node = view_edit.line.head; node; node = node->next) {
+    for (EditNode *node = LIST_BEGIN(&view_edit.line); node != LIST_END(&view_edit.line); node = node->next) {
         for (int i = 0; i < node->size; i++) {
             if (!isspace(node->buffer[i])) {
                 cur += i;
@@ -143,6 +142,30 @@ int edit_buffer_get_first_nonspace(EditBuffer *b)
 
     return cur;
 }
+
+// int edit_buffer_get_prev_word(EditBuffer *b, int current)
+// {
+//     int accum = 0;
+//     int word_begin = 0;
+//     int word_end = 0;
+//     for (EditNode *node = b->head; node; node = node->next) {
+//         if (current == accum) {
+//             return;
+//         } else if (current >= accum && current < accum + node->size) {
+//             return;
+//         }
+//         accum += node->size;
+//         prev = node;
+//     }
+// }
+//
+// int edit_buffer_get_next_word(EditBuffer *b, int current)
+// {
+// }
+//
+// int edit_buffer_get_end_word(EditBuffer *b, int current)
+// {
+// }
 
 void normal_mode_key_event(unsigned c)
 {
@@ -162,6 +185,18 @@ void normal_mode_key_event(unsigned c)
         case '_':
             cursor.x = edit_buffer_get_first_nonspace(&view_edit.line);
             break;
+
+            // case 'b':
+            //     cursor.x = edit_buffer_get_prev_word(&view_edit.line, cursor.x);
+            //     break;
+            //
+            // case 'w':
+            //     cursor.x = edit_buffer_get_next_word(&view_edit.line, cursor.x);
+            //     break;
+            //
+            // case 'e':
+            //     cursor.x = edit_buffer_get_end_word(&view_edit.line, cursor.x);
+            //     break;
 
         case 'i':
             on_normal_leave();
