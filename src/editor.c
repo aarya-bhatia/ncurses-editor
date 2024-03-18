@@ -1,6 +1,7 @@
 #include "editor.h"
 #include "edit_buffer.h"
 #include "log.h"
+#include <ctype.h>
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>
@@ -124,7 +125,23 @@ void insert_mode_key_event(unsigned c)
             }
     }
 
-    draw_view_status("key pressed: 0x%02x", c);
+    // draw_view_status("key pressed: 0x%02x", c);
+}
+
+int edit_buffer_get_first_nonspace(EditBuffer *b)
+{
+    int cur = 0;
+    for (EditNode *node = view_edit.line.head; node; node = node->next) {
+        for (int i = 0; i < node->size; i++) {
+            if (!isspace(node->buffer[i])) {
+                cur += i;
+                return cur;
+            }
+        }
+        cur += node->size;
+    }
+
+    return cur;
 }
 
 void normal_mode_key_event(unsigned c)
@@ -132,6 +149,18 @@ void normal_mode_key_event(unsigned c)
     switch (c) {
         case CTRL_ESCAPE:
             draw_view_status(NULL); // clear status
+            break;
+
+        case '0':
+            cursor.x = 0;
+            break;
+
+        case '$':
+            cursor.x = MAX(0, edit_buffer_size(&view_edit.line) - 1);
+            break;
+
+        case '_':
+            cursor.x = edit_buffer_get_first_nonspace(&view_edit.line);
             break;
 
         case 'i':

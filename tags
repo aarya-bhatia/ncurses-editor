@@ -36,78 +36,80 @@
 !_TAG_ROLE_DESCRIPTION!C!header	system	/system header/
 !_TAG_ROLE_DESCRIPTION!C!macro	undef	/undefined/
 !_TAG_ROLE_DESCRIPTION!C!struct	foreigndecl	/declared in foreign languages/
-Callback	log.c	/^} Callback;$/;"	t	typeref:struct:__anon0fdff1180108	file:
-L	log.c	/^} L;$/;"	v	typeref:struct:__anon0fdff1180208
-MAX_CALLBACKS	log.c	/^#define MAX_CALLBACKS /;"	d	file:
-PRINTABLE	editor.c	/^#define PRINTABLE(/;"	d	file:
-__anon0fdff1180108	log.c	/^typedef struct {$/;"	s	file:
-__anon0fdff1180208	log.c	/^static struct {$/;"	s	file:
-callbacks	log.c	/^  Callback callbacks[MAX_CALLBACKS];$/;"	m	struct:__anon0fdff1180208	typeref:typename:Callback[]	file:
-command_mode_key_event	editor.c	/^void command_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
-cursor	editor.c	/^Vec2 cursor;$/;"	v	typeref:typename:Vec2
-destroy	editor.c	/^void destroy()$/;"	f	typeref:typename:void
-draw_cursor	editor.c	/^void draw_cursor()$/;"	f	typeref:typename:void
-draw_view_edit	editor.c	/^void draw_view_edit()$/;"	f	typeref:typename:void
-draw_view_mode	editor.c	/^void draw_view_mode()$/;"	f	typeref:typename:void
-draw_view_status	editor.c	/^void draw_view_status(const char *format, ...)$/;"	f	typeref:typename:void
-edit_buffer_append_node	edit_buffer.c	/^EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node)$/;"	f	typeref:typename:EditNode *
-edit_buffer_backspace	edit_buffer.c	/^void edit_buffer_backspace(EditBuffer *b)$/;"	f	typeref:typename:void
-edit_buffer_clear	edit_buffer.c	/^void edit_buffer_clear(EditBuffer *b)$/;"	f	typeref:typename:void
-edit_buffer_init	edit_buffer.c	/^void edit_buffer_init(EditBuffer *b)$/;"	f	typeref:typename:void
-edit_buffer_insert	edit_buffer.c	/^void edit_buffer_insert(EditBuffer *b, char value)$/;"	f	typeref:typename:void
-edit_buffer_set_insert_position	edit_buffer.c	/^EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)$/;"	f	typeref:typename:EditNode *
-edit_buffer_size	edit_buffer.c	/^size_t edit_buffer_size(EditBuffer *b)$/;"	f	typeref:typename:size_t
-edit_buffer_to_string	edit_buffer.c	/^char *edit_buffer_to_string(EditBuffer *b)$/;"	f	typeref:typename:char *
-edit_node_append	edit_node.c	/^void edit_node_append(EditNode *node, char value)$/;"	f	typeref:typename:void
-edit_node_free	edit_node.c	/^void edit_node_free(EditNode *node)$/;"	f	typeref:typename:void
-edit_node_new	edit_node.c	/^EditNode *edit_node_new()$/;"	f	typeref:typename:EditNode *
-editor_mode	editor.c	/^int editor_mode;$/;"	v	typeref:typename:int
-file_callback	log.c	/^static void file_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
-fn	log.c	/^  log_LogFn fn;$/;"	m	struct:__anon0fdff1180108	typeref:typename:log_LogFn	file:
-handle_command	editor.c	/^void handle_command(const char *command)$/;"	f	typeref:typename:void
-init	editor.c	/^void init()$/;"	f	typeref:typename:void
-init_event	log.c	/^static void init_event(log_Event *ev, void *udata) {$/;"	f	typeref:typename:void	file:
-insert_mode_key_event	editor.c	/^void insert_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
-level	log.c	/^  int level;$/;"	m	struct:__anon0fdff1180108	typeref:typename:int	file:
-level	log.c	/^  int level;$/;"	m	struct:__anon0fdff1180208	typeref:typename:int	file:
-level_colors	log.c	/^static const char *level_colors[] = {$/;"	v	typeref:typename:const char * []	file:
-level_strings	log.c	/^static const char *level_strings[] = {$/;"	v	typeref:typename:const char * []	file:
-lock	log.c	/^  log_LockFn lock;$/;"	m	struct:__anon0fdff1180208	typeref:typename:log_LockFn	file:
-lock	log.c	/^static void lock(void)   {$/;"	f	typeref:typename:void	file:
-log_add_callback	log.c	/^int log_add_callback(log_LogFn fn, void *udata, int level) {$/;"	f	typeref:typename:int
-log_add_fp	log.c	/^int log_add_fp(FILE *fp, int level) {$/;"	f	typeref:typename:int
-log_level_string	log.c	/^const char* log_level_string(int level) {$/;"	f	typeref:typename:const char *
-log_log	log.c	/^void log_log(int level, const char *file, int line, const char *fmt, ...) {$/;"	f	typeref:typename:void
-log_set_level	log.c	/^void log_set_level(int level) {$/;"	f	typeref:typename:void
-log_set_lock	log.c	/^void log_set_lock(log_LockFn fn, void *udata) {$/;"	f	typeref:typename:void
-log_set_quiet	log.c	/^void log_set_quiet(bool enable) {$/;"	f	typeref:typename:void
-main	main.c	/^int main()$/;"	f	typeref:typename:int
+Callback	src/log.c	/^} Callback;$/;"	t	typeref:struct:__anonb59cff6f0108	file:
+L	src/log.c	/^} L;$/;"	v	typeref:struct:__anonb59cff6f0208
+MAX_CALLBACKS	src/log.c	/^#define MAX_CALLBACKS /;"	d	file:
+PRINTABLE	src/editor.c	/^#define PRINTABLE(/;"	d	file:
+__anonb59cff6f0108	src/log.c	/^typedef struct {$/;"	s	file:
+__anonb59cff6f0208	src/log.c	/^static struct {$/;"	s	file:
+callbacks	src/log.c	/^  Callback callbacks[MAX_CALLBACKS];$/;"	m	struct:__anonb59cff6f0208	typeref:typename:Callback[]	file:
+command_mode_key_event	src/editor.c	/^void command_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
+cursor	src/editor.c	/^Vec2 cursor;$/;"	v	typeref:typename:Vec2
+destroy	src/editor.c	/^void destroy()$/;"	f	typeref:typename:void
+draw_cursor	src/editor.c	/^void draw_cursor()$/;"	f	typeref:typename:void
+draw_view_edit	src/editor.c	/^void draw_view_edit()$/;"	f	typeref:typename:void
+draw_view_mode	src/editor.c	/^void draw_view_mode()$/;"	f	typeref:typename:void
+draw_view_status	src/editor.c	/^void draw_view_status(const char *format, ...)$/;"	f	typeref:typename:void
+edit_buffer_append_node	src/edit_buffer.c	/^EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node)$/;"	f	typeref:typename:EditNode *
+edit_buffer_backspace	src/edit_buffer.c	/^void edit_buffer_backspace(EditBuffer *b)$/;"	f	typeref:typename:void
+edit_buffer_clear	src/edit_buffer.c	/^void edit_buffer_clear(EditBuffer *b)$/;"	f	typeref:typename:void
+edit_buffer_clear_till_beginning	src/edit_buffer.c	/^void edit_buffer_clear_till_beginning(EditBuffer *b)$/;"	f	typeref:typename:void
+edit_buffer_init	src/edit_buffer.c	/^void edit_buffer_init(EditBuffer *b)$/;"	f	typeref:typename:void
+edit_buffer_insert	src/edit_buffer.c	/^void edit_buffer_insert(EditBuffer *b, char value)$/;"	f	typeref:typename:void
+edit_buffer_set_insert_position	src/edit_buffer.c	/^EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)$/;"	f	typeref:typename:EditNode *
+edit_buffer_size	src/edit_buffer.c	/^size_t edit_buffer_size(EditBuffer *b)$/;"	f	typeref:typename:size_t
+edit_buffer_to_string	src/edit_buffer.c	/^char *edit_buffer_to_string(EditBuffer *b)$/;"	f	typeref:typename:char *
+edit_node_append	src/edit_node.c	/^void edit_node_append(EditNode *node, char value)$/;"	f	typeref:typename:void
+edit_node_clear	src/edit_node.c	/^void edit_node_clear(EditNode *node)$/;"	f	typeref:typename:void
+edit_node_free	src/edit_node.c	/^void edit_node_free(EditNode *node)$/;"	f	typeref:typename:void
+edit_node_new	src/edit_node.c	/^EditNode *edit_node_new()$/;"	f	typeref:typename:EditNode *
+editor_mode	src/editor.c	/^int editor_mode;$/;"	v	typeref:typename:int
+file_callback	src/log.c	/^static void file_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
+fn	src/log.c	/^  log_LogFn fn;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:log_LogFn	file:
+handle_command	src/editor.c	/^void handle_command(const char *command)$/;"	f	typeref:typename:void
+init	src/editor.c	/^void init()$/;"	f	typeref:typename:void
+init_event	src/log.c	/^static void init_event(log_Event *ev, void *udata) {$/;"	f	typeref:typename:void	file:
+insert_mode_key_event	src/editor.c	/^void insert_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
+level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:int	file:
+level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:int	file:
+level_colors	src/log.c	/^static const char *level_colors[] = {$/;"	v	typeref:typename:const char * []	file:
+level_strings	src/log.c	/^static const char *level_strings[] = {$/;"	v	typeref:typename:const char * []	file:
+lock	src/log.c	/^  log_LockFn lock;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:log_LockFn	file:
+lock	src/log.c	/^static void lock(void)   {$/;"	f	typeref:typename:void	file:
+log_add_callback	src/log.c	/^int log_add_callback(log_LogFn fn, void *udata, int level) {$/;"	f	typeref:typename:int
+log_add_fp	src/log.c	/^int log_add_fp(FILE *fp, int level) {$/;"	f	typeref:typename:int
+log_level_string	src/log.c	/^const char* log_level_string(int level) {$/;"	f	typeref:typename:const char *
+log_log	src/log.c	/^void log_log(int level, const char *file, int line, const char *fmt, ...) {$/;"	f	typeref:typename:void
+log_set_level	src/log.c	/^void log_set_level(int level) {$/;"	f	typeref:typename:void
+log_set_lock	src/log.c	/^void log_set_lock(log_LockFn fn, void *udata) {$/;"	f	typeref:typename:void
+log_set_quiet	src/log.c	/^void log_set_quiet(bool enable) {$/;"	f	typeref:typename:void
 main	playground/hello.c	/^int main() {$/;"	f	typeref:typename:int
-main	test_edit_buffer.c	/^int main()$/;"	f	typeref:typename:int
-main	test_vec.c	/^int main(void) {$/;"	f	typeref:typename:int
-normal_mode_key_event	editor.c	/^void normal_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
-on_command_enter	editor.c	/^void on_command_enter()$/;"	f	typeref:typename:void
-on_command_leave	editor.c	/^void on_command_leave()$/;"	f	typeref:typename:void
-on_insert_enter	editor.c	/^void on_insert_enter()$/;"	f	typeref:typename:void
-on_insert_leave	editor.c	/^void on_insert_leave()$/;"	f	typeref:typename:void
-on_normal_enter	editor.c	/^void on_normal_enter()$/;"	f	typeref:typename:void
-on_normal_leave	editor.c	/^void on_normal_leave()$/;"	f	typeref:typename:void
-print_buffer	editor.c	/^void print_buffer(EditBuffer *b, WINDOW *win)$/;"	f	typeref:typename:void
-quiet	log.c	/^  bool quiet;$/;"	m	struct:__anon0fdff1180208	typeref:typename:bool	file:
-stdout_callback	log.c	/^static void stdout_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
-test0	test_edit_buffer.c	/^void test0()$/;"	f	typeref:typename:void
-test1	test_edit_buffer.c	/^void test1()$/;"	f	typeref:typename:void
-test2	test_edit_buffer.c	/^void test2()$/;"	f	typeref:typename:void
-test3	test_edit_buffer.c	/^void test3()$/;"	f	typeref:typename:void
-udata	log.c	/^  void *udata;$/;"	m	struct:__anon0fdff1180108	typeref:typename:void *	file:
-udata	log.c	/^  void *udata;$/;"	m	struct:__anon0fdff1180208	typeref:typename:void *	file:
-unlock	log.c	/^static void unlock(void) {$/;"	f	typeref:typename:void	file:
-update	editor.c	/^void update()$/;"	f	typeref:typename:void
-vec2_add	vec2.c	/^Vec2 vec2_add(Vec2 u, Vec2 v) { return (Vec2){u.x + v.x, u.y + v.y}; }$/;"	f	typeref:typename:Vec2
-vec2_dist	vec2.c	/^double vec2_dist(Vec2 v) { return sqrt((v.x * v.x) + (v.y * v.y)); }$/;"	f	typeref:typename:double
-vec2_equal	vec2.c	/^bool vec2_equal(Vec2 u, Vec2 v) { return u.x == v.x && u.y == v.y; }$/;"	f	typeref:typename:bool
-vec2_mul	vec2.c	/^Vec2 vec2_mul(Vec2 u, int scalar) { return (Vec2){u.x * scalar, u.y * scalar}; }$/;"	f	typeref:typename:Vec2
-vec2_sub	vec2.c	/^Vec2 vec2_sub(Vec2 u, Vec2 v) { return (Vec2){u.x - v.x, u.y - v.y}; }$/;"	f	typeref:typename:Vec2
-view_edit	editor.c	/^View view_edit;$/;"	v	typeref:typename:View
-view_mode	editor.c	/^View view_mode;$/;"	v	typeref:typename:View
-view_status	editor.c	/^View view_status;$/;"	v	typeref:typename:View
+main	src/main.c	/^int main()$/;"	f	typeref:typename:int
+main	src/test_edit_buffer.c	/^int main()$/;"	f	typeref:typename:int
+main	src/test_vec.c	/^int main(void) {$/;"	f	typeref:typename:int
+normal_mode_key_event	src/editor.c	/^void normal_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
+on_command_enter	src/editor.c	/^void on_command_enter()$/;"	f	typeref:typename:void
+on_command_leave	src/editor.c	/^void on_command_leave()$/;"	f	typeref:typename:void
+on_insert_enter	src/editor.c	/^void on_insert_enter()$/;"	f	typeref:typename:void
+on_insert_leave	src/editor.c	/^void on_insert_leave()$/;"	f	typeref:typename:void
+on_normal_enter	src/editor.c	/^void on_normal_enter()$/;"	f	typeref:typename:void
+on_normal_leave	src/editor.c	/^void on_normal_leave()$/;"	f	typeref:typename:void
+print_buffer	src/editor.c	/^void print_buffer(EditBuffer *b, WINDOW *win)$/;"	f	typeref:typename:void
+quiet	src/log.c	/^  bool quiet;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:bool	file:
+stdout_callback	src/log.c	/^static void stdout_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
+test0	src/test_edit_buffer.c	/^void test0()$/;"	f	typeref:typename:void
+test1	src/test_edit_buffer.c	/^void test1()$/;"	f	typeref:typename:void
+test2	src/test_edit_buffer.c	/^void test2()$/;"	f	typeref:typename:void
+test3	src/test_edit_buffer.c	/^void test3()$/;"	f	typeref:typename:void
+udata	src/log.c	/^  void *udata;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:void *	file:
+udata	src/log.c	/^  void *udata;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:void *	file:
+unlock	src/log.c	/^static void unlock(void) {$/;"	f	typeref:typename:void	file:
+update	src/editor.c	/^void update()$/;"	f	typeref:typename:void
+vec2_add	src/vec2.c	/^Vec2 vec2_add(Vec2 u, Vec2 v) { return (Vec2){u.x + v.x, u.y + v.y}; }$/;"	f	typeref:typename:Vec2
+vec2_dist	src/vec2.c	/^double vec2_dist(Vec2 v) { return sqrt((v.x * v.x) + (v.y * v.y)); }$/;"	f	typeref:typename:double
+vec2_equal	src/vec2.c	/^bool vec2_equal(Vec2 u, Vec2 v) { return u.x == v.x && u.y == v.y; }$/;"	f	typeref:typename:bool
+vec2_mul	src/vec2.c	/^Vec2 vec2_mul(Vec2 u, int scalar) { return (Vec2){u.x * scalar, u.y * scalar}; }$/;"	f	typeref:typename:Vec2
+vec2_sub	src/vec2.c	/^Vec2 vec2_sub(Vec2 u, Vec2 v) { return (Vec2){u.x - v.x, u.y - v.y}; }$/;"	f	typeref:typename:Vec2
+view_edit	src/editor.c	/^View view_edit;$/;"	v	typeref:typename:View
+view_mode	src/editor.c	/^View view_mode;$/;"	v	typeref:typename:View
+view_status	src/editor.c	/^View view_status;$/;"	v	typeref:typename:View
