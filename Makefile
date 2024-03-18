@@ -1,8 +1,6 @@
 OBJDIR=.obj
 BINDIR=bin
-SRCDIR=.
-SRC=$(shell ls *.c | grep -v '^test')
-OBJS=$(SRC:%.c=$(OBJDIR)/%.o)
+SRCDIR=src
 CFLAGS=-c -std=c99 -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
 
