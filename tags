@@ -39,7 +39,6 @@
 Callback	src/log.c	/^} Callback;$/;"	t	typeref:struct:__anonb59cff6f0108	file:
 L	src/log.c	/^} L;$/;"	v	typeref:struct:__anonb59cff6f0208
 MAX_CALLBACKS	src/log.c	/^#define MAX_CALLBACKS /;"	d	file:
-PRINTABLE	src/editor.c	/^#define PRINTABLE(/;"	d	file:
 __anonb59cff6f0108	src/log.c	/^typedef struct {$/;"	s	file:
 __anonb59cff6f0208	src/log.c	/^static struct {$/;"	s	file:
 callbacks	src/log.c	/^  Callback callbacks[MAX_CALLBACKS];$/;"	m	struct:__anonb59cff6f0208	typeref:typename:Callback[]	file:
@@ -54,8 +53,14 @@ edit_buffer_append_node	src/edit_buffer.c	/^EditNode *edit_buffer_append_node(Ed
 edit_buffer_backspace	src/edit_buffer.c	/^void edit_buffer_backspace(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_clear	src/edit_buffer.c	/^void edit_buffer_clear(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_clear_till_beginning	src/edit_buffer.c	/^void edit_buffer_clear_till_beginning(EditBuffer *b)$/;"	f	typeref:typename:void
+edit_buffer_delete_node	src/edit_buffer.c	/^void edit_buffer_delete_node(EditBuffer *b, EditNode *node)$/;"	f	typeref:typename:void
+edit_buffer_get_end_word	src/motions.c	/^int edit_buffer_get_end_word(EditBuffer *b, int current)$/;"	f	typeref:typename:int
+edit_buffer_get_first_nonspace	src/motions.c	/^int edit_buffer_get_first_nonspace(EditBuffer *b)$/;"	f	typeref:typename:int
+edit_buffer_get_next_word	src/motions.c	/^int edit_buffer_get_next_word(EditBuffer *b, int current)$/;"	f	typeref:typename:int
+edit_buffer_get_prev_word	src/motions.c	/^int edit_buffer_get_prev_word(EditBuffer *b, int current)$/;"	f	typeref:typename:int
 edit_buffer_init	src/edit_buffer.c	/^void edit_buffer_init(EditBuffer *b)$/;"	f	typeref:typename:void
 edit_buffer_insert	src/edit_buffer.c	/^void edit_buffer_insert(EditBuffer *b, char value)$/;"	f	typeref:typename:void
+edit_buffer_insert_node	src/edit_buffer.c	/^void edit_buffer_insert_node(EditBuffer *b, EditNode *before, EditNode *insert, EditNode *after)$/;"	f	typeref:typename:void
 edit_buffer_set_insert_position	src/edit_buffer.c	/^EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)$/;"	f	typeref:typename:EditNode *
 edit_buffer_size	src/edit_buffer.c	/^size_t edit_buffer_size(EditBuffer *b)$/;"	f	typeref:typename:size_t
 edit_buffer_to_string	src/edit_buffer.c	/^char *edit_buffer_to_string(EditBuffer *b)$/;"	f	typeref:typename:char *
@@ -88,12 +93,12 @@ main	src/main.c	/^int main()$/;"	f	typeref:typename:int
 main	src/test_edit_buffer.c	/^int main()$/;"	f	typeref:typename:int
 main	src/test_vec.c	/^int main(void) {$/;"	f	typeref:typename:int
 normal_mode_key_event	src/editor.c	/^void normal_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
-on_command_enter	src/editor.c	/^void on_command_enter()$/;"	f	typeref:typename:void
-on_command_leave	src/editor.c	/^void on_command_leave()$/;"	f	typeref:typename:void
-on_insert_enter	src/editor.c	/^void on_insert_enter()$/;"	f	typeref:typename:void
-on_insert_leave	src/editor.c	/^void on_insert_leave()$/;"	f	typeref:typename:void
-on_normal_enter	src/editor.c	/^void on_normal_enter()$/;"	f	typeref:typename:void
-on_normal_leave	src/editor.c	/^void on_normal_leave()$/;"	f	typeref:typename:void
+on_command_enter	src/edit_modes.c	/^void on_command_enter()$/;"	f	typeref:typename:void
+on_command_leave	src/edit_modes.c	/^void on_command_leave()$/;"	f	typeref:typename:void
+on_insert_enter	src/edit_modes.c	/^void on_insert_enter()$/;"	f	typeref:typename:void
+on_insert_leave	src/edit_modes.c	/^void on_insert_leave()$/;"	f	typeref:typename:void
+on_normal_enter	src/edit_modes.c	/^void on_normal_enter()$/;"	f	typeref:typename:void
+on_normal_leave	src/edit_modes.c	/^void on_normal_leave()$/;"	f	typeref:typename:void
 print_buffer	src/editor.c	/^void print_buffer(EditBuffer *b, WINDOW *win)$/;"	f	typeref:typename:void
 quiet	src/log.c	/^  bool quiet;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:bool	file:
 stdout_callback	src/log.c	/^static void stdout_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:

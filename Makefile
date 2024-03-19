@@ -4,8 +4,8 @@ SRCDIR=src
 CFLAGS=-c -std=c99 -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
 
-COMMON=edit_node.c edit_buffer.c vec2.c log.c
-COMMON_OBJ=$(COMMON:%.c=$(OBJDIR)/%.o)
+COMMON=$(shell ls $(SRCDIR)/*.c | grep -vE "test|main")
+COMMON_OBJ=$(COMMON:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 EDITOR=editor.c main.c
 EDITOR_OBJS=$(EDITOR:%.c=$(OBJDIR)/%.o) $(COMMON_OBJ)

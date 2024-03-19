@@ -43,6 +43,7 @@
 #define CTRL_UNDERSCORE 31
 
 #define MAX_KEY_CHORD_LENGTH 5
+#define PRINTABLE(c) ((c) > 0x1f && (c) < 0x7f)
 
 enum { NORMAL_MODE, INSERT_MODE, COMMAND_MODE };
 

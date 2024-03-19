@@ -109,7 +109,7 @@ EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node)
 {
     assert(b);
     assert(node);
-    edit_buffer_insert_node(b, b->tail.prev, node, &b->tail);
+    edit_buffer_insert_node(b, LIST_END(b)->prev, node, LIST_END(b));
     return node;
 }
 
@@ -139,7 +139,7 @@ EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)
     }
 
     if (index >= edit_buffer_size(b)) {
-        return b->current = b->tail.prev;
+        return b->current = LIST_END(b)->prev;
     }
 
     size_t accum = 0;
@@ -189,7 +189,7 @@ void edit_buffer_backspace(EditBuffer *b)
     }
 
     // no more bytes to erase backwards
-    if (b->head.next == b->current) {
+    if (LIST_IS_FIRST(b, b->current)) {
         return;
     }
 
@@ -214,7 +214,7 @@ void edit_buffer_clear_till_beginning(EditBuffer *b)
     }
 
     // do not delete the first node
-    if (b->current == b->head.next) {
+    if (LIST_IS_FIRST(b, b->current)) {
         edit_node_clear(b->current);
         return;
     }

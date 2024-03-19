@@ -1,13 +1,9 @@
 #include "editor.h"
 #include "edit_buffer.h"
-#include "log.h"
-#include <ctype.h>
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>
 #include <sys/types.h>
-
-#define PRINTABLE(c) ((c) > 0x1f && (c) < 0x7f)
 
 View view_edit;
 View view_mode;
@@ -123,49 +119,7 @@ void insert_mode_key_event(unsigned c)
                 cursor.x++;
             }
     }
-
-    // draw_view_status("key pressed: 0x%02x", c);
 }
-
-int edit_buffer_get_first_nonspace(EditBuffer *b)
-{
-    int cur = 0;
-    for (EditNode *node = LIST_BEGIN(&view_edit.line); node != LIST_END(&view_edit.line); node = node->next) {
-        for (int i = 0; i < node->size; i++) {
-            if (!isspace(node->buffer[i])) {
-                cur += i;
-                return cur;
-            }
-        }
-        cur += node->size;
-    }
-
-    return cur;
-}
-
-// int edit_buffer_get_prev_word(EditBuffer *b, int current)
-// {
-//     int accum = 0;
-//     int word_begin = 0;
-//     int word_end = 0;
-//     for (EditNode *node = b->head; node; node = node->next) {
-//         if (current == accum) {
-//             return;
-//         } else if (current >= accum && current < accum + node->size) {
-//             return;
-//         }
-//         accum += node->size;
-//         prev = node;
-//     }
-// }
-//
-// int edit_buffer_get_next_word(EditBuffer *b, int current)
-// {
-// }
-//
-// int edit_buffer_get_end_word(EditBuffer *b, int current)
-// {
-// }
 
 void normal_mode_key_event(unsigned c)
 {
@@ -291,51 +245,4 @@ void destroy()
     delwin(view_status.window);
 
     endwin();
-}
-
-void on_insert_enter()
-{
-    editor_mode = INSERT_MODE;
-    log_debug("enter insert mode");
-    draw_view_mode();
-
-    cursor.x = MAX(0, MIN(cursor.x, edit_buffer_size(&view_edit.line) - 1));
-    cursor.y = MAX(cursor.y, 0);
-
-    edit_buffer_set_insert_position(&view_edit.line, cursor.x);
-}
-
-void on_insert_leave()
-{
-    log_debug("leave insert mode");
-}
-
-void on_normal_enter()
-{
-    editor_mode = NORMAL_MODE;
-    log_debug("enter normal mode");
-    draw_view_mode();
-    if (edit_buffer_size(&view_edit.line) > 0 && cursor.x >= edit_buffer_size(&view_edit.line)) {
-        cursor.x = edit_buffer_size(&view_edit.line) - 1;
-    }
-}
-
-void on_normal_leave()
-{
-    log_debug("leave normal mode");
-}
-
-void on_command_enter()
-{
-    editor_mode = COMMAND_MODE;
-    log_debug("enter command mode");
-    draw_view_mode();
-    edit_buffer_clear(&view_mode.line);
-    edit_buffer_set_insert_position(&view_mode.line, 0);
-}
-
-void on_command_leave()
-{
-    log_debug("leave command mode");
-    handle_command(edit_buffer_to_string(&view_mode.line));
 }
