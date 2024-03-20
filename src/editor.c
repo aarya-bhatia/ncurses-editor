@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "edit_buffer.h"
+#include "motions.h"
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>
@@ -143,10 +144,10 @@ void normal_mode_key_event(unsigned c)
             // case 'b':
             //     cursor.x = edit_buffer_get_prev_word(&view_edit.line, cursor.x);
             //     break;
-            //
-            // case 'w':
-            //     cursor.x = edit_buffer_get_next_word(&view_edit.line, cursor.x);
-            //     break;
+            // 
+        case 'w':
+            cursor.x = edit_buffer_get_next_word(&view_edit.line, cursor.x);
+            break;
             //
             // case 'e':
             //     cursor.x = edit_buffer_get_end_word(&view_edit.line, cursor.x);

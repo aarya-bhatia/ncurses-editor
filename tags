@@ -38,10 +38,12 @@
 !_TAG_ROLE_DESCRIPTION!C!struct	foreigndecl	/declared in foreign languages/
 Callback	src/log.c	/^} Callback;$/;"	t	typeref:struct:__anonb59cff6f0108	file:
 L	src/log.c	/^} L;$/;"	v	typeref:struct:__anonb59cff6f0208
+LOCATION_NONE	src/location.c	/^Location LOCATION_NONE = {NULL, -1, -1};$/;"	v	typeref:typename:Location
 MAX_CALLBACKS	src/log.c	/^#define MAX_CALLBACKS /;"	d	file:
 __anonb59cff6f0108	src/log.c	/^typedef struct {$/;"	s	file:
 __anonb59cff6f0208	src/log.c	/^static struct {$/;"	s	file:
 callbacks	src/log.c	/^  Callback callbacks[MAX_CALLBACKS];$/;"	m	struct:__anonb59cff6f0208	typeref:typename:Callback[]	file:
+char_type	src/motions.c	/^int char_type(char c)$/;"	f	typeref:typename:int
 command_mode_key_event	src/editor.c	/^void command_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
 cursor	src/editor.c	/^Vec2 cursor;$/;"	v	typeref:typename:Vec2
 destroy	src/editor.c	/^void destroy()$/;"	f	typeref:typename:void
@@ -70,8 +72,15 @@ edit_node_free	src/edit_node.c	/^void edit_node_free(EditNode *node)$/;"	f	typer
 edit_node_new	src/edit_node.c	/^EditNode *edit_node_new()$/;"	f	typeref:typename:EditNode *
 editor_mode	src/editor.c	/^int editor_mode;$/;"	v	typeref:typename:int
 file_callback	src/log.c	/^static void file_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
+find_container_node	src/location.c	/^Location find_container_node(EditBuffer *b, int index)$/;"	f	typeref:typename:Location
+find_next_character	src/location.c	/^Location find_next_character(EditBuffer *b, Location current, int type_mask)$/;"	f	typeref:typename:Location
+find_next_word	src/location.c	/^Location find_next_word(EditBuffer *b, Location current)$/;"	f	typeref:typename:Location
 fn	src/log.c	/^  log_LogFn fn;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:log_LogFn	file:
+get_backward_adjacent	src/location.c	/^Location get_backward_adjacent(EditBuffer *b, Location current)$/;"	f	typeref:typename:Location
+get_forward_adjacent	src/location.c	/^Location get_forward_adjacent(EditBuffer *b, Location current)$/;"	f	typeref:typename:Location
 handle_command	src/editor.c	/^void handle_command(const char *command)$/;"	f	typeref:typename:void
+has_next_node	src/location.c	/^bool has_next_node(EditBuffer *b, Location current)$/;"	f	typeref:typename:bool
+has_prev_node	src/location.c	/^bool has_prev_node(EditBuffer *b, Location current)$/;"	f	typeref:typename:bool
 init	src/editor.c	/^void init()$/;"	f	typeref:typename:void
 init_event	src/log.c	/^static void init_event(log_Event *ev, void *udata) {$/;"	f	typeref:typename:void	file:
 insert_mode_key_event	src/editor.c	/^void insert_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
@@ -79,6 +88,7 @@ level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:
 level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:int	file:
 level_colors	src/log.c	/^static const char *level_colors[] = {$/;"	v	typeref:typename:const char * []	file:
 level_strings	src/log.c	/^static const char *level_strings[] = {$/;"	v	typeref:typename:const char * []	file:
+location	src/location.c	/^Location location(EditNode *container, int offset, int index)$/;"	f	typeref:typename:Location
 lock	src/log.c	/^  log_LockFn lock;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:log_LockFn	file:
 lock	src/log.c	/^static void lock(void)   {$/;"	f	typeref:typename:void	file:
 log_add_callback	src/log.c	/^int log_add_callback(log_LogFn fn, void *udata, int level) {$/;"	f	typeref:typename:int
@@ -89,8 +99,10 @@ log_set_level	src/log.c	/^void log_set_level(int level) {$/;"	f	typeref:typename
 log_set_lock	src/log.c	/^void log_set_lock(log_LockFn fn, void *udata) {$/;"	f	typeref:typename:void
 log_set_quiet	src/log.c	/^void log_set_quiet(bool enable) {$/;"	f	typeref:typename:void
 main	playground/hello.c	/^int main() {$/;"	f	typeref:typename:int
+main	playground/keys.c	/^int main()$/;"	f	typeref:typename:int
 main	src/main.c	/^int main()$/;"	f	typeref:typename:int
 main	src/test_edit_buffer.c	/^int main()$/;"	f	typeref:typename:int
+main	src/test_location.c	/^int main()$/;"	f	typeref:typename:int
 main	src/test_vec.c	/^int main(void) {$/;"	f	typeref:typename:int
 normal_mode_key_event	src/editor.c	/^void normal_mode_key_event(unsigned c)$/;"	f	typeref:typename:void
 on_command_enter	src/edit_modes.c	/^void on_command_enter()$/;"	f	typeref:typename:void
@@ -103,6 +115,7 @@ print_buffer	src/editor.c	/^void print_buffer(EditBuffer *b, WINDOW *win)$/;"	f	
 quiet	src/log.c	/^  bool quiet;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:bool	file:
 stdout_callback	src/log.c	/^static void stdout_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
 test0	src/test_edit_buffer.c	/^void test0()$/;"	f	typeref:typename:void
+test0	src/test_location.c	/^void test0()$/;"	f	typeref:typename:void
 test1	src/test_edit_buffer.c	/^void test1()$/;"	f	typeref:typename:void
 test2	src/test_edit_buffer.c	/^void test2()$/;"	f	typeref:typename:void
 test3	src/test_edit_buffer.c	/^void test3()$/;"	f	typeref:typename:void
