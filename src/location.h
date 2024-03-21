@@ -6,11 +6,13 @@ typedef struct Location {
     int index;           // global index within the buffer
 } Location;
 
+#define byte_at_location(location) ((location).container->buffer[(location).offset])
+#define has_next_node(editbuffer, location) (LIST_END(editbuffer) != (location).container->next)
+#define has_prev_node(editbuffer, location) (LIST_BEGIN(editbuffer) != (location).container)
+
 extern Location LOCATION_NONE;
 
 Location location(EditNode *container, int offset, int index);
-bool has_next_node(EditBuffer *b, Location current);
-bool has_prev_node(EditBuffer *b, Location current);
 Location get_forward_adjacent(EditBuffer *b, Location current);
 Location get_backward_adjacent(EditBuffer *b, Location current);
 Location find_container_node(EditBuffer *b, int index);

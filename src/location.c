@@ -10,16 +10,6 @@ Location location(EditNode *container, int offset, int index)
     return (Location){container, offset, index};
 }
 
-bool has_next_node(EditBuffer *b, Location current)
-{
-    return LIST_END(b) != current.container->next;
-}
-
-bool has_prev_node(EditBuffer *b, Location current)
-{
-    return LIST_BEGIN(b) != current.container;
-}
-
 Location get_forward_adjacent(EditBuffer *b, Location current)
 {
     if (current.offset < current.container->size) {
@@ -79,22 +69,14 @@ Location find_next_character(EditBuffer *b, Location current, int type_mask)
 
 Location find_next_word(EditBuffer *b, Location current)
 {
-    assert(memcmp(&current, &LOCATION_NONE, sizeof(Location)) != 0);
-
-    int cur_type = char_type(current.container->buffer[current.offset]);
-    if (cur_type == C_WHITESPACE) {
-        return find_next_character(b, current, ~C_WHITESPACE);
-    }
-
-    Location found = find_next_character(b, current, ~cur_type | C_WHITESPACE);
+    Location found =
+        find_next_character(b, current, ~char_type(byte_at_location(current))); // next character of different type
     if (found.container == NULL) {
-        return found;
+        EditNode *last = LIST_END(b)->prev;
+        return location(last, last->size - 1, edit_buffer_size(b) - last->size); // last location
     }
-
-    int found_type = char_type(found.container->buffer[found.offset]);
-    if (found_type == C_WHITESPACE) {
-        return find_next_character(b, found, ~C_WHITESPACE);
+    if (char_type(byte_at_location(found)) == C_WHITESPACE) {
+        return find_next_character(b, found, ~C_WHITESPACE); // skip whitespace till next non-whitespace character
     }
-
     return found;
 }

@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <string.h>
 
+// test next and previous location
 void test0()
 {
     EditBuffer b;
@@ -34,6 +35,7 @@ void test0()
     edit_buffer_clear(&b);
 }
 
+// test next word with 1 edit node and 2 words
 void test1()
 {
     char *str = "Hello World";
@@ -53,11 +55,60 @@ void test1()
     assert(world.index == 0);
     assert(world.offset == 6);
     assert(world.container == hello.container);
+
+    edit_buffer_clear(&b);
+}
+
+// test next word with 2 edit nodes and 2 words
+void test2()
+{
+    EditNode n2;
+    n2.buffer = strdup("World");
+    n2.size = 5;
+    n2.capacity = 5;
+    n2.next = NULL;
+
+    EditNode n1;
+    n1.buffer = strdup("Hello ");
+    n1.size = 6;
+    n1.capacity = 6;
+    n1.next = NULL;
+
+    EditBuffer b;
+    edit_buffer_init(&b);
+
+    edit_buffer_append_node(&b, &n1);
+    edit_buffer_append_node(&b, &n2);
+
+    assert(edit_buffer_size(&b) == 11);
+
+    char *s = edit_buffer_to_string(&b);
+    assert(!strcmp(s, "Hello World"));
+    free(s);
+
+    Location hello = location(LIST_BEGIN(&b), 0, 0);
+    assert(hello.index == 0);
+    assert(hello.offset == 0);
+    assert(hello.container == &n1);
+
+    Location world = find_next_word(&b, hello);
+    assert(world.index == 6);
+    assert(world.offset == 0);
+    assert(world.container == &n2);
+
+    Location end = find_next_word(&b, world);
+    assert(end.index == 6);
+    assert(end.offset == 4);
+    assert(end.container == &n2);
+
+	free(n1.buffer);
+	free(n2.buffer);
 }
 
 int main()
 {
     test0();
     test1();
+    test2();
     return 0;
 }
