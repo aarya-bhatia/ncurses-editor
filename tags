@@ -37,7 +37,6 @@
 !_TAG_ROLE_DESCRIPTION!C!macro	undef	/undefined/
 !_TAG_ROLE_DESCRIPTION!C!struct	foreigndecl	/declared in foreign languages/
 Callback	src/log.c	/^} Callback;$/;"	t	typeref:struct:__anonb59cff6f0108	file:
-IS_SENITEL	src/location.c	/^#define IS_SENITEL(/;"	d	file:
 L	src/log.c	/^} L;$/;"	v	typeref:struct:__anonb59cff6f0208
 LOCATION_NULL	src/location.c	/^#define LOCATION_NULL /;"	d	file:
 MAX_CALLBACKS	src/log.c	/^#define MAX_CALLBACKS /;"	d	file:
@@ -68,6 +67,8 @@ edit_buffer_insert_node	src/edit_buffer.c	/^void edit_buffer_insert_node(EditBuf
 edit_buffer_set_insert_position	src/edit_buffer.c	/^EditNode *edit_buffer_set_insert_position(EditBuffer *b, size_t index)$/;"	f	typeref:typename:EditNode *
 edit_buffer_size	src/edit_buffer.c	/^size_t edit_buffer_size(EditBuffer *b)$/;"	f	typeref:typename:size_t
 edit_buffer_to_string	src/edit_buffer.c	/^char *edit_buffer_to_string(EditBuffer *b)$/;"	f	typeref:typename:char *
+edit_node_add_after	src/edit_node.c	/^void edit_node_add_after(EditNode *current, EditNode *other)$/;"	f	typeref:typename:void
+edit_node_add_before	src/edit_node.c	/^void edit_node_add_before(EditNode *current, EditNode *other)$/;"	f	typeref:typename:void
 edit_node_append	src/edit_node.c	/^void edit_node_append(EditNode *node, char value)$/;"	f	typeref:typename:void
 edit_node_clear	src/edit_node.c	/^void edit_node_clear(EditNode *node)$/;"	f	typeref:typename:void
 edit_node_free	src/edit_node.c	/^void edit_node_free(EditNode *node)$/;"	f	typeref:typename:void
@@ -76,6 +77,7 @@ edit_node_new1	src/edit_node.c	/^EditNode *edit_node_new1(const char *str)$/;"	f
 editor_mode	src/editor.c	/^int editor_mode;$/;"	v	typeref:typename:int
 file_callback	src/log.c	/^static void file_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
 fn	src/log.c	/^  log_LogFn fn;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:log_LogFn	file:
+get_location	src/motions.c	/^Location get_location(EditBuffer *b, int index)$/;"	f	typeref:typename:Location
 handle_command	src/editor.c	/^void handle_command(const char *command)$/;"	f	typeref:typename:void
 init	src/editor.c	/^void init()$/;"	f	typeref:typename:void
 init_event	src/log.c	/^static void init_event(log_Event *ev, void *udata) {$/;"	f	typeref:typename:void	file:
@@ -84,15 +86,14 @@ level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:
 level	src/log.c	/^  int level;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:int	file:
 level_colors	src/log.c	/^static const char *level_colors[] = {$/;"	v	typeref:typename:const char * []	file:
 level_strings	src/log.c	/^static const char *level_strings[] = {$/;"	v	typeref:typename:const char * []	file:
-location_at	src/location.c	/^Location location_at(EditBuffer *b, size_t index)$/;"	f	typeref:typename:Location
 location_find_backward	src/location.c	/^Location location_find_backward(Location l, int type_mask)$/;"	f	typeref:typename:Location
+location_find_begin_word	src/location.c	/^Location location_find_begin_word(Location l)$/;"	f	typeref:typename:Location
+location_find_end_word	src/location.c	/^Location location_find_end_word(Location l)$/;"	f	typeref:typename:Location
 location_find_forward	src/location.c	/^Location location_find_forward(Location l, int type_mask)$/;"	f	typeref:typename:Location
 location_next_byte	src/location.c	/^Location location_next_byte(Location l)$/;"	f	typeref:typename:Location
-location_next_node	src/location.c	/^Location location_next_node(Location l)$/;"	f	typeref:typename:Location
 location_next_word	src/location.c	/^Location location_next_word(Location l)$/;"	f	typeref:typename:Location
 location_ok	src/location.c	/^bool location_ok(Location l)$/;"	f	typeref:typename:bool
 location_prev_byte	src/location.c	/^Location location_prev_byte(Location l)$/;"	f	typeref:typename:Location
-location_prev_node	src/location.c	/^Location location_prev_node(Location l)$/;"	f	typeref:typename:Location
 location_prev_word	src/location.c	/^Location location_prev_word(Location l)$/;"	f	typeref:typename:Location
 location_to_index	src/location.c	/^size_t location_to_index(Location l)$/;"	f	typeref:typename:size_t
 lock	src/log.c	/^  log_LockFn lock;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:log_LockFn	file:
@@ -121,11 +122,12 @@ print_buffer	src/editor.c	/^void print_buffer(EditBuffer *b, WINDOW *win)$/;"	f	
 quiet	src/log.c	/^  bool quiet;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:bool	file:
 stdout_callback	src/log.c	/^static void stdout_callback(log_Event *ev) {$/;"	f	typeref:typename:void	file:
 test0	src/test_edit_buffer.c	/^void test0()$/;"	f	typeref:typename:void
-test0	src/test_location.c	/^void test0()$/;"	f	typeref:typename:void
 test1	src/test_edit_buffer.c	/^void test1()$/;"	f	typeref:typename:void
 test2	src/test_edit_buffer.c	/^void test2()$/;"	f	typeref:typename:void
 test3	src/test_edit_buffer.c	/^void test3()$/;"	f	typeref:typename:void
-test_find_character	src/test_location.c	/^void test_find_character()$/;"	f	typeref:typename:void
+test_many_node	src/test_location.c	/^void test_many_node()$/;"	f	typeref:typename:void
+test_one_node	src/test_location.c	/^void test_one_node()$/;"	f	typeref:typename:void
+test_word_one_node	src/test_location.c	/^void test_word_one_node()$/;"	f	typeref:typename:void
 udata	src/log.c	/^  void *udata;$/;"	m	struct:__anonb59cff6f0108	typeref:typename:void *	file:
 udata	src/log.c	/^  void *udata;$/;"	m	struct:__anonb59cff6f0208	typeref:typename:void *	file:
 unlock	src/log.c	/^static void unlock(void) {$/;"	f	typeref:typename:void	file:
