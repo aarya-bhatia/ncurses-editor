@@ -127,19 +127,37 @@ Location location_next_word(Location l)
         return LOCATION_NULL;
     }
 
-    Location found = location_find_forward(l, ~char_type(l.ptr[0])); // find a separator
-    if (!location_ok(found)) {
+    l = location_find_end_word(l);
+    Location next = location_next_byte(l);
+    if (!location_ok(next)) {
         return l;
     }
 
-    if (char_type(found.ptr[0]) == C_WHITESPACE) {
-        found = location_find_forward(found, ~C_WHITESPACE); // skip whitespace
-        if (!location_ok(found)) {
-            return l;
-        }
+    Location prev = next;
+    while (location_ok(next) && char_type(next.ptr[0]) == C_WHITESPACE) {
+        prev = next;
+        next = location_next_byte(next);
     }
 
-    return found;
+    if(!location_ok(next)){
+		return prev;
+	}
+
+	return next;
+
+    // Location found = location_find_forward(l, ~char_type(l.ptr[0])); // find a separator
+    // if (!location_ok(found)) {
+    //     return l;
+    // }
+    //
+    // if (char_type(found.ptr[0]) == C_WHITESPACE) {
+    //     found = location_find_forward(found, ~C_WHITESPACE); // skip whitespace
+    //     if (!location_ok(found)) {
+    //         return l;
+    //     }
+    // }
+    //
+    // return found;
 }
 
 Location location_prev_word(Location l)
