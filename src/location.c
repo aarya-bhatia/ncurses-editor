@@ -1,5 +1,6 @@
 #include "include/location.h"
 #include <assert.h>
+#include <string.h>
 
 #define LOCATION_NULL                                                                                                  \
     (Location)                                                                                                         \
@@ -139,25 +140,11 @@ Location location_next_word(Location l)
         next = location_next_byte(next);
     }
 
-    if(!location_ok(next)){
-		return prev;
-	}
+    if (!location_ok(next)) {
+        return prev;
+    }
 
-	return next;
-
-    // Location found = location_find_forward(l, ~char_type(l.ptr[0])); // find a separator
-    // if (!location_ok(found)) {
-    //     return l;
-    // }
-    //
-    // if (char_type(found.ptr[0]) == C_WHITESPACE) {
-    //     found = location_find_forward(found, ~C_WHITESPACE); // skip whitespace
-    //     if (!location_ok(found)) {
-    //         return l;
-    //     }
-    // }
-    //
-    // return found;
+    return next;
 }
 
 Location location_prev_word(Location l)
@@ -166,17 +153,21 @@ Location location_prev_word(Location l)
         return LOCATION_NULL;
     }
 
-    Location found = location_find_backward(l, ~char_type(l.ptr[0])); // find a separator
-    if (!location_ok(found)) {
-        return l;
+    Location begin = location_find_begin_word(l);
+    if (memcmp(&begin, &l, sizeof l) != 0) {
+        return begin;
     }
 
-    if (char_type(found.ptr[0]) == C_WHITESPACE) {
-        found = location_find_backward(found, ~C_WHITESPACE); // skip whitespace
-        if (!location_ok(found)) {
-            return l;
-        }
+    Location prev = location_prev_byte(begin);
+    Location next = begin;
+    while (location_ok(prev) && char_type(prev.ptr[0]) == C_WHITESPACE) {
+        next = prev;
+        prev = location_prev_byte(prev);
     }
 
-    return location_find_begin_word(found);
+    if (!location_ok(prev)) {
+        return next;
+    }
+
+    return location_find_begin_word(prev);
 }
