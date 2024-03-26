@@ -1,5 +1,6 @@
 #include "include/edit_buffer.h"
 #include "include/location.h"
+#include <string.h>
 
 Location get_location(EditBuffer *b, int index)
 {
@@ -28,33 +29,12 @@ int edit_buffer_get_first_nonspace(EditBuffer *b)
 
 int edit_buffer_get_prev_word(EditBuffer *b, int current)
 {
-    Location l = get_location(b, current);
-    if (!location_ok(l)) {
-        return -1;
-    }
-
-    Location found = location_prev_word(l);
-    if (!location_ok(found)) {
-        return current;
-    }
-
-    return location_to_index(found);
+    return location_to_index(location_prev_word(get_location(b, current)));
 }
 
 int edit_buffer_get_next_word(EditBuffer *b, int current)
 {
-    Location l = get_location(b, current);
-    if (!location_ok(l)) {
-        return -1;
-    }
-
-    Location found = location_next_word(l);
-    if (!location_ok(found)) {
-        Location end = location_find_end_word(l);
-        return location_to_index(end);
-    }
-
-    return location_to_index(found);
+    return location_to_index(location_next_word(get_location(b, current)));
 }
 
 int edit_buffer_get_end_word(EditBuffer *b, int current)
@@ -65,7 +45,7 @@ int edit_buffer_get_end_word(EditBuffer *b, int current)
     }
 
     Location end = location_find_end_word(l);
-    if (end.ptr == l.ptr) {
+    if (memcmp(&end, &l, sizeof l) != 0) {
         Location next = location_next_word(l);
         if (!location_ok(next)) {
             return location_to_index(end);

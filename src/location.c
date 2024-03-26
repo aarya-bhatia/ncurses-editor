@@ -1,5 +1,4 @@
 #include "include/location.h"
-#include <assert.h>
 #include <string.h>
 
 #define LOCATION_NULL                                                                                                  \
@@ -16,9 +15,11 @@ bool location_ok(Location l)
            l.ptr < l.node->buffer + l.node->size;
 }
 
-size_t location_to_index(Location l)
+ssize_t location_to_index(Location l)
 {
-    assert(location_ok(l));
+    if (!location_ok(l)) {
+        return -1;
+    }
 
     EditNode *itr = l.node;
     size_t accum = OFFSET(l);

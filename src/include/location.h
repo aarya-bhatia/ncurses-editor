@@ -6,7 +6,7 @@ typedef struct Location {
 } Location;
 
 bool location_ok(Location l);
-size_t location_to_index(Location l);
+ssize_t location_to_index(Location l);
 Location location_next_byte(Location l);
 Location location_prev_byte(Location l);
 Location location_find_begin_word(Location l);
