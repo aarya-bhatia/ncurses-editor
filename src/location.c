@@ -1,4 +1,4 @@
-#include "location.h"
+#include "include/location.h"
 #include <assert.h>
 
 #define LOCATION_NULL                                                                                                  \
@@ -7,20 +7,12 @@
         NULL, NULL                                                                                                     \
     }
 
-#define IS_SENITEL(node) ((node)->prev == NULL || (node)->next == NULL)
 #define OFFSET(location) ((location).ptr - (location).node->buffer)
 
 bool location_ok(Location l)
 {
-    bool node_ok = l.node != NULL && l.node->prev != NULL && l.node->next != NULL;
-    bool ptr_ok = l.ptr != NULL && l.ptr >= l.node->buffer && l.ptr < l.node->buffer + l.node->size;
-    return node_ok && ptr_ok;
-}
-
-// TODO
-Location location_at(EditBuffer *b, size_t index)
-{
-    return LOCATION_NULL;
+    return l.node != NULL && l.node->buffer != NULL && l.ptr != NULL && l.ptr >= l.node->buffer &&
+           l.ptr < l.node->buffer + l.node->size;
 }
 
 size_t location_to_index(Location l)
@@ -30,8 +22,7 @@ size_t location_to_index(Location l)
     EditNode *itr = l.node;
     size_t accum = OFFSET(l);
 
-    while (!IS_SENITEL(itr->prev)) {
-        itr = itr->prev;
+    while ((itr = itr->prev) != NULL) {
         accum += itr->size;
     }
 
@@ -40,7 +31,9 @@ size_t location_to_index(Location l)
 
 Location location_next_byte(Location l)
 {
-    assert(location_ok(l));
+    if (!location_ok(l)) {
+        return LOCATION_NULL;
+    }
 
     if (l.ptr[1] != 0) {
         return (Location){l.node, l.ptr + 1};
@@ -48,7 +41,7 @@ Location location_next_byte(Location l)
 
     EditNode *node = l.node->next;
 
-    if (IS_SENITEL(node) || node->size == 0) {
+    if (!node || !node->buffer || node->size == 0) {
         return LOCATION_NULL;
     }
 
@@ -57,7 +50,9 @@ Location location_next_byte(Location l)
 
 Location location_prev_byte(Location l)
 {
-    assert(location_ok(l));
+    if (!location_ok(l)) {
+        return LOCATION_NULL;
+    }
 
     if (OFFSET(l) > 0) {
         return (Location){l.node, l.ptr - 1};
@@ -65,7 +60,7 @@ Location location_prev_byte(Location l)
 
     EditNode *node = l.node->prev;
 
-    if (IS_SENITEL(node) || node->size == 0) {
+    if (!node || !node->buffer || node->size == 0) {
         return LOCATION_NULL;
     }
 

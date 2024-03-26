@@ -1,23 +1,16 @@
-#include "edit_buffer.h"
-#include "location.h"
+#include "include/edit_node.h"
+#include "include/location.h"
 #include <assert.h>
 #include <string.h>
 
 void test_one_node()
 {
-    // 3 'words' in 1 node: hello - aarya - !
     EditNode *n = edit_node_new1("hello aarya!");
-
-    EditBuffer b;
-    edit_buffer_init(&b);
-    edit_buffer_append_node(&b, n);
 
     Location l, l1, l2;
 
     assert(!location_ok((Location){NULL, NULL}));
     assert(!location_ok((Location){n, n->buffer + n->size}));
-    assert(!location_ok((Location){&b.head, b.head.buffer}));
-    assert(!location_ok((Location){&b.tail, b.tail.buffer}));
 
     l = (Location){n, n->buffer};
     assert(location_ok(l));
@@ -73,7 +66,7 @@ void test_one_node()
     l1 = location_find_forward(l, C_SPECIAL);
     assert(l1.ptr[0] == '!');
 
-    edit_buffer_clear(&b);
+    edit_node_free(n);
 }
 
 void test_many_node()
@@ -84,18 +77,12 @@ void test_many_node()
     EditNode *n4 = edit_node_new1("worl");
     EditNode *n5 = edit_node_new1("d!");
 
-    EditBuffer b;
-    edit_buffer_init(&b);
-    edit_buffer_append_node(&b, n1);
-    edit_buffer_append_node(&b, n2);
-    edit_buffer_append_node(&b, n3);
-    edit_buffer_append_node(&b, n4);
-    edit_buffer_append_node(&b, n5);
+    edit_node_add_after(n1, n2);
+    edit_node_add_after(n2, n3);
+    edit_node_add_after(n3, n4);
+    edit_node_add_after(n4, n5);
 
-    assert(edit_buffer_size(&b) == 12);
-    char *s = edit_buffer_to_string(&b);
-    assert(!strcmp(s, "hello world!"));
-
+    char *s = "hello world!";
     Location l = (Location){n1, n1->buffer};
 
     for (int i = 0; i < 12; i++) {
@@ -107,16 +94,16 @@ void test_many_node()
 
     assert(!location_ok(l));
 
-    free(s);
-    edit_buffer_clear(&b);
+    edit_node_free(n1);
+    edit_node_free(n2);
+    edit_node_free(n3);
+    edit_node_free(n4);
+    edit_node_free(n5);
 }
 
 void test_word_one_node()
 {
     EditNode *n = edit_node_new1("hello world!");
-    EditBuffer b;
-    edit_buffer_init(&b);
-    edit_buffer_append_node(&b, n);
 
     Location l = (Location){n, n->buffer};
 
@@ -136,7 +123,7 @@ void test_word_one_node()
     assert(l5.ptr[0] == 'h');
     assert(l6.ptr[0] == 'h');
 
-    edit_buffer_clear(&b);
+    edit_node_free(n);
 }
 
 int main()
