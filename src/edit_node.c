@@ -1,4 +1,4 @@
-#include "edit_node.h"
+#include "include/edit_node.h"
 #include <assert.h>
 #include <string.h>
 
@@ -45,4 +45,32 @@ void edit_node_clear(EditNode *node)
     node->buffer = realloc(node->buffer, MIN_CAPACITY);
     node->size = 0;
     node->buffer[0] = 0;
+}
+
+void edit_node_add_after(EditNode *current, EditNode *other)
+{
+    assert(current);
+    assert(other);
+
+    other->next = current->next;
+    if (current->next) {
+        current->next->prev = other;
+    }
+
+    current->next = other;
+    other->prev = current;
+}
+
+void edit_node_add_before(EditNode *current, EditNode *other)
+{
+    assert(current);
+    assert(other);
+
+    other->prev = current->prev;
+    if (current->prev) {
+        current->prev->next = other;
+    }
+
+    current->prev = other;
+    other->next = current;
 }
