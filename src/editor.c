@@ -141,17 +141,17 @@ void normal_mode_key_event(unsigned c)
             cursor.x = edit_buffer_get_first_nonspace(&view_edit.line);
             break;
 
-            // case 'b':
-            //     cursor.x = edit_buffer_get_prev_word(&view_edit.line, cursor.x);
-            //     break;
-            // 
+        case 'b':
+            cursor.x = edit_buffer_get_prev_word(&view_edit.line, cursor.x);
+            break;
+
         case 'w':
             cursor.x = edit_buffer_get_next_word(&view_edit.line, cursor.x);
             break;
-            //
-            // case 'e':
-            //     cursor.x = edit_buffer_get_end_word(&view_edit.line, cursor.x);
-            //     break;
+
+        case 'e':
+            cursor.x = edit_buffer_get_end_word(&view_edit.line, cursor.x);
+            break;
 
         case 'i':
             on_normal_leave();

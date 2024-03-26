@@ -65,5 +65,14 @@ int edit_buffer_get_end_word(EditBuffer *b, int current)
     }
 
     Location end = location_find_end_word(l);
+	if(end.ptr == l.ptr) {
+		Location next = location_next_word(l);
+		if(!location_ok(next)){
+			return location_to_index(end);
+		} else {
+			return location_to_index(location_find_end_word(next));
+		}
+	}
+
     return location_to_index(end);
 }
