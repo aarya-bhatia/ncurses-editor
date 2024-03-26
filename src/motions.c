@@ -1,63 +1,69 @@
-#include "include/location.h"
 #include "include/edit_buffer.h"
+#include "include/location.h"
+
+Location get_location(EditBuffer *b, int index)
+{
+    size_t accum = 0;
+    for (EditNode *node = LIST_BEGIN(b); node != LIST_END(b); node = node->next) {
+        if (index >= accum && index < accum + node->size) {
+            return (Location){node, node->buffer + (index - accum)};
+        }
+        accum += node->size;
+    }
+
+    return (Location){NULL, NULL};
+}
+
+int edit_buffer_get_first_nonspace(EditBuffer *b)
+{
+    EditNode *begin = LIST_BEGIN(b);
+    Location l = (Location){begin, begin->buffer};
+    Location found = location_find_forward(l, ~C_WHITESPACE);
+    if (!location_ok(found)) {
+        return 0;
+    }
+
+    return location_to_index(found);
+}
 
 int edit_buffer_get_prev_word(EditBuffer *b, int current)
 {
-    return -1;
-}
-int edit_buffer_get_next_word(EditBuffer *b, int current)
-{
-    return -1;
-}
-int edit_buffer_get_end_word(EditBuffer *b, int current)
-{
-    return -1;
-}
-int edit_buffer_get_first_nonspace(EditBuffer *b)
-{
-    return -1;
+    Location l = get_location(b, current);
+    if (!location_ok(l)) {
+        return -1;
+    }
+
+    Location found = location_prev_word(l);
+    if (!location_ok(found)) {
+        return current;
+    }
+
+    return location_to_index(found);
 }
 
-// int edit_buffer_get_first_nonspace(EditBuffer *b)
-// {
-//     int cur = 0;
-//     for (EditNode *node = LIST_BEGIN(b); node != LIST_END(b); node = node->next) {
-//         for (int i = 0; i < node->size; i++) {
-//             if (!isspace(node->buffer[i])) {
-//                 cur += i;
-//                 return cur;
-//             }
-//         }
-//         cur += node->size;
-//     }
-//
-//     return cur;
-// }
-//
-// // TODO
-// int edit_buffer_get_prev_word(EditBuffer *b, int current)
-// {
-//     return -1;
-// }
-//
-// // TODO
-// int edit_buffer_get_next_word(EditBuffer *b, int current)
-// {
-//     Location l = find_container_node(b, current);
-//     if (l.container == NULL) {
-//         return edit_buffer_size(b) - 1;
-//     }
-//
-//     l = find_next_word(b, l);
-//     if (l.container == NULL) {
-//         return edit_buffer_size(b) - 1;
-//     }
-//
-//     return l.index + l.offset;
-// }
-//
-// // TODO
-// int edit_buffer_get_end_word(EditBuffer *b, int current)
-// {
-//     return -1;
-// }
+int edit_buffer_get_next_word(EditBuffer *b, int current)
+{
+    Location l = get_location(b, current);
+    if (!location_ok(l)) {
+        return -1;
+    }
+
+    Location found = location_next_word(l);
+    if (!location_ok(found)) {
+        Location end = location_find_end_word(l);
+        return location_to_index(end);
+    }
+
+    return location_to_index(found);
+}
+
+int edit_buffer_get_end_word(EditBuffer *b, int current)
+{
+    Location l = get_location(b, current);
+    if (!location_ok(l)) {
+        return -1;
+    }
+
+    Location end = location_find_end_word(l);
+    return location_to_index(end);
+}
