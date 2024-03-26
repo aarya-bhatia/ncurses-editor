@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <string.h>
 
-void test0()
+void test_one_node()
 {
     // 3 'words' in 1 node: hello - aarya - !
     EditNode *n = edit_node_new1("hello aarya!");
@@ -21,7 +21,7 @@ void test0()
 
     l = (Location){n, n->buffer};
     assert(location_ok(l));
-	assert(location_to_index(l) == 0);
+    assert(location_to_index(l) == 0);
 
     l1 = location_next_byte(l);
     l2 = location_prev_byte(l);
@@ -31,7 +31,7 @@ void test0()
     assert(l2.ptr == NULL);
 
     l = (Location){n, n->buffer + 2};
-	assert(location_to_index(l) == 2);
+    assert(location_to_index(l) == 2);
     l1 = location_next_byte(l);
     l2 = location_prev_byte(l);
 
@@ -49,7 +49,7 @@ void test0()
     assert(l2.ptr == n->buffer + n->size - 2);
 
     l = (Location){n, n->buffer + 5};
-	assert(location_to_index(l) == 5);
+    assert(location_to_index(l) == 5);
     assert(l.node == n);
     assert(l.ptr[0] == ' ');
     l1 = location_find_forward(l, C_ALPHANUM);
@@ -76,85 +76,74 @@ void test0()
     edit_buffer_clear(&b);
 }
 
-// test next word with 1 edit node and 2 words
-// void test1()
-// {
-//     char *str = "Hello World";
-//     EditBuffer b;
-//     edit_buffer_init(&b);
-//     for (int i = 0; i < strlen(str); i++) {
-//         edit_buffer_insert(&b, str[i]);
-//     }
-//
-//     char *s = edit_buffer_to_string(&b);
-//     assert(!strcmp(s, str));
-//     free(s);
-//
-//     Location hello = location(LIST_BEGIN(&b), 0, 0);
-//     Location world = find_next_word(&b, hello);
-//
-//     assert(world.index == 0);
-//     assert(world.offset == 6);
-//     assert(world.container == hello.container);
-//
-//     edit_buffer_clear(&b);
-// }
-
-// test next word with 2 edit nodes and 2 words
-// void test2()
-// {
-//     EditNode n2;
-//     n2.buffer = strdup("World");
-//     n2.size = 5;
-//     n2.capacity = 5;
-//     n2.next = NULL;
-//
-//     EditNode n1;
-//     n1.buffer = strdup("Hello ");
-//     n1.size = 6;
-//     n1.capacity = 6;
-//     n1.next = NULL;
-//
-//     EditBuffer b;
-//     edit_buffer_init(&b);
-//
-//     edit_buffer_append_node(&b, &n1);
-//     edit_buffer_append_node(&b, &n2);
-//
-//     assert(edit_buffer_size(&b) == 11);
-//
-//     char *s = edit_buffer_to_string(&b);
-//     assert(!strcmp(s, "Hello World"));
-//     free(s);
-//
-//     Location hello = location(LIST_BEGIN(&b), 0, 0);
-//     assert(hello.index == 0);
-//     assert(hello.offset == 0);
-//     assert(hello.container == &n1);
-//
-//     Location world = find_next_word(&b, hello);
-//     assert(world.index == 6);
-//     assert(world.offset == 0);
-//     assert(world.container == &n2);
-//
-//     Location end = find_next_word(&b, world);
-//     assert(end.index == 6);
-//     assert(end.offset == 4);
-//     assert(end.container == &n2);
-//
-//     free(n1.buffer);
-//     free(n2.buffer);
-// }
-
-void test_find_character()
+void test_many_node()
 {
+    EditNode *n1 = edit_node_new1("he");
+    EditNode *n2 = edit_node_new1("ll");
+    EditNode *n3 = edit_node_new1("o ");
+    EditNode *n4 = edit_node_new1("worl");
+    EditNode *n5 = edit_node_new1("d!");
+
+    EditBuffer b;
+    edit_buffer_init(&b);
+    edit_buffer_append_node(&b, n1);
+    edit_buffer_append_node(&b, n2);
+    edit_buffer_append_node(&b, n3);
+    edit_buffer_append_node(&b, n4);
+    edit_buffer_append_node(&b, n5);
+
+    assert(edit_buffer_size(&b) == 12);
+    char *s = edit_buffer_to_string(&b);
+    assert(!strcmp(s, "hello world!"));
+
+    Location l = (Location){n1, n1->buffer};
+
+    for (int i = 0; i < 12; i++) {
+        assert(l.ptr[0] == s[i]);
+        assert(location_ok(l));
+        assert(location_to_index(l) == i);
+        l = location_next_byte(l);
+    }
+
+    assert(!location_ok(l));
+
+    free(s);
+    edit_buffer_clear(&b);
+}
+
+void test_word_one_node()
+{
+    EditNode *n = edit_node_new1("hello world!");
+    EditBuffer b;
+    edit_buffer_init(&b);
+    edit_buffer_append_node(&b, n);
+
+    Location l = (Location){n, n->buffer};
+
+    Location l1 = location_next_word(l);
+    Location l2 = location_next_word(l1);
+    Location l3 = location_next_word(l2);
+
+    assert(l1.ptr[0] == 'w');
+    assert(l2.ptr[0] == '!');
+    assert(l3.ptr[0] == '!');
+
+    Location l4 = location_prev_word(l2);
+    Location l5 = location_prev_word(l4);
+    Location l6 = location_prev_word(l5);
+
+    assert(l4.ptr[0] == 'w');
+    assert(l5.ptr[0] == 'h');
+    assert(l6.ptr[0] == 'h');
+
+    edit_buffer_clear(&b);
 }
 
 int main()
 {
-    test0();
-    // test1();
-    // test2();
-    // test_find_character();
+    test_one_node();
+    test_many_node();
+    test_word_one_node();
+
     return 0;
 }
