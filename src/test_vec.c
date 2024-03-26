@@ -1,4 +1,4 @@
-#include "vec2.h"
+#include "include/vec2.h"
 #include <assert.h>
 
 int main(void) {

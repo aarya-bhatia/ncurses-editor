@@ -1,6 +1,6 @@
-#include "editor.h"
-#include "edit_buffer.h"
-#include "motions.h"
+#include "include/editor.h"
+#include "include/edit_buffer.h"
+#include "include/motions.h"
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>

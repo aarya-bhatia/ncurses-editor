@@ -4,7 +4,7 @@ SRCDIR=src
 CFLAGS=-c -std=c99 -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
 
-COMMON=$(shell ls $(SRCDIR)/*.c | grep -vE "test|main")
+COMMON=$(shell find $(SRCDIR) -type f -name "*.c" | grep -vE "test|main")
 COMMON_OBJ=$(COMMON:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
 EDITOR=editor.c main.c
@@ -13,23 +13,15 @@ EDITOR_OBJS=$(EDITOR:%.c=$(OBJDIR)/%.o) $(COMMON_OBJ)
 all: $(BINDIR)/editor $(BINDIR)/test_edit_buffer $(BINDIR)/test_location $(BINDIR)/test_vec
 
 $(BINDIR)/editor: $(EDITOR_OBJS)
-	mkdir -p $(BINDIR)
+	mkdir -p $(dir $@)
 	gcc -std=c99 $^ $(LDFLAGS) -o $@
 
-$(BINDIR)/test_edit_buffer: $(OBJDIR)/test_edit_buffer.o $(COMMON_OBJ)
-	mkdir -p $(BINDIR)
-	gcc -std=c99 $^ $(LDFLAGS) -o $@
-
-$(BINDIR)/test_location: $(OBJDIR)/test_location.o $(COMMON_OBJ)
-	mkdir -p $(BINDIR)
-	gcc -std=c99 $^ $(LDFLAGS) -o $@
-
-$(BINDIR)/test_vec: $(OBJDIR)/test_vec.o $(OBJDIR)/vec2.o
-	mkdir -p $(BINDIR)
+$(BINDIR)/test_%: $(OBJDIR)/test_%.o $(COMMON_OBJ)
+	mkdir -p $(dir $@)
 	gcc -std=c99 $^ $(LDFLAGS) -o $@
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	mkdir -p $(OBJDIR)
+	mkdir -p $(dir $@)
 	gcc $(CFLAGS) $< -o $@
 
 clean:

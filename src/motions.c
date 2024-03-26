@@ -1,4 +1,5 @@
-#include "location.h"
+#include "include/location.h"
+#include "include/edit_buffer.h"
 
 int edit_buffer_get_prev_word(EditBuffer *b, int current)
 {

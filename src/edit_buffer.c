@@ -1,4 +1,4 @@
-#include "edit_buffer.h"
+#include "include/edit_buffer.h"
 #include <assert.h>
 #include <string.h>
 

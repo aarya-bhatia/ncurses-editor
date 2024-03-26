@@ -1,4 +1,4 @@
-#include "vec2.h"
+#include "include/vec2.h"
 #include <math.h>
 
 bool vec2_equal(Vec2 u, Vec2 v) { return u.x == v.x && u.y == v.y; }

@@ -1,6 +1,6 @@
-#include "edit_buffer.h"
-#include "editor.h"
-#include "log.h"
+#include "include/edit_buffer.h"
+#include "include/editor.h"
+#include "include/log.h"
 #include <curses.h>
 #include <ncurses.h>
 #include <sys/types.h>

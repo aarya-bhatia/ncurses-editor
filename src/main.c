@@ -1,5 +1,5 @@
-#include "editor.h"
-#include "log.h"
+#include "include/editor.h"
+#include "include/log.h"
 #include <fcntl.h>
 #include <unistd.h>
 
