@@ -1,5 +1,15 @@
 #include "edit_node.h"
 #include <assert.h>
+#include <string.h>
+
+EditNode *edit_node_new1(const char *str)
+{
+    EditNode *node = calloc(1, sizeof *node);
+    node->buffer = strdup(str);
+    node->capacity = strlen(str) + 1;
+    node->size = strlen(str);
+    return node;
+}
 
 EditNode *edit_node_new()
 {

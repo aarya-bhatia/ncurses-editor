@@ -33,12 +33,6 @@ EditNode *edit_buffer_append_node(EditBuffer *b, EditNode *node);
 void edit_buffer_backspace(EditBuffer *b);
 void edit_buffer_clear_till_beginning(EditBuffer *b);
 
-// todo
-// const char *edit_buffer_flush(EditBuffer *b);
-
 // private
 void edit_buffer_delete_node(EditBuffer *b, EditNode *node);
 void edit_buffer_insert_node(EditBuffer *b, EditNode *before, EditNode *insert, EditNode *after);
-
-// motions
-int edit_buffer_get_first_nonspace(EditBuffer *b);

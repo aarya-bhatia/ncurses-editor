@@ -16,6 +16,7 @@ typedef struct _EditNode {
 } EditNode;
 
 EditNode *edit_node_new();
+EditNode *edit_node_new1(const char *str);
 void edit_node_free(EditNode *node);
 void edit_node_append(EditNode *node, char value);
 void edit_node_clear(EditNode *node);
