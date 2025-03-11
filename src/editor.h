@@ -58,6 +58,7 @@ struct Editor
 
     void command(const std::string &command);
 
+    void handle_event(unsigned c);
     void handle_command_mode_event(unsigned c);
     void handle_insert_mode_event(unsigned c);
     void handle_normal_mode_event(unsigned c);

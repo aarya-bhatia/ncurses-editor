@@ -11,15 +11,24 @@ void setup_logger()
     log_info("hello world");
 }
 
-int main()
+void init()
 {
-    setup_logger();
-
     initscr();            // Start ncurses mode
     noecho();             // Don't echo typed characters
     cbreak();             // Disable line buffering (input is available immediately)
     keypad(stdscr, TRUE); // Enable special keys (e.g., arrows)
     refresh();
+}
+
+void cleanup()
+{
+    endwin();
+}
+
+int main()
+{
+    setup_logger();
+    init();
 
     Editor editor("Makefile");
     editor.draw();
@@ -27,30 +36,12 @@ int main()
     while (!editor.quit)
     {
         int c = getch();
+        editor.handle_event(c);
 
-        if (c == CTRL_C)
-        {
-            editor.quit = true;
-        }
-        else if (editor.mode == INSERT_MODE)
-        {
-            editor.handle_insert_mode_event(c);
-        }
-        else if (editor.mode == NORMAL_MODE)
-        {
-            editor.handle_normal_mode_event(c);
-        }
-        else if (editor.mode == COMMAND_MODE)
-        {
-            editor.handle_command_mode_event(c);
-        }
-
-        editor.update();
         // log_debug("cursor: x:%d y:%d, scroll: dx:%d dy:%d", editor.cursor.x,
         //         editor.cursor.y, editor.scroll.dx, editor.scroll.dy);
     }
 
-    endwin();
-
+    cleanup();
     return 0;
 }

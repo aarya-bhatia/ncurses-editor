@@ -51,6 +51,29 @@ Editor::~Editor()
     delwin(status_window);
 }
 
+void Editor::handle_event(unsigned c)
+{
+    if (c == CTRL_C)
+    {
+        quit = true;
+        return;
+    }
+    else if (mode == INSERT_MODE)
+    {
+        handle_insert_mode_event(c);
+    }
+    else if (mode == NORMAL_MODE)
+    {
+        handle_normal_mode_event(c);
+    }
+    else if (mode == COMMAND_MODE)
+    {
+        handle_command_mode_event(c);
+    }
+
+    update();
+}
+
 void Editor::move_cursor_eol()
 {
     std::list<char> &line_val = *cursor.line;
@@ -117,30 +140,37 @@ void Editor::cursor_right()
 
 void Editor::scroll_to_ensure_cursor_visible()
 {
-	// adjust horizontal scroll
-	if (cursor.x-scroll.dx < 0) {
-		log_debug("scrolling left");
-		scroll.dx = cursor.x;
+    // adjust horizontal scroll
+    if (cursor.x - scroll.dx < 0)
+    {
+        log_debug("scrolling left");
+        scroll.dx = cursor.x;
         force_redraw = true;
-	} else if (cursor.x-scroll.dx >= getmaxx(edit_window)) {
-		log_debug("scrolling right");
-		scroll.dx = cursor.x - getmaxx(edit_window) + 1;
+    }
+    else if (cursor.x - scroll.dx >= getmaxx(edit_window))
+    {
+        log_debug("scrolling right");
+        scroll.dx = cursor.x - getmaxx(edit_window) + 1;
         force_redraw = true;
-	}
+    }
 
-	// adjust vertical scroll
-	if (cursor.y-scroll.dy < 0) {
-		log_debug("scrolling up");
-		scroll.dy = cursor.y;
+    // adjust vertical scroll
+    if (cursor.y - scroll.dy < 0)
+    {
+        log_debug("scrolling up");
+        scroll.dy = cursor.y;
         force_redraw = true;
-	} else if (cursor.y-scroll.dy >= getmaxy(edit_window)) {
-		log_debug("scrolling down");
-		scroll.dy = cursor.y - getmaxy(edit_window) + 1;
+    }
+    else if (cursor.y - scroll.dy >= getmaxy(edit_window))
+    {
+        log_debug("scrolling down");
+        scroll.dy = cursor.y - getmaxy(edit_window) + 1;
         force_redraw = true;
-	}
+    }
 }
 
-void Editor::force_redraw_editor() {
+void Editor::force_redraw_editor()
+{
     log_debug("force redrawing");
     werase(edit_window);
     auto line_itr = lines.begin();
@@ -148,24 +178,29 @@ void Editor::force_redraw_editor() {
     int count_lines = 0;
     int max_lines, max_cols;
     getmaxyx(edit_window, max_lines, max_cols);
-    for(; line_itr != lines.end() && count_lines < max_lines; line_itr++, count_lines++) {
+    for (; line_itr != lines.end() && count_lines < max_lines; line_itr++, count_lines++)
+    {
         wmove(edit_window, count_lines, 0);
         // log_debug("drawing line %d", count_lines);
         auto &line = *line_itr;
         auto col_itr = line.begin();
         std::advance(col_itr, scroll.dx);
         int count_cols = 0;
-        for(; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++) {
+        for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
+        {
             waddch(edit_window, *col_itr);
         }
-        for(; count_cols < max_cols; count_cols++) {
+        for (; count_cols < max_cols; count_cols++)
+        {
             waddch(edit_window, ' ');
         }
     }
-    for(; count_lines < max_lines; count_lines++) {
+    for (; count_lines < max_lines; count_lines++)
+    {
         // log_debug("drawing line %d", count_lines);
         wmove(edit_window, count_lines, 0);
-        for(int count_cols = 0; count_cols < max_cols; count_cols++) {
+        for (int count_cols = 0; count_cols < max_cols; count_cols++)
+        {
             waddch(edit_window, ' ');
         }
     }
@@ -273,41 +308,49 @@ void Editor::handle_command_mode_event(unsigned c)
 void Editor::update()
 {
     scroll_to_ensure_cursor_visible();
-    if(force_redraw){
+    if (force_redraw)
+    {
         force_redraw = false;
         force_redraw_editor();
     }
     draw();
 }
 
-void join_left_and_right_status(int ncols, char *left_status, char *right_status, char *full_status) {
-    for(int i = 0; i < ncols; i++) {
+void join_left_and_right_status(int ncols, char *left_status, char *right_status, char *full_status)
+{
+    for (int i = 0; i < ncols; i++)
+    {
         full_status[i] = ' ';
     }
 
     int i = 0;
-    for(; i < strlen(left_status); i++) {
+    for (; i < strlen(left_status); i++)
+    {
         full_status[i] = left_status[i];
     }
 
-    if(i >= ncols) {
+    if (i >= ncols)
+    {
         return;
     }
 
     int max_right_len = ncols - i;
     int right_len = strlen(right_status);
-    if(max_right_len < right_len) {
+    if (max_right_len < right_len)
+    {
         right_status[max_right_len] = 0;
         right_len = max_right_len;
     }
 
-    if(right_len == 0) {
+    if (right_len == 0)
+    {
         return;
     }
 
     int between_len = ncols - i - right_len;
     int start_right = i + between_len;
-    for(int j = start_right; j < ncols; j++) {
+    for (int j = start_right; j < ncols; j++)
+    {
         full_status[j] = right_status[j - start_right];
     }
 }
@@ -337,11 +380,13 @@ void Editor::draw()
 
     int cy = cursor.y - scroll.dy;
     int cx = cursor.x - scroll.dx;
-    if(cy < 0 || cy >= getmaxy(edit_window)){
+    if (cy < 0 || cy >= getmaxy(edit_window))
+    {
         cy = 0;
         log_warn("illegal cursor or scroll value");
     }
-    if(cx < 0 || cx >= getmaxx(edit_window)) {
+    if (cx < 0 || cx >= getmaxx(edit_window))
+    {
         cx = 0;
         log_warn("illegal cursor or scroll value");
     }
