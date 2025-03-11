@@ -2,6 +2,7 @@
 
 #include <list>
 #include <string>
+#include <map>
 #include <assert.h>
 #include "common.h"
 
@@ -12,6 +13,12 @@ enum Mode
     NORMAL_MODE,
     INSERT_MODE,
     COMMAND_MODE
+};
+
+static std::map<Mode, const char *> mode_names = {
+    {NORMAL_MODE, "NORMAL"},
+    {COMMAND_MODE, "COMMAND"},
+    {INSERT_MODE, "INSERT"},
 };
 
 struct Cursor
@@ -44,6 +51,8 @@ struct Editor
     Mode mode = NORMAL_MODE;
     bool quit = false;
 
+    bool force_redraw = false;
+
     Editor(const char *filename);
     ~Editor();
 
@@ -53,10 +62,15 @@ struct Editor
     void handle_insert_mode_event(unsigned c);
     void handle_normal_mode_event(unsigned c);
 
+    void update();
     void draw();
 
     void cursor_up();
     void cursor_down();
     void cursor_left();
     void cursor_right();
+
+    void move_cursor_eol();
+    void scroll_to_ensure_cursor_visible();
+    void force_redraw_editor();
 };

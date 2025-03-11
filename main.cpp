@@ -45,7 +45,9 @@ int main()
             editor.handle_command_mode_event(c);
         }
 
-        editor.draw();
+        editor.update();
+        // log_debug("cursor: x:%d y:%d, scroll: dx:%d dy:%d", editor.cursor.x,
+        //         editor.cursor.y, editor.scroll.dx, editor.scroll.dy);
     }
 
     endwin();
