@@ -9,14 +9,14 @@ Editor::Editor(const char *filename)
 {
     log_info("No. lines: %d, cols: %d", LINES, COLS);
     edit_window = newwin(LINES - 2, COLS, 0, 0);
-    status_window = newwin(2, COLS, LINES - 2, 0);
+    status_window = newwin(1, COLS, LINES - 2, 0);
+    console_window = newwin(1, COLS, LINES - 1, 0);
 
     refresh();
 
     std::list<std::string> str_lines = readlines(filename);
 
     werase(edit_window);
-    // wprintw(edit_window, "test line");
 
     int y = 0;
 
@@ -143,13 +143,13 @@ void Editor::scroll_to_ensure_cursor_visible()
     // adjust horizontal scroll
     if (cursor.x - scroll.dx < 0)
     {
-        log_debug("scrolling left");
+        // log_debug("scrolling left");
         scroll.dx = cursor.x;
         force_redraw = true;
     }
     else if (cursor.x - scroll.dx >= getmaxx(edit_window))
     {
-        log_debug("scrolling right");
+        // log_debug("scrolling right");
         scroll.dx = cursor.x - getmaxx(edit_window) + 1;
         force_redraw = true;
     }
@@ -157,13 +157,13 @@ void Editor::scroll_to_ensure_cursor_visible()
     // adjust vertical scroll
     if (cursor.y - scroll.dy < 0)
     {
-        log_debug("scrolling up");
+        // log_debug("scrolling up");
         scroll.dy = cursor.y;
         force_redraw = true;
     }
     else if (cursor.y - scroll.dy >= getmaxy(edit_window))
     {
-        log_debug("scrolling down");
+        // log_debug("scrolling down");
         scroll.dy = cursor.y - getmaxy(edit_window) + 1;
         force_redraw = true;
     }
@@ -171,7 +171,7 @@ void Editor::scroll_to_ensure_cursor_visible()
 
 void Editor::force_redraw_editor()
 {
-    log_debug("force redrawing");
+    // log_debug("force redrawing");
     werase(edit_window);
     auto line_itr = lines.begin();
     std::advance(line_itr, scroll.dy);
@@ -377,6 +377,24 @@ void Editor::draw()
     delete[] left_status;
     delete[] right_status;
     delete[] full_status;
+
+    werase(console_window);
+    ncols = getmaxx(console_window);
+    if (mode == COMMAND_MODE)
+    {
+        std::string tmp = ":" + mode_line;
+        if (tmp.size() >= ncols)
+        {
+            tmp = tmp.substr(tmp.size() - ncols - 1);
+        }
+        mvwprintw(console_window, 0, 0, tmp.substr(0, ncols).c_str());
+    }
+    else
+    {
+        mvwprintw(console_window, 0, 0, statusline.substr(0, ncols).c_str());
+    }
+
+    wrefresh(console_window);
 
     int cy = cursor.y - scroll.dy;
     int cx = cursor.x - scroll.dx;

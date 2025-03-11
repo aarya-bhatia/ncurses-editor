@@ -42,6 +42,7 @@ struct Editor
 
     WINDOW *edit_window = NULL;
     WINDOW *status_window = NULL;
+    WINDOW *console_window = NULL;
 
     std::string mode_line = "";
     std::string statusline = "status";
