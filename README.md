@@ -53,8 +53,9 @@ bin/editor [<filename1> [<filename2>...] ]
 - `g`: go to start of file
 
 ## Tasks
-- TODO feat: show line numbers
+- TODO feat: read filenames from args on launch
 - TODO feat: open and edit multiple files
+- TODO feat: show line numbers
 - DONE feat: auto-scroll when jumping cursor goes off-screen
 - TODO feat: handle empty buffer
 - TODO feat: command mode - run external commands on current line
