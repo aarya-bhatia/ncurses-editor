@@ -19,7 +19,7 @@ void init()
     initscr();             // Start ncurses mode
     noecho();              // Don't echo typed characters
     cbreak();              // Disable line buffering (input is available immediately)
-    keypad(stdscr, FALSE); // Disable handling special keys (e.g., arrows) - to fix delay issue with "Escape" key.
+    keypad(stdscr, FALSE); // Don't handle special keys to fix escape key delay issue
     refresh();
 }
 
