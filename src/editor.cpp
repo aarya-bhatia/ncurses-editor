@@ -74,10 +74,9 @@ void Editor::handle_event(unsigned c)
 
 void Editor::move_cursor_eol()
 {
+    cursor.col = --(*cursor.line).end();
     std::list<char> &line_val = *cursor.line;
     cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
-    cursor.col = line_val.begin();
-    std::advance(cursor.col, cursor.x);
 }
 
 void Editor::cursor_up()
@@ -252,6 +251,7 @@ void Editor::redraw_line(Cursor info)
     }
 
     wmove(edit_window, display_line, 0);
+    wclrtoeol(edit_window);
     int max_cols = getmaxx(edit_window);
 
     std::list<char> &line = *info.line;
@@ -262,10 +262,10 @@ void Editor::redraw_line(Cursor info)
     {
         waddch(edit_window, *col_itr);
     }
-    for (; count_cols < max_cols; count_cols++)
-    {
-        waddch(edit_window, ' ');
-    }
+    // for (; count_cols < max_cols; count_cols++)
+    // {
+    //     waddch(edit_window, ' ');
+    // }
 }
 
 void Editor::handle_normal_mode_event(unsigned c)
@@ -297,8 +297,7 @@ void Editor::handle_normal_mode_event(unsigned c)
         break;
 
     case '$':
-        cursor.col = --(*cursor.line).end();
-        cursor.x = std::max(0, (int)(*cursor.line).size() - 1);
+        move_cursor_eol();
         break;
 
     case 'i':

@@ -13,10 +13,10 @@ void setup_logger()
 
 void init()
 {
-    initscr();            // Start ncurses mode
-    noecho();             // Don't echo typed characters
-    cbreak();             // Disable line buffering (input is available immediately)
-    keypad(stdscr, TRUE); // Enable special keys (e.g., arrows)
+    initscr();             // Start ncurses mode
+    noecho();              // Don't echo typed characters
+    cbreak();              // Disable line buffering (input is available immediately)
+    keypad(stdscr, FALSE); // Disable handling special keys (e.g., arrows) - to fix delay issue with "Escape" key.
     refresh();
 }
 
