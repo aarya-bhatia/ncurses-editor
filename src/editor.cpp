@@ -208,12 +208,7 @@ void Editor::handle_insert_mode_event(unsigned c)
     switch (c)
     {
     case CTRL_ESCAPE:
-        if (line_val.size() > 0 && cursor.x >= line_val.size())
-        {
-            cursor.x = line_val.size() - 1;
-            cursor.col = --line_val.end();
-        }
-
+        cursor_left();
         mode = NORMAL_MODE;
         break;
 
