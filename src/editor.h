@@ -6,6 +6,7 @@
 #include <vector>
 #include <assert.h>
 #include "common.h"
+#include "FileManager.h"
 
 #include <ncurses.h>
 
@@ -22,24 +23,9 @@ static std::map<Mode, const char *> mode_names = {
     {INSERT_MODE, "INSERT"},
 };
 
-struct Cursor
-{
-    int y;
-    int x;
-
-    std::list<std::list<char>>::iterator line;
-    std::list<char>::iterator col;
-};
-
-struct Scroll
-{
-    int dy;
-    int dx;
-};
-
 struct Editor
 {
-    std::list<std::list<char>> lines;
+    FileManager file_manager;
 
     WINDOW *edit_window = NULL;
     WINDOW *status_window = NULL;
@@ -48,15 +34,12 @@ struct Editor
     std::string mode_line = "";
     std::string statusline = "status";
 
-    Cursor cursor;
-    Scroll scroll;
     Mode mode = NORMAL_MODE;
     bool quit = false;
 
     bool force_redraw = false;
-    std::vector<Cursor> dirty_lines;
 
-    Editor(const char *filename);
+    Editor();
     ~Editor();
 
     void command(const std::string &command);

@@ -51,7 +51,7 @@ int main()
 
     signal(SIGWINCH, handle_resize);
 
-    Editor editor("Makefile");
+    Editor editor;
     editor.draw();
 
     while (!editor.quit)
@@ -69,8 +69,8 @@ int main()
         editor.handle_event(c);
         editor.update();
 
-        log_debug("cursor: x:%d y:%d, scroll: dx:%d dy:%d", editor.cursor.x,
-                  editor.cursor.y, editor.scroll.dx, editor.scroll.dy);
+        // log_debug("cursor: x:%d y:%d, scroll: dx:%d dy:%d", editor.cursor.x,
+        //           editor.cursor.y, editor.scroll.dx, editor.scroll.dy);
     }
 
     cleanup();

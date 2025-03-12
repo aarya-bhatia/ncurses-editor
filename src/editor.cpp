@@ -23,7 +23,7 @@ void Editor::resize()
     update();
 }
 
-Editor::Editor(const char *filename)
+Editor::Editor()
 {
     log_info("No. lines: %d, cols: %d", LINES, COLS);
     edit_window = newwin(LINES - 2, COLS, 0, 0);
@@ -31,36 +31,7 @@ Editor::Editor(const char *filename)
     console_window = newwin(1, COLS, LINES - 1, 0);
 
     refresh();
-
-    std::list<std::string> str_lines = readlines(filename);
-
-    werase(edit_window);
-
-    int y = 0;
-
-    for (const std::string &str_line : str_lines)
-    {
-        lines.emplace_back(str_line.begin(), str_line.end());
-        mvwprintw(edit_window, y, 0, "%s", str_line.substr(0, COLS).c_str());
-        y++;
-    }
-
-    wrefresh(edit_window);
-
-    if (lines.empty())
-    {
-        lines.push_back({});
-    }
-
-    cursor.x = 0;
-    cursor.y = 0;
-    cursor.line = lines.begin();
-    cursor.col = lines.front().begin();
-
-    scroll.dy = 0;
-    scroll.dx = 0;
-
-    move(cursor.y, cursor.x);
+    move(0, 0);
 }
 
 Editor::~Editor()
@@ -93,6 +64,9 @@ void Editor::handle_event(unsigned c)
 
 void Editor::move_cursor_eol()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    Cursor &cursor = file->cursor;
     cursor.col = --(*cursor.line).end();
     std::list<char> &line_val = *cursor.line;
     cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
@@ -100,6 +74,10 @@ void Editor::move_cursor_eol()
 
 void Editor::cursor_up()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    Cursor &cursor = file->cursor;
+
     if (cursor.y > 0)
     {
         --cursor.y;
@@ -119,6 +97,11 @@ void Editor::cursor_up()
 
 void Editor::cursor_down()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    auto &lines = file->lines;
+    Cursor &cursor = file->cursor;
+
     if (cursor.y < lines.size() - 1)
     {
         ++cursor.y;
@@ -137,6 +120,10 @@ void Editor::cursor_down()
 
 void Editor::cursor_left()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    Cursor &cursor = file->cursor;
+
     if (cursor.x > 0)
     {
         --cursor.x;
@@ -146,7 +133,11 @@ void Editor::cursor_left()
 
 void Editor::cursor_right()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    Cursor &cursor = file->cursor;
     std::list<char> &line_val = *cursor.line;
+
     if (line_val.size() > 0 && cursor.x < line_val.size() - 1)
     {
         ++cursor.x;
@@ -156,6 +147,11 @@ void Editor::cursor_right()
 
 void Editor::scroll_to_ensure_cursor_visible()
 {
+    File *file = file_manager.get_file();
+    assert(file);
+    Cursor &cursor = file->cursor;
+    Scroll &scroll = file->scroll;
+
     // adjust horizontal scroll
     if (cursor.x - scroll.dx < 0)
     {
@@ -189,6 +185,14 @@ void Editor::force_redraw_editor()
 {
     log_debug("force redrawing");
     werase(edit_window);
+
+    File *file = file_manager.get_file();
+    if(!file) {
+        return;
+    }
+    Scroll &scroll = file->scroll;
+    auto &lines = file->lines;
+
     auto line_itr = lines.begin();
     std::advance(line_itr, scroll.dy);
     int count_lines = 0;
@@ -222,7 +226,9 @@ void Editor::command(const std::string &command)
 
 void Editor::handle_insert_mode_event(unsigned c)
 {
-    std::list<char> &line_val = *cursor.line;
+    File *file = file_manager.get_file();
+    assert(file);
+    std::list<char> &line_val = *file->cursor.line;
 
     switch (c)
     {
@@ -234,16 +240,22 @@ void Editor::handle_insert_mode_event(unsigned c)
     default:
         if (PRINTABLE(c))
         {
-            cursor.col = line_val.insert(cursor.col, c);
-            cursor.col++;
-            cursor.x++;
-            dirty_lines.push_back(cursor);
+            file->cursor.col = line_val.insert(file->cursor.col, c);
+            file->cursor.col++;
+            file->cursor.x++;
+            file->dirty_lines.push_back(file->cursor);
         }
     }
 }
 
 void Editor::redraw_line(Cursor info)
 {
+    File *file = file_manager.get_file();
+    if(!file) {
+        return;
+    }
+    Scroll &scroll = file->scroll;
+
     int display_line = info.y - scroll.dy;
     if (display_line < 0 || display_line >= getmaxy(edit_window))
     {
@@ -266,22 +278,36 @@ void Editor::redraw_line(Cursor info)
 
 void Editor::handle_normal_mode_event(unsigned c)
 {
+    File *file = file_manager.get_file();
+
     switch (c)
     {
     case 'h':
-        cursor_left();
+        if (file)
+        {
+            cursor_left();
+        }
         break;
 
     case 'l':
-        cursor_right();
+        if (file)
+        {
+            cursor_right();
+        }
         break;
 
     case 'j':
-        cursor_down();
+        if (file)
+        {
+            cursor_down();
+        }
         break;
 
     case 'k':
-        cursor_up();
+        if (file)
+        {
+            cursor_up();
+        }
         break;
 
     case CTRL_ESCAPE:
@@ -289,15 +315,25 @@ void Editor::handle_normal_mode_event(unsigned c)
         break;
 
     case '0':
-        cursor.x = 0;
+        if (file)
+        {
+            file->cursor.x = 0;
+            file->cursor.col = (*file->cursor.line).begin();
+        }
         break;
 
     case '$':
-        move_cursor_eol();
+        if (file)
+        {
+            move_cursor_eol();
+        }
         break;
 
     case 'i':
-        mode = INSERT_MODE;
+        if (file)
+        {
+            mode = INSERT_MODE;
+        }
         break;
 
     case ':':
@@ -326,6 +362,15 @@ void Editor::handle_command_mode_event(unsigned c)
 
 void Editor::update()
 {
+    File *file = file_manager.get_file();
+    if (!file)
+    {
+        draw();
+        return;
+    }
+
+    auto &dirty_lines = file->dirty_lines;
+
     scroll_to_ensure_cursor_visible();
     if (force_redraw)
     {
@@ -395,7 +440,16 @@ void Editor::draw()
     assert(mode_name != mode_names.end());
 
     snprintf(left_status, ncols, "-- %s --", (*mode_name).second);
-    snprintf(right_status, ncols, "Ln:%d Col:%d", cursor.y, cursor.x);
+
+    File *file = file_manager.get_file();
+    if (file)
+    {
+        snprintf(right_status, ncols, "Ln:%d Col:%d", file->cursor.y, file->cursor.x);
+    }
+    else
+    {
+        snprintf(right_status, ncols, "Ln:%d Col:%d", 0, 0);
+    }
 
     join_left_and_right_status(ncols, left_status, right_status, full_status);
 
@@ -423,6 +477,15 @@ void Editor::draw()
     }
 
     wrefresh(console_window);
+
+    if (!file)
+    {
+        move(0, 0);
+        return;
+    }
+
+    Scroll &scroll = file->scroll;
+    Cursor &cursor = file->cursor;
 
     int cy = cursor.y - scroll.dy;
     int cx = cursor.x - scroll.dx;
