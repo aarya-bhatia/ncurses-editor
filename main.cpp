@@ -16,11 +16,19 @@ void setup_logger()
 
 void init()
 {
+    setup_logger();
+
     initscr();             // Start ncurses mode
     noecho();              // Don't echo typed characters
     cbreak();              // Disable line buffering (input is available immediately)
     keypad(stdscr, FALSE); // Don't handle special keys to fix escape key delay issue
-    refresh();
+}
+
+void init_screen()
+{
+    endwin();  // Reset ncurses
+    refresh(); // Refresh stdscr
+    clear();   // Clear the screen
 }
 
 void cleanup()
@@ -38,8 +46,8 @@ void handle_resize(int sig)
 
 int main()
 {
-    setup_logger();
     init();
+    init_screen();
 
     signal(SIGWINCH, handle_resize);
 
@@ -52,8 +60,8 @@ int main()
         {
             resized = false;
             log_info("window resize detected!");
-            editor.force_redraw_editor();
-            editor.update();
+            init_screen();
+            editor.resize();
             continue;
         }
 

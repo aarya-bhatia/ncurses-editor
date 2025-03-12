@@ -5,6 +5,24 @@
 #include "log.h"
 #include <sys/types.h>
 
+void Editor::resize()
+{
+    delwin(edit_window);
+    delwin(status_window);
+    delwin(console_window);
+
+    log_info("On resize(): No. lines: %d, cols: %d", LINES, COLS);
+
+    edit_window = newwin(LINES - 2, COLS, 0, 0);
+    status_window = newwin(1, COLS, LINES - 2, 0);
+    console_window = newwin(1, COLS, LINES - 1, 0);
+
+    refresh();
+
+    force_redraw = true;
+    update();
+}
+
 Editor::Editor(const char *filename)
 {
     log_info("No. lines: %d, cols: %d", LINES, COLS);
@@ -49,6 +67,7 @@ Editor::~Editor()
 {
     delwin(edit_window);
     delwin(status_window);
+    delwin(console_window);
 }
 
 void Editor::handle_event(unsigned c)

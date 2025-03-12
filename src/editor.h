@@ -78,4 +78,6 @@ struct Editor
     void scroll_to_ensure_cursor_visible();
     void force_redraw_editor();
     void redraw_line(Cursor);
+
+    void resize();
 };
