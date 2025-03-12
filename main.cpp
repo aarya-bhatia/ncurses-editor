@@ -3,6 +3,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+bool resized = false;
+
 void setup_logger()
 {
     log_set_level(LOG_INFO);
@@ -26,16 +28,35 @@ void cleanup()
     endwin();
 }
 
+void handle_resize(int sig)
+{
+    if (sig == SIGWINCH)
+    {
+        resized = true;
+    }
+}
+
 int main()
 {
     setup_logger();
     init();
+
+    signal(SIGWINCH, handle_resize);
 
     Editor editor("Makefile");
     editor.draw();
 
     while (!editor.quit)
     {
+        if (resized)
+        {
+            resized = false;
+            log_info("window resize detected!");
+            editor.force_redraw_editor();
+            editor.update();
+            continue;
+        }
+
         int c = getch();
         editor.handle_event(c);
         editor.update();
