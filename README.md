@@ -53,13 +53,14 @@ bin/editor [<filename1> [<filename2>...] ]
 - `g`: go to start of file
 
 ## Tasks
-- TODO feat: read filenames from args on launch
-- TODO feat: open and edit multiple files
+- TODO core: add logic to update specific lines after inserts/deletes in editor class.
+- TODO core: read filenames from args on launch
+- TODO core: open and edit multiple files
 - TODO feat: show line numbers
-- DONE feat: auto-scroll when jumping cursor goes off-screen
-- TODO feat: handle empty buffer
+- DONE core: auto-scroll when jumping cursor goes off-screen
+- TODO core: handle empty buffer
 - TODO feat: command mode - run external commands on current line
 - TODO feat: visual mode
-- TODO feat: impl popup to show longer info messages to user
+- TODO idea: impl popup to show longer info messages to user
 - TODO feat: keep user command history
 - TODO improv: add colors

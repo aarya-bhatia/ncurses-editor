@@ -70,8 +70,6 @@ void Editor::handle_event(unsigned c)
     {
         handle_command_mode_event(c);
     }
-
-    update();
 }
 
 void Editor::move_cursor_eol()
@@ -86,8 +84,8 @@ void Editor::cursor_up()
 {
     if (cursor.y > 0)
     {
-        cursor.y--;
-        cursor.line--;
+        --cursor.y;
+        --cursor.line;
 
         if (cursor.x >= (*cursor.line).size())
         {
@@ -105,8 +103,8 @@ void Editor::cursor_down()
 {
     if (cursor.y < lines.size() - 1)
     {
-        cursor.y++;
-        cursor.line++;
+        ++cursor.y;
+        ++cursor.line;
 
         std::list<char> &line_val = *cursor.line;
         if (cursor.x >= line_val.size())
@@ -123,8 +121,8 @@ void Editor::cursor_left()
 {
     if (cursor.x > 0)
     {
-        cursor.x--;
-        cursor.col--;
+        --cursor.x;
+        --cursor.col;
     }
 }
 
@@ -133,8 +131,8 @@ void Editor::cursor_right()
     std::list<char> &line_val = *cursor.line;
     if (line_val.size() > 0 && cursor.x < line_val.size() - 1)
     {
-        cursor.x++;
-        cursor.col++;
+        ++cursor.x;
+        ++cursor.col;
     }
 }
 
@@ -190,21 +188,20 @@ void Editor::force_redraw_editor()
         {
             waddch(edit_window, *col_itr);
         }
-        for (; count_cols < max_cols; count_cols++)
-        {
-            waddch(edit_window, ' ');
-        }
+        // for (; count_cols < max_cols; count_cols++)
+        // {
+        //     waddch(edit_window, ' ');
+        // }
     }
-    for (; count_lines < max_lines; count_lines++)
-    {
-        // log_debug("drawing line %d", count_lines);
-        wmove(edit_window, count_lines, 0);
-        for (int count_cols = 0; count_cols < max_cols; count_cols++)
-        {
-            waddch(edit_window, ' ');
-        }
-    }
-    wrefresh(edit_window);
+    // for (; count_lines < max_lines; count_lines++)
+    // {
+    //     // log_debug("drawing line %d", count_lines);
+    //     wmove(edit_window, count_lines, 0);
+    //     for (int count_cols = 0; count_cols < max_cols; count_cols++)
+    //     {
+    //         waddch(edit_window, ' ');
+    //     }
+    // }
 }
 
 void Editor::command(const std::string &command)
@@ -239,8 +236,35 @@ void Editor::handle_insert_mode_event(unsigned c)
         if (PRINTABLE(c))
         {
             cursor.col = line_val.insert(cursor.col, c);
+            cursor.col++;
             cursor.x++;
+            dirty_lines.push_back(cursor);
         }
+    }
+}
+
+void Editor::redraw_line(Cursor info)
+{
+    int display_line = info.y - scroll.dy;
+    if (display_line < 0 || display_line >= getmaxy(edit_window))
+    {
+        return;
+    }
+
+    wmove(edit_window, display_line, 0);
+    int max_cols = getmaxx(edit_window);
+
+    std::list<char> &line = *info.line;
+    auto col_itr = line.begin();
+    std::advance(col_itr, scroll.dx);
+    int count_cols = 0;
+    for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
+    {
+        waddch(edit_window, *col_itr);
+    }
+    for (; count_cols < max_cols; count_cols++)
+    {
+        waddch(edit_window, ' ');
     }
 }
 
@@ -311,8 +335,16 @@ void Editor::update()
     if (force_redraw)
     {
         force_redraw = false;
+        dirty_lines.clear();
         force_redraw_editor();
     }
+
+    for (Cursor &line : dirty_lines)
+    {
+        redraw_line(line);
+    }
+
+    dirty_lines.clear();
     draw();
 }
 
@@ -357,6 +389,8 @@ void join_left_and_right_status(int ncols, char *left_status, char *right_status
 
 void Editor::draw()
 {
+    wrefresh(edit_window);
+
     int ncols = getmaxx(status_window);
     char *left_status = new char[ncols + 1];
     char *right_status = new char[ncols + 1];
@@ -370,7 +404,6 @@ void Editor::draw()
 
     join_left_and_right_status(ncols, left_status, right_status, full_status);
 
-    werase(status_window);
     mvwprintw(status_window, 0, 0, full_status);
     wrefresh(status_window);
 

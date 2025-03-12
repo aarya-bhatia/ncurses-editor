@@ -3,6 +3,7 @@
 #include <list>
 #include <string>
 #include <map>
+#include <vector>
 #include <assert.h>
 #include "common.h"
 
@@ -53,6 +54,7 @@ struct Editor
     bool quit = false;
 
     bool force_redraw = false;
+    std::vector<Cursor> dirty_lines;
 
     Editor(const char *filename);
     ~Editor();
@@ -75,4 +77,5 @@ struct Editor
     void move_cursor_eol();
     void scroll_to_ensure_cursor_visible();
     void force_redraw_editor();
+    void redraw_line(Cursor);
 };
