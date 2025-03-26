@@ -64,3 +64,4 @@ bin/editor [<filename1> [<filename2>...] ]
 - TODO idea: impl popup to show longer info messages to user
 - TODO feat: keep user command history
 - TODO improv: add colors
+- TODO core: use buffer ids instead of filenames

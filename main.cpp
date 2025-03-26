@@ -7,11 +7,11 @@ bool resized = false;
 
 void setup_logger()
 {
-    log_set_level(LOG_INFO);
+    log_set_level(LOG_DEBUG);
     int logfile = open("stderr.log", O_CREAT | O_TRUNC | O_WRONLY, 0640);
     dup2(logfile, 2);
     close(logfile);
-    log_info("hello world");
+    log_info("BEGIN");
 }
 
 void init()
@@ -53,6 +53,9 @@ int main()
 
     Editor editor;
     editor.draw();
+
+    editor.open({"test.txt", "Makefile", "main.cpp"});
+    log_info("Active file: %s", editor.get_current_filename());
 
     while (!editor.quit)
     {

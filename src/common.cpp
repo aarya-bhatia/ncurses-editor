@@ -1,6 +1,8 @@
 #include "common.h"
 #include <list>
 #include <string>
+#include <vector>
+#include <assert.h>
 
 int char_type(char c)
 {
@@ -29,6 +31,7 @@ std::list<std::string> readlines(const char *filename)
     FILE *file = fopen(filename, "r");
     if (!file)
     {
+        perror("fopen");
         return {};
     }
 
@@ -47,4 +50,27 @@ std::list<std::string> readlines(const char *filename)
     free(line);
     fclose(file);
     return ans;
+}
+
+// Get list of non-empty tokens from 'line' separated by the exact substring of 'delim'.
+std::vector<std::string> splitwords(const std::string &line, const std::string &delim)
+{
+    std::vector<std::string> tokens;
+    size_t start = 0, end;
+
+    while ((end = line.find(delim, start)) != std::string::npos)
+    {
+        if (end > start)
+        { // Avoid empty tokens (e.g., consecutive delimiters)
+            tokens.emplace_back(line.substr(start, end - start));
+        }
+        start = end + delim.length();
+    }
+
+    if (start < line.size())
+    { // Add the last token
+        tokens.emplace_back(line.substr(start));
+    }
+
+    return tokens;
 }

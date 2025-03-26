@@ -63,4 +63,11 @@ struct Editor
     void redraw_line(Cursor);
 
     void resize();
+
+    void open(const std::vector<std::string> &filenames);
+    void close(const std::string &filename);
+
+    const char * get_current_filename() {
+        return file_manager.get_file()->filename;
+    }
 };

@@ -59,3 +59,5 @@ enum
 int char_type(char c);
 
 std::list<std::string> readlines(const char *filename);
+
+std::vector<std::string> splitwords(const std::string &line, const std::string &delim);

@@ -12,6 +12,7 @@ File *FileManager::get_file()
 
 int FileManager::open_file(const char *filename)
 {
+    log_debug("Opening file: %s", filename);
     for(size_t i = 0; i < _files.size(); i++)
     {
         if(!strncmp(_files[i]->filename, filename, strlen(filename))) {
@@ -22,7 +23,7 @@ int FileManager::open_file(const char *filename)
     }
 
     File *new_file = new File(filename);
-    if(!new_file->load_file()) {
+    if(new_file->load_file() != 0) {
         log_warn("Failed to load file %s", filename);
         delete new_file;
         return 1;

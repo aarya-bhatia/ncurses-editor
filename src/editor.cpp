@@ -25,7 +25,8 @@ void Editor::resize()
 
 Editor::Editor()
 {
-    log_info("No. lines: %d, cols: %d", LINES, COLS);
+    log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
+
     edit_window = newwin(LINES - 2, COLS, 0, 0);
     status_window = newwin(1, COLS, LINES - 2, 0);
     console_window = newwin(1, COLS, LINES - 1, 0);
@@ -187,7 +188,8 @@ void Editor::force_redraw_editor()
     werase(edit_window);
 
     File *file = file_manager.get_file();
-    if(!file) {
+    if (!file)
+    {
         return;
     }
     Scroll &scroll = file->scroll;
@@ -217,6 +219,14 @@ void Editor::command(const std::string &command)
     if (command == "q")
     {
         quit = true;
+    }
+    else if (strncmp(command.c_str(), "open ", 5) == 0)
+    {
+        std::vector<std::string> filenames = splitwords(command.substr(5), " ");
+        for (std::string &filename : filenames)
+        {
+            file_manager.open_file(filename.c_str());
+        }
     }
     else
     {
@@ -251,7 +261,8 @@ void Editor::handle_insert_mode_event(unsigned c)
 void Editor::redraw_line(Cursor info)
 {
     File *file = file_manager.get_file();
-    if(!file) {
+    if (!file)
+    {
         return;
     }
     Scroll &scroll = file->scroll;
@@ -444,11 +455,11 @@ void Editor::draw()
     File *file = file_manager.get_file();
     if (file)
     {
-        snprintf(right_status, ncols, "Ln:%d Col:%d", file->cursor.y, file->cursor.x);
+        snprintf(right_status, ncols, "file: %s | Ln:%d Col:%d", file->filename, file->cursor.y, file->cursor.x);
     }
     else
     {
-        snprintf(right_status, ncols, "Ln:%d Col:%d", 0, 0);
+        snprintf(right_status, ncols, "no file | Ln:%d Col:%d", 0, 0);
     }
 
     join_left_and_right_status(ncols, left_status, right_status, full_status);
@@ -501,4 +512,25 @@ void Editor::draw()
     }
     log_debug("display cursor: y:%d x:%d", cy, cx);
     move(cy, cx);
+}
+
+void Editor::open(const std::vector<std::string> &filenames)
+{
+    for(const std::string &filename: filenames)
+    {
+        file_manager.open_file(filename.c_str());
+    }
+
+    if(file_manager.get_file()) {
+        force_redraw = true;
+        update();
+    }
+}
+
+void Editor::close(const std::string &filename)
+{
+    // TODO: close file directly
+    if(file_manager.open_file(filename.c_str())) {
+        file_manager.close_file();
+    }
 }

@@ -1,11 +1,12 @@
 #include "File.h"
+#include "log.h"
 #include "common.h"
 #include <string>
 #include <list>
 
 File::File(const char *_filename)
 {
-    filename = _filename;
+    filename = strdup(_filename);
 
     lines.push_back({});
 
@@ -18,15 +19,24 @@ File::File(const char *_filename)
     scroll.dx = 0;
 }
 
+File::~File()
+{
+    free(filename);
+    filename = NULL;
+}
+
 int File::load_file()
 {
     FILE *file = fopen(filename, "r");
-    if(!file) {
-        return 1;
+    if (!file)
+    {
+        log_info("load_file(): file %s: no lines were loaded because file does not exist.", filename);
+        return 0;
     }
     fclose(file);
 
     std::list<std::string> str_lines = readlines(filename);
+    log_info("load_file(): file %s: read %zu lines", filename, str_lines.size());
     lines.clear();
 
     for (const std::string &str_line : str_lines)
@@ -48,7 +58,8 @@ int File::load_file()
 int File::save_file()
 {
     FILE *file = fopen(filename, "w");
-    if(!file) {
+    if (!file)
+    {
         return 1;
     }
 

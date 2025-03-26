@@ -27,9 +27,10 @@ struct File
 
     bool force_redraw = false;
 
-    const char *filename;
+    char *filename;
 
     File(const char *filename);
+    ~File();
 
     int load_file();
     int save_file();
