@@ -55,7 +55,7 @@ int main()
     editor.draw();
 
     editor.open({"test.txt", "Makefile", "main.cpp"});
-    log_info("Active file: %s", editor.get_current_filename());
+    log_debug("%d files open", editor.file_manager.count_files());
 
     while (!editor.quit)
     {

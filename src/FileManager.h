@@ -17,4 +17,7 @@ public:
     int prev_file();
 
     bool has_file(const char *filename);
+
+    size_t count_files() const { return _files.size(); }
+    size_t get_file_index() const { return _index; }
 };

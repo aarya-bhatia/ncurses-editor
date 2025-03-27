@@ -3,7 +3,8 @@
 
 File *FileManager::get_file()
 {
-    if(_files.empty()) {
+    if (_files.empty())
+    {
         return NULL;
     }
 
@@ -13,9 +14,10 @@ File *FileManager::get_file()
 int FileManager::open_file(const char *filename)
 {
     log_debug("Opening file: %s", filename);
-    for(size_t i = 0; i < _files.size(); i++)
+    for (size_t i = 0; i < _files.size(); i++)
     {
-        if(!strncmp(_files[i]->filename, filename, strlen(filename))) {
+        if (!strncmp(_files[i]->filename, filename, strlen(filename)))
+        {
             log_info("opened file %s at index %d", filename, _index);
             _index = i;
             return 0;
@@ -23,21 +25,24 @@ int FileManager::open_file(const char *filename)
     }
 
     File *new_file = new File(filename);
-    if(new_file->load_file() != 0) {
+    if (new_file->load_file() != 0)
+    {
         log_warn("Failed to load file %s", filename);
         delete new_file;
         return 1;
     }
 
-    log_info("New file %s added at index %d", filename, _index);
     _files.push_back(new_file);
     _index = _files.size() - 1;
+    log_info("New file %s added at index %d", filename, _index);
+
     return 0;
 }
 
 int FileManager::close_file()
 {
-    if(_files.empty()) {
+    if (_files.empty())
+    {
         return 1;
     }
 
@@ -49,13 +54,18 @@ int FileManager::close_file()
 
 int FileManager::next_file()
 {
-    if(_files.empty()) {
+    if (_files.empty())
+    {
         return 1;
     }
 
-    _index++;
-    if(_index >= _files.size()) {
+    if (_index >= _files.size() - 1)
+    {
         _index = 0;
+    }
+    else
+    {
+        _index++;
     }
 
     return 0;
@@ -63,13 +73,18 @@ int FileManager::next_file()
 
 int FileManager::prev_file()
 {
-    if(_files.empty()) {
+    if (_files.empty())
+    {
         return 1;
     }
 
-    _index--;
-    if(_index < 0) {
+    if (_index == 0)
+    {
         _index = _files.size() - 1;
+    }
+    else
+    {
+        _index--;
     }
 
     return 0;
@@ -77,9 +92,10 @@ int FileManager::prev_file()
 
 bool FileManager::has_file(const char *filename)
 {
-    for(size_t i = 0; i < _files.size(); i++)
+    for (size_t i = 0; i < _files.size(); i++)
     {
-        if(!strncmp(_files[i]->filename, filename, strlen(filename))) {
+        if (!strncmp(_files[i]->filename, filename, strlen(filename)))
+        {
             return true;
         }
     }

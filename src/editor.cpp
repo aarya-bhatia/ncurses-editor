@@ -226,7 +226,20 @@ void Editor::command(const std::string &command)
         for (std::string &filename : filenames)
         {
             file_manager.open_file(filename.c_str());
+            log_debug("File index: %d", file_manager.get_file_index());
         }
+    }
+    else if (command == "next")
+    {
+        file_manager.next_file();
+        force_redraw = true;
+        log_debug("File index: %d", file_manager.get_file_index());
+    }
+    else if (command == "prev")
+    {
+        file_manager.prev_file();
+        force_redraw = true;
+        log_debug("File index: %d", file_manager.get_file_index());
     }
     else
     {
@@ -455,7 +468,7 @@ void Editor::draw()
     File *file = file_manager.get_file();
     if (file)
     {
-        snprintf(right_status, ncols, "file: %s | Ln:%d Col:%d", file->filename, file->cursor.y, file->cursor.x);
+        snprintf(right_status, ncols, "%s | Ln:%d Col:%d", file->filename, file->cursor.y, file->cursor.x);
     }
     else
     {
@@ -516,12 +529,13 @@ void Editor::draw()
 
 void Editor::open(const std::vector<std::string> &filenames)
 {
-    for(const std::string &filename: filenames)
+    for (const std::string &filename : filenames)
     {
         file_manager.open_file(filename.c_str());
     }
 
-    if(file_manager.get_file()) {
+    if (file_manager.get_file())
+    {
         force_redraw = true;
         update();
     }
@@ -530,7 +544,8 @@ void Editor::open(const std::vector<std::string> &filenames)
 void Editor::close(const std::string &filename)
 {
     // TODO: close file directly
-    if(file_manager.open_file(filename.c_str())) {
+    if (file_manager.open_file(filename.c_str()))
+    {
         file_manager.close_file();
     }
 }

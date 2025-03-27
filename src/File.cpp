@@ -30,13 +30,13 @@ int File::load_file()
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        log_info("load_file(): file %s: no lines were loaded because file does not exist.", filename);
+        log_info("load_file(): %s: no lines were loaded because file does not exist.", filename);
         return 0;
     }
     fclose(file);
 
     std::list<std::string> str_lines = readlines(filename);
-    log_info("load_file(): file %s: read %zu lines", filename, str_lines.size());
+    log_info("load_file(): %s: read %zu lines", filename, str_lines.size());
     lines.clear();
 
     for (const std::string &str_line : str_lines)
