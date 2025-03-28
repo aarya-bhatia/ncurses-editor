@@ -1,7 +1,9 @@
-#include "src/editor.h"
-#include "src/log.h"
+#include "log.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <ncurses.h>
+#include "window/WindowManager.h"
+#include <memory>
 
 bool resized = false;
 
@@ -44,6 +46,46 @@ void handle_resize(int sig)
     }
 }
 
+struct TestContentView : public ContentView {
+
+    WINDOW* win = nullptr;
+
+    TestContentView() {
+    }
+
+    ~TestContentView() {
+        if (win) {
+            delwin(win);
+        }
+    }
+
+    std::unique_ptr<ContentView> clone() override {
+        return std::unique_ptr<ContentView>(new TestContentView());
+    }
+
+    void resize(Dimension bounds) override {
+        if (win) {
+            delwin(win);
+        }
+
+        log_info("created new window");
+        win = newwin(bounds.height, bounds.width, bounds.y, bounds.x);
+        refresh();
+    }
+
+    void draw() override {
+        log_info("drawing test content");
+        wclear(win);
+        mvwprintw(win, 0, 0, "Test");
+        wmove(win, 1, 2);
+    }
+
+    void show() override {
+        wrefresh(win);
+        log_info("showing test content");
+    }
+};
+
 int main()
 {
     init();
@@ -51,29 +93,20 @@ int main()
 
     signal(SIGWINCH, handle_resize);
 
-    Editor editor;
-    editor.draw();
+    Dimension screen_bounds(0, 0, (unsigned)COLS, (unsigned)LINES);
+    WindowManager wm(screen_bounds);
 
-    editor.open({"test.txt", "Makefile", "main.cpp"});
-    log_debug("%d files open", editor.file_manager.count_files());
+    ContentWindow* current_window = wm.get_content_node();
 
-    while (!editor.quit)
-    {
-        if (resized)
-        {
-            resized = false;
-            log_info("window resize detected!");
-            init_screen();
-            editor.resize();
-            continue;
-        }
+    wm.split_horizontal();
+    current_window = wm.get_content_node();
+    current_window->set_view(std::unique_ptr<ContentView>(new TestContentView()));
 
-        int c = getch();
-        editor.handle_event(c);
-        editor.update();
-
-        // log_debug("cursor: x:%d y:%d, scroll: dx:%d dy:%d", editor.cursor.x,
-        //           editor.cursor.y, editor.scroll.dx, editor.scroll.dy);
+    int ch = 0;
+    while (ch != 'q') {
+        wm.draw();
+        wm.show();
+        ch = getch();
     }
 
     cleanup();

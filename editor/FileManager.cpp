@@ -1,7 +1,7 @@
 #include "FileManager.h"
 #include "log.h"
 
-File *FileManager::get_file()
+File* FileManager::get_file()
 {
     if (_files.empty())
     {
@@ -11,7 +11,7 @@ File *FileManager::get_file()
     return _files[_index];
 }
 
-int FileManager::open_file(const char *filename)
+int FileManager::open_file(const char* filename)
 {
     log_debug("Opening file: %s", filename);
     for (size_t i = 0; i < _files.size(); i++)
@@ -24,7 +24,8 @@ int FileManager::open_file(const char *filename)
         }
     }
 
-    File *new_file = new File(filename);
+    FileID id = get_new_file_id();
+    File* new_file = new File(id, filename);
     if (new_file->load_file() != 0)
     {
         log_warn("Failed to load file %s", filename);
@@ -90,7 +91,7 @@ int FileManager::prev_file()
     return 0;
 }
 
-bool FileManager::has_file(const char *filename)
+bool FileManager::has_file(const char* filename)
 {
     for (size_t i = 0; i < _files.size(); i++)
     {
@@ -101,4 +102,27 @@ bool FileManager::has_file(const char *filename)
     }
 
     return false;
+}
+
+FileID FileManager::get_new_file_id() const
+{
+    size_t id = 0;
+    for (size_t i = 0; i < _files.size(); i++)
+    {
+        if (_files[i]->id > id)
+        {
+            id = _files[i]->id;
+        }
+    }
+
+    return id + 1;
+}
+
+File* FileManager::open_untitled_file()
+{
+    size_t id = get_new_file_id();
+    File* new_file = new File(id, nullptr);
+    _files.push_back(new_file);
+    _index = _files.size() - 1;
+    return new_file;
 }

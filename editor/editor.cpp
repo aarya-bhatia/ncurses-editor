@@ -65,19 +65,19 @@ void Editor::handle_event(unsigned c)
 
 void Editor::move_cursor_eol()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    Cursor &cursor = file->cursor;
+    Cursor& cursor = file->cursor;
     cursor.col = --(*cursor.line).end();
-    std::list<char> &line_val = *cursor.line;
+    std::list<char>& line_val = *cursor.line;
     cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
 }
 
 void Editor::cursor_up()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    Cursor &cursor = file->cursor;
+    Cursor& cursor = file->cursor;
 
     if (cursor.y > 0)
     {
@@ -98,17 +98,17 @@ void Editor::cursor_up()
 
 void Editor::cursor_down()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    auto &lines = file->lines;
-    Cursor &cursor = file->cursor;
+    auto& lines = file->lines;
+    Cursor& cursor = file->cursor;
 
     if (cursor.y < lines.size() - 1)
     {
         ++cursor.y;
         ++cursor.line;
 
-        std::list<char> &line_val = *cursor.line;
+        std::list<char>& line_val = *cursor.line;
         if (cursor.x >= line_val.size())
         {
             cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
@@ -121,9 +121,9 @@ void Editor::cursor_down()
 
 void Editor::cursor_left()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    Cursor &cursor = file->cursor;
+    Cursor& cursor = file->cursor;
 
     if (cursor.x > 0)
     {
@@ -134,10 +134,10 @@ void Editor::cursor_left()
 
 void Editor::cursor_right()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    Cursor &cursor = file->cursor;
-    std::list<char> &line_val = *cursor.line;
+    Cursor& cursor = file->cursor;
+    std::list<char>& line_val = *cursor.line;
 
     if (line_val.size() > 0 && cursor.x < line_val.size() - 1)
     {
@@ -148,10 +148,10 @@ void Editor::cursor_right()
 
 void Editor::scroll_to_ensure_cursor_visible()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    Cursor &cursor = file->cursor;
-    Scroll &scroll = file->scroll;
+    Cursor& cursor = file->cursor;
+    Scroll& scroll = file->scroll;
 
     // adjust horizontal scroll
     if (cursor.x - scroll.dx < 0)
@@ -187,13 +187,13 @@ void Editor::force_redraw_editor()
     log_debug("force redrawing");
     werase(edit_window);
 
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     if (!file)
     {
         return;
     }
-    Scroll &scroll = file->scroll;
-    auto &lines = file->lines;
+    Scroll& scroll = file->scroll;
+    auto& lines = file->lines;
 
     auto line_itr = lines.begin();
     std::advance(line_itr, scroll.dy);
@@ -203,7 +203,7 @@ void Editor::force_redraw_editor()
     for (; line_itr != lines.end() && count_lines < max_lines; line_itr++, count_lines++)
     {
         wmove(edit_window, count_lines, 0);
-        auto &line = *line_itr;
+        auto& line = *line_itr;
         auto col_itr = line.begin();
         std::advance(col_itr, scroll.dx);
         int count_cols = 0;
@@ -214,7 +214,7 @@ void Editor::force_redraw_editor()
     }
 }
 
-void Editor::command(const std::string &command)
+void Editor::command(const std::string& command)
 {
     if (command == "q")
     {
@@ -223,7 +223,7 @@ void Editor::command(const std::string &command)
     else if (strncmp(command.c_str(), "open ", 5) == 0)
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
-        for (std::string &filename : filenames)
+        for (std::string& filename : filenames)
         {
             file_manager.open_file(filename.c_str());
             log_debug("File index: %d", file_manager.get_file_index());
@@ -249,9 +249,9 @@ void Editor::command(const std::string &command)
 
 void Editor::handle_insert_mode_event(unsigned c)
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     assert(file);
-    std::list<char> &line_val = *file->cursor.line;
+    std::list<char>& line_val = *file->cursor.line;
 
     switch (c)
     {
@@ -273,12 +273,12 @@ void Editor::handle_insert_mode_event(unsigned c)
 
 void Editor::redraw_line(Cursor info)
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     if (!file)
     {
         return;
     }
-    Scroll &scroll = file->scroll;
+    Scroll& scroll = file->scroll;
 
     int display_line = info.y - scroll.dy;
     if (display_line < 0 || display_line >= getmaxy(edit_window))
@@ -290,7 +290,7 @@ void Editor::redraw_line(Cursor info)
     wclrtoeol(edit_window);
     int max_cols = getmaxx(edit_window);
 
-    std::list<char> &line = *info.line;
+    std::list<char>& line = *info.line;
     auto col_itr = line.begin();
     std::advance(col_itr, scroll.dx);
     int count_cols = 0;
@@ -302,7 +302,7 @@ void Editor::redraw_line(Cursor info)
 
 void Editor::handle_normal_mode_event(unsigned c)
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
 
     switch (c)
     {
@@ -386,14 +386,14 @@ void Editor::handle_command_mode_event(unsigned c)
 
 void Editor::update()
 {
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     if (!file)
     {
         draw();
         return;
     }
 
-    auto &dirty_lines = file->dirty_lines;
+    auto& dirty_lines = file->dirty_lines;
 
     scroll_to_ensure_cursor_visible();
     if (force_redraw)
@@ -403,7 +403,7 @@ void Editor::update()
         force_redraw_editor();
     }
 
-    for (Cursor &line : dirty_lines)
+    for (Cursor& line : dirty_lines)
     {
         redraw_line(line);
     }
@@ -412,7 +412,7 @@ void Editor::update()
     draw();
 }
 
-void join_left_and_right_status(int ncols, char *left_status, char *right_status, char *full_status)
+void join_left_and_right_status(int ncols, char* left_status, char* right_status, char* full_status)
 {
     for (int i = 0; i < ncols; i++)
     {
@@ -456,16 +456,16 @@ void Editor::draw()
     wrefresh(edit_window);
 
     int ncols = getmaxx(status_window);
-    char *left_status = new char[ncols + 1];
-    char *right_status = new char[ncols + 1];
-    char *full_status = new char[ncols + 1];
+    char* left_status = new char[ncols + 1];
+    char* right_status = new char[ncols + 1];
+    char* full_status = new char[ncols + 1];
 
     auto mode_name = mode_names.find(mode);
     assert(mode_name != mode_names.end());
 
     snprintf(left_status, ncols, "-- %s --", (*mode_name).second);
 
-    File *file = file_manager.get_file();
+    File* file = file_manager.get_file();
     if (file)
     {
         snprintf(right_status, ncols, "%s | Ln:%d Col:%d", file->filename, file->cursor.y, file->cursor.x);
@@ -508,8 +508,8 @@ void Editor::draw()
         return;
     }
 
-    Scroll &scroll = file->scroll;
-    Cursor &cursor = file->cursor;
+    Scroll& scroll = file->scroll;
+    Cursor& cursor = file->cursor;
 
     int cy = cursor.y - scroll.dy;
     int cx = cursor.x - scroll.dx;
@@ -527,9 +527,9 @@ void Editor::draw()
     move(cy, cx);
 }
 
-void Editor::open(const std::vector<std::string> &filenames)
+void Editor::open(const std::vector<std::string>& filenames)
 {
-    for (const std::string &filename : filenames)
+    for (const std::string& filename : filenames)
     {
         file_manager.open_file(filename.c_str());
     }
@@ -541,7 +541,7 @@ void Editor::open(const std::vector<std::string> &filenames)
     }
 }
 
-void Editor::close(const std::string &filename)
+void Editor::close(const std::string& filename)
 {
     // TODO: close file directly
     if (file_manager.open_file(filename.c_str()))

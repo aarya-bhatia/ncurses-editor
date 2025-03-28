@@ -4,39 +4,18 @@
 #include <string>
 #include <list>
 
-File::File(const char *_filename)
-{
-    filename = strdup(_filename);
-
-    lines.push_back({});
-
-    cursor.x = 0;
-    cursor.y = 0;
-    cursor.line = lines.begin();
-    cursor.col = lines.front().begin();
-
-    scroll.dy = 0;
-    scroll.dx = 0;
-}
-
-File::~File()
-{
-    free(filename);
-    filename = NULL;
-}
-
 int File::load_file()
 {
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        log_info("load_file(): %s: no lines were loaded because file does not exist.", filename);
+        log_info("no lines were loaded because file %s does not exist", filename);
         return 0;
     }
     fclose(file);
 
     std::list<std::string> str_lines = readlines(filename);
-    log_info("load_file(): %s: read %zu lines", filename, str_lines.size());
+    log_info("Read file %s with %zu lines", filename, str_lines.size());
     lines.clear();
 
     for (const std::string &str_line : str_lines)
@@ -49,8 +28,14 @@ int File::load_file()
         lines.push_back({});
     }
 
+    cursor.y = 0;
+    cursor.x = 0;
     cursor.line = lines.begin();
     cursor.col = lines.front().begin();
+    scroll.dx = 0;
+    scroll.dy = 0;
+
+    // subscriber->file_loaded();
 
     return 0;
 }
