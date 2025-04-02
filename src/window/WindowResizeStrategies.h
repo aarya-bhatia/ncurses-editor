@@ -37,11 +37,10 @@ struct HSplitResizeStrategy : public WindowResizeStrategy
             return false;
         }
 
-        Dimension child_bound = new_bound;
-        child_bound.height = new_bound.height / children.size();
+        unsigned child_height = new_bound.height / children.size();
 
-        for (Window* child : children) {
-            child->resize(child_bound);
+        for (int i = 0; i < children.size(); i++) {
+            children[i]->resize(Dimension(new_bound.x, new_bound.y + i * child_height, new_bound.width, child_height));
         }
 
         return true;
@@ -57,11 +56,10 @@ struct VSplitResizeStrategy : public WindowResizeStrategy
             return false;
         }
 
-        Dimension child_bound = new_bound;
-        child_bound.width = new_bound.width / children.size();
+        unsigned child_width = new_bound.width / children.size();
 
-        for (Window* child : children) {
-            child->resize(child_bound);
+        for (int i = 0; i < children.size(); i++) {
+            children[i]->resize(Dimension(new_bound.x + i * child_width, new_bound.y, child_width, new_bound.height));
         }
 
         return true;

@@ -26,7 +26,7 @@ struct ContainerWindow : public Window
         children.clear();
     }
 
-    size_t count_children(Window* child) const {
+    size_t count_children() const {
         return children.size();
     }
 
