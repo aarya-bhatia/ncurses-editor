@@ -30,38 +30,10 @@ struct ProportionalResizeStrategy : public WindowResizeStrategy
 
 struct HSplitResizeStrategy : public WindowResizeStrategy
 {
-    bool execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound)
-    {
-        if (children.empty())
-        {
-            return false;
-        }
-
-        unsigned child_height = new_bound.height / children.size();
-
-        for (int i = 0; i < children.size(); i++) {
-            children[i]->resize(Dimension(new_bound.x, new_bound.y + i * child_height, new_bound.width, child_height));
-        }
-
-        return true;
-    }
+    bool execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound) override;
 };
 
 struct VSplitResizeStrategy : public WindowResizeStrategy
 {
-    bool execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound)
-    {
-        if (children.empty())
-        {
-            return false;
-        }
-
-        unsigned child_width = new_bound.width / children.size();
-
-        for (int i = 0; i < children.size(); i++) {
-            children[i]->resize(Dimension(new_bound.x + i * child_width, new_bound.y, child_width, new_bound.height));
-        }
-
-        return true;
-    }
+    bool execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound) override;
 };

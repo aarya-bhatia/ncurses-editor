@@ -8,81 +8,29 @@ struct ContainerWindow : public Window
     std::vector<Window*> children;
     WindowResizeStrategy* resize_strategy = nullptr;
 
-    ContainerWindow(Dimension bounds, WindowResizeStrategy* resize_strategy) :
-        Window(bounds), resize_strategy(resize_strategy) {
-        if (!resize_strategy) {
-            resize_strategy = new ProportionalResizeStrategy;
-        }
-    }
+    ContainerWindow(Dimension bounds, WindowResizeStrategy* resize_strategy);
 
-    virtual ~ContainerWindow() {
-        delete resize_strategy;
-        resize_strategy = nullptr;
+    virtual ~ContainerWindow();
 
-        for (auto child : children) {
-            delete child;
-        }
+    size_t count_children() const;
 
-        children.clear();
-    }
+    bool has_child(Window* child) const;
 
-    size_t count_children() const {
-        return children.size();
-    }
+    void swap_child(Window* old_child, Window* new_child);
 
-    bool has_child(Window* child) const {
-        return std::find(children.begin(), children.end(), child) != children.end();
-    }
+    void add_child(Window* child);
 
-    void swap_child(Window* old_child, Window* new_child) {
-        for (size_t i = 0; i < children.size(); i++) {
-            if (children[i] == old_child) {
-                old_child->parent = nullptr;
-                children[i] = new_child;
-                new_child->parent = this;
-                return;
-            }
-        }
-    }
+    void remove_child(Window* child);
 
-    void add_child(Window* child) {
-        children.push_back(child);
-        child->parent = this;
-    }
+    void arrange_children();
 
-    void remove_child(Window* child) {
-        children.erase(std::remove(children.begin(), children.end(), child), children.end());
-        child->parent = nullptr;
-    }
+    ContainerWindow* get_container() override;
 
-    void arrange_children() {
-        resize_strategy->execute(children, bounds, bounds);
-    }
+    void draw() override;
 
-    ContainerWindow* get_container() override { return this; }
+    void show() override;
 
-    void draw() override {
-        for (auto child : children) {
-            child->draw();
-        }
-    }
-
-    void show() override {
-        for (auto child : children) {
-            child->show();
-        }
-    }
-
-    bool resize(Dimension new_bounds) override {
-        Window::resize(bounds);
-
-        if (resize_strategy->execute(children, bounds, bounds)) {
-            this->bounds = new_bounds;
-            return true;
-        }
-
-        return false;
-    }
+    bool resize(Dimension new_bounds) override;
 };
 
 struct HSplitContainerWindow : public ContainerWindow

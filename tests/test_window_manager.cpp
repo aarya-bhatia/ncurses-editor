@@ -2,35 +2,7 @@
 #include "window/WindowManager.h"
 #include "window/Window.h"
 #include "window/ContentWindow.h"
-
-struct TestContentView : public ContentWindow {
-
-    TestContentView(Dimension bounds = Dimension()): ContentWindow(bounds) {}
-
-    bool draw_called = false;
-    bool show_called = false;
-    bool resize_called = false;
-
-    void reset() {
-        draw_called = false;
-        show_called = false;
-        resize_called = false;
-    }
-
-    bool resize(Dimension bounds) override {
-        Window::resize(bounds);
-        resize_called = true;
-        return true;
-    }
-
-    void draw() override {
-        draw_called = true;
-    }
-
-    void show() override {
-        show_called = true;
-    }
-};
+#include "TestContentView.h"
 
 TEST_CASE("WM works with one content window", "[windows]") {
     Dimension bounds(0, 0, 100, 100);
@@ -78,12 +50,12 @@ TEST_CASE("check content window is resized when added to WM", "[windows]") {
 TEST_CASE("check window container adds and resizes children properly", "[windows]") {
     Dimension bounds(0, 0, 100, 100);
 
-    HSplitContainerWindow *container = new HSplitContainerWindow(bounds);
+    HSplitContainerWindow* container = new HSplitContainerWindow(bounds);
     container->add_child(new TestContentView(bounds));
     container->add_child(new TestContentView(bounds));
     container->arrange_children();
 
-    REQUIRE(dynamic_cast<HSplitResizeStrategy *>(container->resize_strategy) != nullptr);
+    REQUIRE(dynamic_cast<HSplitResizeStrategy*>(container->resize_strategy) != nullptr);
 
     REQUIRE(container->count_children() == 2);
     REQUIRE(container->get_container() == container);
