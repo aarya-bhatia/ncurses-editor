@@ -84,40 +84,40 @@ ContentWindow* WindowManager::_find_content_node(Window* node)
 }
 
 
-    // void _split(ContainerWindow* orig_parent, ContainerWindow* split_container) {
-    //     assert(split_container);
+void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow *new_content) {
+    assert(split_container);
 
-    //     if (orig_parent) {
-    //         log_info("splitting current node");
-    //         orig_parent->swap_child(current_node, split_container);
-    //         assert(split_container->parent == orig_parent);
-    //     }
-    //     else {
-    //         log_info("splitting root node");
-    //         root_node = split_container;
-    //     }
+    if (orig_parent) {
+        log_info("splitting current node");
+        orig_parent->swap_child(current_node, split_container);
+        assert(split_container->parent == orig_parent);
+    }
+    else {
+        log_info("splitting root node");
+        root_node = split_container;
+    }
 
-    //     split_container->add_child(current_node);
-    //     split_container->add_child(new ContentWindow(*current_node->get_content()));
-    //     split_container->arrange_children();
-    // }
+    split_container->add_child(current_node);
+    split_container->add_child(new_content);
+    split_container->arrange_children();
+}
 
-    // bool split_horizontal() {
-    //     if (!current_node) {
-    //         return false;
-    //     }
+bool WindowManager::split_horizontal(ContentWindow *new_content) {
+    if (!current_node) {
+        return false;
+    }
 
-    //     ContainerWindow* container = new HSplitContainerWindow(current_node->bounds);
-    //     _split(current_node->parent, container);
-    //     return true;
-    // }
+    ContainerWindow* container = new HSplitContainerWindow(current_node->bounds);
+    _split(current_node->parent, container, new_content);
+    return true;
+}
 
-    // bool split_vertical() {
-    //     if (!current_node) {
-    //         return false;
-    //     }
+bool WindowManager::split_vertical(ContentWindow *new_content) {
+    if (!current_node) {
+        return false;
+    }
 
-    //     ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
-    //     _split(current_node->parent, container);
-    //     return true;
-    // }
+    ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
+    _split(current_node->parent, container, new_content);
+    return true;
+}

@@ -27,4 +27,7 @@ struct WindowManager
 
     ContentWindow* _find_content_node(Window* node);
 
+    void _split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content);
+    bool split_vertical(ContentWindow* new_content);
+    bool split_horizontal(ContentWindow* new_content);
 };

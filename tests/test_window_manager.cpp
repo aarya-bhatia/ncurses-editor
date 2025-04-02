@@ -67,3 +67,26 @@ TEST_CASE("check window container adds and resizes children properly", "[windows
     REQUIRE(container->children[1]->parent == container);
     REQUIRE(container->children[1]->get_bounds() == Dimension(0, 50, 100, 50));
 }
+
+TEST_CASE("check splits", "[windows]"){
+    Dimension bounds(0, 0, 100, 100);
+    WindowManager wm(bounds);
+    wm.set_content(new TestContentView(bounds));
+    wm.split_horizontal(new TestContentView(bounds));
+
+    ContentWindow *node = wm.get_content_node();
+    REQUIRE(node);
+    REQUIRE(node != wm.root_node);
+    REQUIRE(node->parent != nullptr);
+    REQUIRE(node->parent->count_children() == 2);
+
+    wm.draw();
+
+    ContentWindow *content = node->parent->children[0]->get_content();
+    TestContentView *view = dynamic_cast<TestContentView*>(content);
+    REQUIRE(view->draw_called);
+
+    content = node->parent->children[1]->get_content();
+    view = dynamic_cast<TestContentView*>(content);
+    REQUIRE(view->draw_called);
+}
