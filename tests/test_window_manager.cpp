@@ -68,7 +68,7 @@ TEST_CASE("check window container adds and resizes children properly", "[windows
     REQUIRE(container->children[1]->get_bounds() == Dimension(0, 50, 100, 50));
 }
 
-TEST_CASE("check splits", "[windows]"){
+TEST_CASE("check single split works", "[windows]"){
     Dimension bounds(0, 0, 100, 100);
     WindowManager wm(bounds);
     wm.set_content(new TestContentView(bounds));
@@ -89,4 +89,36 @@ TEST_CASE("check splits", "[windows]"){
     content = node->parent->children[1]->get_content();
     view = dynamic_cast<TestContentView*>(content);
     REQUIRE(view->draw_called);
+}
+
+TEST_CASE("Check multiple splits", "[windows]") {
+    Dimension bounds(0, 0, 100, 100);
+    WindowManager wm(bounds);
+    wm.set_content(new TestContentView(bounds));
+    wm.split_horizontal(new TestContentView(bounds));
+    wm.split_vertical(new TestContentView(bounds));
+
+    ContentWindow *node = wm.get_content_node();
+    REQUIRE(node);
+    REQUIRE(node != wm.root_node);
+    REQUIRE(node->parent != nullptr);
+    REQUIRE(node->parent->count_children() == 2);
+    REQUIRE(node->get_bounds() == Dimension(0, 0, 50, 50));
+
+    REQUIRE(node->parent->children[0] == node);
+
+    ContentWindow *sibling = node->parent->children[1]->get_content();
+    REQUIRE(sibling);
+    REQUIRE(sibling->get_bounds() == Dimension(50, 0, 50, 50));
+
+    REQUIRE(node->parent->parent != nullptr);
+
+    REQUIRE(node->parent->get_bounds() == Dimension(0, 0, 100, 50));
+    REQUIRE(node->parent->parent->get_bounds() == Dimension(0, 0, 100, 100));
+
+    REQUIRE(node->parent->count_children() == 2);
+    REQUIRE(node->parent->parent->count_children() == 2);
+    REQUIRE(node->parent->parent->children[0] == node->parent);
+    REQUIRE(node->parent->parent->children[1]);
+    REQUIRE(node->parent->parent->children[1]->get_bounds() == Dimension(0, 50, 100, 50));
 }
