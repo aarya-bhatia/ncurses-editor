@@ -58,11 +58,11 @@ ContentWindow* WindowManager::get_content_node() {
 }
 
 void WindowManager::draw() {
-    if (current_node) { current_node->draw(); }
+    if (root_node) { root_node->draw(); }
 }
 
 void WindowManager::show() {
-    if (current_node) { current_node->show(); }
+    if (root_node) { root_node->show(); }
 }
 
 ContentWindow* WindowManager::_find_content_node(Window* node)
