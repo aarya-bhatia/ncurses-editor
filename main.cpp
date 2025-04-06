@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include "window/WindowManager.h"
+#include "application/editor.h"
 #include <memory>
 
 bool resized = false;
@@ -46,67 +47,24 @@ void handle_resize(int sig)
     }
 }
 
-struct TestContentView : public ContentView {
-
-    WINDOW* win = nullptr;
-
-    TestContentView() {
-    }
-
-    ~TestContentView() {
-        if (win) {
-            delwin(win);
-        }
-    }
-
-    std::unique_ptr<ContentView> clone() override {
-        return std::unique_ptr<ContentView>(new TestContentView());
-    }
-
-    void resize(Dimension bounds) override {
-        if (win) {
-            delwin(win);
-        }
-
-        log_info("created new window");
-        win = newwin(bounds.height, bounds.width, bounds.y, bounds.x);
-        refresh();
-    }
-
-    void draw() override {
-        log_info("drawing test content");
-        wclear(win);
-        mvwprintw(win, 0, 0, "Test");
-        wmove(win, 1, 2);
-    }
-
-    void show() override {
-        wrefresh(win);
-        log_info("showing test content");
-    }
-};
-
 int main()
 {
     init();
     init_screen();
-
     signal(SIGWINCH, handle_resize);
 
-    Dimension screen_bounds(0, 0, (unsigned)COLS, (unsigned)LINES);
-    WindowManager wm(screen_bounds);
-
-    ContentWindow* current_window = wm.get_content_node();
-
-    wm.split_horizontal();
-    current_window = wm.get_content_node();
-    current_window->set_view(std::unique_ptr<ContentView>(new TestContentView()));
+    Editor editor;
 
     int ch = 0;
-    while (ch != 'q') {
-        wm.draw();
-        wm.show();
+    while (!editor.quit) {
+        editor.update();
+        editor.draw();
+        editor.show();
         ch = getch();
+        if (ch == CTRL_C) {
+            editor.quit = true;
+        }
+        editor.handle_event(ch);
     }
 
     cleanup();

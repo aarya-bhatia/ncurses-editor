@@ -43,6 +43,9 @@ struct Editor
     Editor();
     ~Editor();
 
+    FileView* get_current_view();
+    std::shared_ptr<File> get_current_file();
+
     void command(const std::string& command);
 
     void handle_event(unsigned c);
@@ -52,6 +55,7 @@ struct Editor
 
     void update();
     void draw();
+    void show();
 
     void cursor_up();
     void cursor_down();
@@ -66,4 +70,5 @@ struct Editor
     void resize();
 
     void open(const std::vector<std::string>& filenames);
+    void open(std::shared_ptr<File> file);
 };
