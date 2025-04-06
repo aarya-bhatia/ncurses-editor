@@ -55,14 +55,26 @@ int main()
 
     Editor editor;
 
-    int ch = 0;
-    while (!editor.quit) {
+    while (!editor.quit)
+    {
+        if (resized)
+        {
+            resized = false;
+            log_info("window resize detected!");
+            init_screen();
+            editor.resize();
+            continue;
+        }
+
         editor.draw();
         editor.show();
-        ch = getch();
+
+        int ch = getch();
+
         if (ch == CTRL_C) {
-            editor.quit = true;
+            break;
         }
+
         editor.handle_event(ch);
     }
 
