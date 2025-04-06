@@ -32,4 +32,8 @@ struct Dimension
     bool operator==(const Dimension& other) const {
         return x == other.x && y == other.y && width == other.width && height == other.height;
     }
+
+    bool contains(const Dimension& other) const {
+        return other.x >= x && other.y >= y && other.x + other.width <= width && other.y + other.height <= height;
+    }
 };

@@ -7,7 +7,7 @@
 #include <assert.h>
 #include "common.h"
 #include "file/FileManager.h"
-#include "window/WindowManager.h"
+#include "window/IWindowManager.h"
 
 #include <ncurses.h>
 
@@ -26,8 +26,8 @@ static std::map<Mode, const char*> mode_names = {
 
 struct Editor
 {
-    FileManager file_manager;
-    WindowManager window_manager;
+    std::unique_ptr<FileManager> file_manager;
+    std::shared_ptr<IWindowManager> window_manager;
 
     WINDOW* status_window = NULL;
     WINDOW* console_window = NULL;

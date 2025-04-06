@@ -1,26 +1,6 @@
 #include "log.h"
 #include "WindowManager.h"
 
-WindowManager::WindowManager(Dimension bounds) : screen_bounds(bounds) {
-}
-
-WindowManager::~WindowManager() {
-    delete root_node;
-    root_node = current_node = nullptr;
-}
-
-bool WindowManager::resize(Dimension bounds)
-{
-    if (!root_node || !root_node->resize(bounds)) {
-        return false;
-    }
-
-    this->screen_bounds = bounds;
-    return true;
-}
-
-Dimension WindowManager::get_bounds() const { return screen_bounds; }
-
 void WindowManager::set_content(ContentWindow* content_window) {
     assert(content_window);
     assert(content_window->get_content());
@@ -65,14 +45,6 @@ ContentWindow* WindowManager::get_content_node() {
 
     log_info("No content node");
     return nullptr;
-}
-
-void WindowManager::draw() {
-    if (root_node) { root_node->draw(); }
-}
-
-void WindowManager::show() {
-    if (root_node) { root_node->show(); }
 }
 
 ContentWindow* WindowManager::_find_content_node(Window* node)

@@ -9,17 +9,12 @@ ContainerWindow::ContainerWindow(Dimension bounds, WindowResizeStrategy* resize_
 
 ContainerWindow::~ContainerWindow() {
     delete resize_strategy;
-    resize_strategy = nullptr;
 
     for (auto child : children) {
         delete child;
     }
 
     children.clear();
-}
-
-size_t ContainerWindow::count_children() const {
-    return children.size();
 }
 
 bool ContainerWindow::has_child(Window* child) const {
@@ -51,27 +46,14 @@ void ContainerWindow::arrange_children() {
     resize_strategy->execute(children, bounds, bounds);
 }
 
-ContainerWindow* ContainerWindow::get_container()  { return this; }
-
-void ContainerWindow::draw()  {
+void ContainerWindow::draw() {
     for (auto child : children) {
         child->draw();
     }
 }
 
-void ContainerWindow::show()  {
+void ContainerWindow::show() {
     for (auto child : children) {
         child->show();
     }
-}
-
-bool ContainerWindow::resize(Dimension new_bounds)  {
-    Window::resize(bounds);
-
-    if (resize_strategy->execute(children, bounds, bounds)) {
-        this->bounds = new_bounds;
-        return true;
-    }
-
-    return false;
 }

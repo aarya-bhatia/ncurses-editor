@@ -33,7 +33,7 @@ struct FileView : public ContentWindow
     NcursesWindow window;
     Scroll page_scroll;
 
-    FileView(const std::shared_ptr<File>& file) : ContentWindow(Dimension()), file(file)
+    FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension()) : ContentWindow(bounds), file(file)
     {
     }
 
@@ -50,10 +50,12 @@ struct FileView : public ContentWindow
         }
     }
 
-    bool resize(Dimension bounds) override {
+    void resize(Dimension bounds) override {
+        if (!ContentWindow::resizable(bounds)) {
+            return;
+        }
         ContentWindow::resize(bounds);
         window = NcursesWindow(bounds);
-        return true;
     }
 
     int get_relative_y(int absy) const

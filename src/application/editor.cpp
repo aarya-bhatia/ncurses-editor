@@ -4,9 +4,13 @@
 #include <string.h>
 #include "log.h"
 #include <sys/types.h>
+#include "window/WindowManager.h"
 
-Editor::Editor() : window_manager(Dimension(0, 0, COLS, LINES - 2))
+Editor::Editor()
 {
+    this->window_manager = std::shared_ptr<IWindowManager>(new WindowManager(Dimension(0, 0, COLS, LINES - 2)));
+    this->file_manager = std::unique_ptr<FileManager>(new FileManager(this->window_manager));
+
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
     status_window = newwin(1, COLS, LINES - 2, 0);
@@ -24,7 +28,7 @@ Editor::~Editor()
 
 void Editor::resize()
 {
-    if (!window_manager.resize(Dimension(0, 0, COLS, LINES - 2))) {
+    if (!window_manager->resize(Dimension(0, 0, COLS, LINES - 2))) {
         log_warn("resize failed");
         return;
     }
@@ -65,7 +69,7 @@ void Editor::handle_event(unsigned c)
 
 FileView* Editor::get_current_view()
 {
-    ContentWindow* window = window_manager.get_content_node();
+    ContentWindow* window = window_manager->get_content_node();
     if (!window) {
         return nullptr;
     }
@@ -220,7 +224,7 @@ void Editor::command(const std::string& command)
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         for (std::string& filename : filenames)
         {
-            file_manager.open_file(filename.c_str());
+            file_manager->open_file(filename.c_str());
         }
     }
     else if (command == "next")
@@ -228,12 +232,12 @@ void Editor::command(const std::string& command)
         if (!file) {
             return;
         }
-        open(file_manager.next_file(file));
+        open(file_manager->next_file(file));
         force_redraw = true;
     }
     else if (command == "prev")
     {
-        open(file_manager.prev_file(file));
+        open(file_manager->prev_file(file));
         force_redraw = true;
     }
     else
@@ -446,11 +450,11 @@ void join_left_and_right_status(int ncols, char* left_status, char* right_status
     }
 }
 
-void Editor::show() { window_manager.show(); }
+void Editor::show() { window_manager->show(); }
 
 void Editor::draw()
 {
-    window_manager.draw();
+    window_manager->draw();
 
     int ncols = getmaxx(status_window);
     char* left_status = new char[ncols + 1];
@@ -462,7 +466,7 @@ void Editor::draw()
 
     snprintf(left_status, ncols, "-- %s --", (*mode_name).second);
 
-    auto view = dynamic_cast<FileView*> (window_manager.get_content_node()->get_content());
+    auto view = dynamic_cast<FileView*> (window_manager->get_content_node()->get_content());
     std::shared_ptr<File> file;
     if (view) {
         file = view->file;
@@ -532,9 +536,9 @@ void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
     {
-        auto file = file_manager.open_file(filename.c_str());
-        auto file_view = file_manager.get_file_view(file);
-        window_manager.set_content(file_view);
+        auto file = file_manager->open_file(filename.c_str());
+        auto file_view = file_manager->get_file_view(file);
+        window_manager->set_content(file_view);
     }
 
     force_redraw = true;
@@ -542,11 +546,11 @@ void Editor::open(const std::vector<std::string>& filenames)
 
 void Editor::open(std::shared_ptr<File> file)
 {
-    auto view = file_manager.get_file_view(file);
+    auto view = file_manager->get_file_view(file);
     if (!view) {
         return;
     }
 
-    window_manager.set_content(view);
+    window_manager->set_content(view);
     force_redraw = true;
 }

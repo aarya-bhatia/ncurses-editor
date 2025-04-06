@@ -3,7 +3,7 @@
 
 struct TestContentView : public ContentWindow {
 
-    TestContentView(Dimension bounds = Dimension()): ContentWindow(bounds) {}
+    TestContentView(Dimension bounds = Dimension()) : ContentWindow(bounds) {}
 
     bool draw_called = false;
     bool show_called = false;
@@ -15,10 +15,9 @@ struct TestContentView : public ContentWindow {
         resize_called = false;
     }
 
-    bool resize(Dimension bounds) override {
+    void resize(Dimension bounds) override {
         Window::resize(bounds);
         resize_called = true;
-        return true;
     }
 
     void draw() override {

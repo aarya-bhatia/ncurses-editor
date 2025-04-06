@@ -12,7 +12,7 @@ struct ContainerWindow : public Window
 
     virtual ~ContainerWindow();
 
-    size_t count_children() const;
+    size_t count_children() const { return children.size(); }
 
     bool has_child(Window* child) const;
 
@@ -24,13 +24,10 @@ struct ContainerWindow : public Window
 
     void arrange_children();
 
-    ContainerWindow* get_container() override;
+    ContainerWindow* get_container() override { return this; }
 
     void draw() override;
-
     void show() override;
-
-    bool resize(Dimension new_bounds) override;
 };
 
 struct HSplitContainerWindow : public ContainerWindow
