@@ -2,18 +2,18 @@
 #include "log.h"
 #include <assert.h>
 
-ContentWindow* FileManager::get_file_view(const std::shared_ptr<File>& file)
-{
-    if (!file) {
-        return nullptr;
-    }
+// ContentWindow* FileManager::get_file_view(const std::shared_ptr<File>& file)
+// {
+//     if (!file) {
+//         return nullptr;
+//     }
 
-    if (_file_views.find(file) == _file_views.end()) {
-        _file_views[file] = new FileView(file);
-    }
+//     if (_file_views.find(file) == _file_views.end()) {
+//         _file_views[file] = new FileView(file);
+//     }
 
-    return _file_views[file];
-}
+//     return _file_views[file];
+// }
 
 std::shared_ptr<File> FileManager::get_file(const char* filename)
 {
@@ -50,7 +50,7 @@ std::shared_ptr<File> FileManager::open_file(const char* filename)
 void FileManager::close_file(const std::shared_ptr<File>& file)
 {
     _files.erase(std::find(_files.begin(), _files.end(), file));
-    _file_views.erase(file);
+    // _file_views.erase(file);
 }
 
 std::shared_ptr<File> FileManager::next_file(const std::shared_ptr<File>& file)
@@ -109,17 +109,17 @@ std::shared_ptr<File> FileManager::open_untitled_file()
     return new_file;
 }
 
-void FileManager::open_in_splith(std::shared_ptr<File>& file) {
+void FileManager::open_in_splith(std::shared_ptr<File> file) {
     ContentWindow* content = new FileView(file, window_manager->get_bounds());
     window_manager->split_horizontal(content);
 }
 
-void FileManager::open_in_splitv(std::shared_ptr<File>& file) {
+void FileManager::open_in_splitv(std::shared_ptr<File> file) {
     ContentWindow* content = new FileView(file, window_manager->get_bounds());
     window_manager->split_vertical(content);
 }
 
-void FileManager::open_in_current_window(std::shared_ptr<File>& file)
+void FileManager::open_in_current_window(std::shared_ptr<File> file)
 {
     ContentWindow* content = new FileView(file, window_manager->get_bounds());
     window_manager->set_content(content);

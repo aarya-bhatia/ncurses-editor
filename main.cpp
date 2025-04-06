@@ -57,7 +57,6 @@ int main()
 
     int ch = 0;
     while (!editor.quit) {
-        editor.update();
         editor.draw();
         editor.show();
         ch = getch();

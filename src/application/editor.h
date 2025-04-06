@@ -8,6 +8,7 @@
 #include "common.h"
 #include "file/FileManager.h"
 #include "window/IWindowManager.h"
+#include "StatusWindow.h"
 
 #include <ncurses.h>
 
@@ -28,20 +29,17 @@ struct Editor
 {
     std::unique_ptr<FileManager> file_manager;
     std::shared_ptr<IWindowManager> window_manager;
+    std::unique_ptr<StatusWindow> status_window;
 
-    WINDOW* status_window = NULL;
-    WINDOW* console_window = NULL;
+    NcursesWindow console_window;
 
     std::string mode_line = "";
-    std::string statusline = "status";
+    std::string statusline = "";
 
     Mode mode = NORMAL_MODE;
     bool quit = false;
 
-    bool force_redraw = false;
-
     Editor();
-    ~Editor();
 
     FileView* get_current_view();
     std::shared_ptr<File> get_current_file();
@@ -53,7 +51,6 @@ struct Editor
     void handle_insert_mode_event(unsigned c);
     void handle_normal_mode_event(unsigned c);
 
-    void update();
     void draw();
     void show();
 
@@ -70,5 +67,4 @@ struct Editor
     void resize();
 
     void open(const std::vector<std::string>& filenames);
-    void open(std::shared_ptr<File> file);
 };

@@ -13,17 +13,11 @@ Editor::Editor()
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
-    status_window = newwin(1, COLS, LINES - 2, 0);
-    console_window = newwin(1, COLS, LINES - 1, 0);
+    status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
+    console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
 
     refresh();
     move(0, 0);
-}
-
-Editor::~Editor()
-{
-    delwin(status_window);
-    delwin(console_window);
 }
 
 void Editor::resize()
@@ -35,15 +29,10 @@ void Editor::resize()
 
     log_info("resize(): lines:%d cols:%d", LINES, COLS);
 
-    delwin(status_window);
-    delwin(console_window);
-
-    status_window = newwin(1, COLS, LINES - 2, 0);
-    console_window = newwin(1, COLS, LINES - 1, 0);
+    status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
+    console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
 
     refresh();
-
-    force_redraw = true;
 }
 
 void Editor::handle_event(unsigned c)
@@ -74,15 +63,22 @@ FileView* Editor::get_current_view()
         return nullptr;
     }
 
-    return dynamic_cast<FileView*>(window);
+    if (window->get_content_type() == ContentWindow::ContentType::FileContent) {
+        return static_cast<FileView*>(window);
+    }
+
+    return nullptr;
 }
 
 
 std::shared_ptr<File> Editor::get_current_file()
 {
     FileView* file_view = get_current_view();
-    assert(file_view);
-    return file_view->file;
+    if (!file_view) {
+        return nullptr;
+    }
+
+    return std::static_pointer_cast<File>(file_view->get_model());
 }
 
 void Editor::move_cursor_eol()
@@ -168,45 +164,6 @@ void Editor::cursor_right()
     }
 }
 
-void Editor::force_redraw_editor()
-{
-    log_debug("force redrawing");
-
-    auto file_view = get_current_view();
-    if (!file_view) {
-        return;
-    }
-
-    file_view->draw();
-
-    // werase(edit_window);
-
-    // if (!file)
-    // {
-    //     return;
-    // }
-    // Scroll& scroll = file->scroll;
-    // auto& lines = file->lines;
-
-    // auto line_itr = lines.begin();
-    // std::advance(line_itr, scroll.dy);
-    // int count_lines = 0;
-    // int max_lines, max_cols;
-    // getmaxyx(edit_window, max_lines, max_cols);
-    // for (; line_itr != lines.end() && count_lines < max_lines; line_itr++, count_lines++)
-    // {
-    //     wmove(edit_window, count_lines, 0);
-    //     auto& line = *line_itr;
-    //     auto col_itr = line.begin();
-    //     std::advance(col_itr, scroll.dx);
-    //     int count_cols = 0;
-    //     for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
-    //     {
-    //         waddch(edit_window, *col_itr);
-    //     }
-    // }
-}
-
 void Editor::command(const std::string& command)
 {
     FileView* file_view = get_current_view();
@@ -226,19 +183,6 @@ void Editor::command(const std::string& command)
         {
             file_manager->open_file(filename.c_str());
         }
-    }
-    else if (command == "next")
-    {
-        if (!file) {
-            return;
-        }
-        open(file_manager->next_file(file));
-        force_redraw = true;
-    }
-    else if (command == "prev")
-    {
-        open(file_manager->prev_file(file));
-        force_redraw = true;
     }
     else
     {
@@ -303,66 +247,60 @@ void Editor::handle_normal_mode_event(unsigned c)
 {
     auto file = get_current_file();
 
-    switch (c)
-    {
-    case 'h':
-        if (file)
+    if (!file) {
+        switch (c) {
+        case CTRL_ESCAPE:
+            statusline = "";
+            break;
+        case ':':
+            mode = COMMAND_MODE;
+            mode_line = "";
+            break;
+        }
+    }
+    else {
+        assert(file);
+
+        switch (c)
         {
+        case 'h':
             cursor_left();
-        }
-        break;
+            break;
 
-    case 'l':
-        if (file)
-        {
+        case 'l':
             cursor_right();
-        }
-        break;
+            break;
 
-    case 'j':
-        if (file)
-        {
+        case 'j':
             cursor_down();
-        }
-        break;
+            break;
 
-    case 'k':
-        if (file)
-        {
+        case 'k':
             cursor_up();
-        }
-        break;
+            break;
 
-    case CTRL_ESCAPE:
-        statusline = "";
-        break;
+        case CTRL_ESCAPE:
+            statusline = "";
+            break;
 
-    case '0':
-        if (file)
-        {
+        case '0':
             file->cursor.x = 0;
             file->cursor.col = (*file->cursor.line).begin();
-        }
-        break;
+            break;
 
-    case '$':
-        if (file)
-        {
+        case '$':
             move_cursor_eol();
-        }
-        break;
+            break;
 
-    case 'i':
-        if (file)
-        {
+        case 'i':
             mode = INSERT_MODE;
-        }
-        break;
+            break;
 
-    case ':':
-        mode = COMMAND_MODE;
-        mode_line = "";
-        break;
+        case ':':
+            mode = COMMAND_MODE;
+            mode_line = "";
+            break;
+        }
     }
 }
 
@@ -383,132 +321,48 @@ void Editor::handle_command_mode_event(unsigned c)
     }
 }
 
-void Editor::update()
-{
-    auto file = get_current_file();
-    if (!file)
-    {
-        draw();
-        return;
-    }
 
-    // auto& dirty_lines = file->dirty_lines;
-
-    // scroll_to_ensure_cursor_visible();
-    // if (force_redraw)
-    // {
-    //     force_redraw = false;
-    //     dirty_lines.clear();
-    //     force_redraw_editor();
-    // }
-
-    // for (Cursor& line : dirty_lines)
-    // {
-    //     redraw_line(line);
-    // }
-
-    // dirty_lines.clear();
-    draw();
+void Editor::show() {
+    window_manager->show();
+    status_window->show();
+    wrefresh(console_window.get());
 }
-
-void join_left_and_right_status(int ncols, char* left_status, char* right_status, char* full_status)
-{
-    for (int i = 0; i < ncols; i++)
-    {
-        full_status[i] = ' ';
-    }
-
-    int i = 0;
-    for (; i < strlen(left_status); i++)
-    {
-        full_status[i] = left_status[i];
-    }
-
-    if (i >= ncols)
-    {
-        return;
-    }
-
-    int max_right_len = ncols - i;
-    int right_len = strlen(right_status);
-    if (max_right_len < right_len)
-    {
-        right_status[max_right_len] = 0;
-        right_len = max_right_len;
-    }
-
-    if (right_len == 0)
-    {
-        return;
-    }
-
-    int between_len = ncols - i - right_len;
-    int start_right = i + between_len;
-    for (int j = start_right; j < ncols; j++)
-    {
-        full_status[j] = right_status[j - start_right];
-    }
-}
-
-void Editor::show() { window_manager->show(); }
 
 void Editor::draw()
 {
     window_manager->draw();
+    status_window->draw();
 
-    int ncols = getmaxx(status_window);
-    char* left_status = new char[ncols + 1];
-    char* right_status = new char[ncols + 1];
-    char* full_status = new char[ncols + 1];
+    wclear(console_window.get());
+    wprintw(console_window.get(), "Console Window");
 
-    auto mode_name = mode_names.find(mode);
-    assert(mode_name != mode_names.end());
+    // werase(console_window);
+    // ncols = getmaxx(console_window);
+    // if (mode == COMMAND_MODE)
+    // {
+    //     std::string tmp = ":" + mode_line;
+    //     if (tmp.size() >= ncols)
+    //     {
+    //         tmp = tmp.substr(tmp.size() - ncols - 1);
+    //     }
+    //     mvwprintw(console_window, 0, 0, tmp.substr(0, ncols).c_str());
+    // }
+    // else
+    // {
+    //     mvwprintw(console_window, 0, 0, statusline.substr(0, ncols).c_str());
+    // }
 
-    snprintf(left_status, ncols, "-- %s --", (*mode_name).second);
+    // wrefresh(console_window);
 
-    auto view = dynamic_cast<FileView*> (window_manager->get_content_node()->get_content());
-    std::shared_ptr<File> file;
-    if (view) {
-        file = view->file;
-    }
-    if (file)
-    {
-        snprintf(right_status, ncols, "%s | Ln:%d Col:%d", file->filename, file->cursor.y, file->cursor.x);
-    }
-    else
-    {
-        snprintf(right_status, ncols, "no file | Ln:%d Col:%d", 0, 0);
-    }
+    // if (!file)
+    // {
+    //     move(0, 0);
+    //     return;
+    // }
 
-    join_left_and_right_status(ncols, left_status, right_status, full_status);
-
-    mvwprintw(status_window, 0, 0, full_status);
-    wrefresh(status_window);
-
-    delete[] left_status;
-    delete[] right_status;
-    delete[] full_status;
-
-    werase(console_window);
-    ncols = getmaxx(console_window);
-    if (mode == COMMAND_MODE)
-    {
-        std::string tmp = ":" + mode_line;
-        if (tmp.size() >= ncols)
-        {
-            tmp = tmp.substr(tmp.size() - ncols - 1);
-        }
-        mvwprintw(console_window, 0, 0, tmp.substr(0, ncols).c_str());
-    }
-    else
-    {
-        mvwprintw(console_window, 0, 0, statusline.substr(0, ncols).c_str());
-    }
-
-    wrefresh(console_window);
-
-    if (!file)
-    {
+    FileView* view = get_current_view();
+    std::shared_ptr<File> file = get_current_file();
+    if (!file) {
         move(0, 0);
         return;
     }
@@ -536,21 +390,6 @@ void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
     {
-        auto file = file_manager->open_file(filename.c_str());
-        auto file_view = file_manager->get_file_view(file);
-        window_manager->set_content(file_view);
+        file_manager->open_in_current_window(file_manager->open_file(filename.c_str()));
     }
-
-    force_redraw = true;
-}
-
-void Editor::open(std::shared_ptr<File> file)
-{
-    auto view = file_manager->get_file_view(file);
-    if (!view) {
-        return;
-    }
-
-    window_manager->set_content(view);
-    force_redraw = true;
 }

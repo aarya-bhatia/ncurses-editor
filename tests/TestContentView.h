@@ -9,6 +9,9 @@ struct TestContentView : public ContentWindow {
     bool show_called = false;
     bool resize_called = false;
 
+    std::shared_ptr<void> get_model()  override { return nullptr; }
+    ContentType get_content_type() override { return ContentType::TestContent; }
+
     void reset() {
         draw_called = false;
         show_called = false;
