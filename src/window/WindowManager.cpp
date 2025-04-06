@@ -9,6 +9,16 @@ WindowManager::~WindowManager() {
     root_node = current_node = nullptr;
 }
 
+bool WindowManager::resize(Dimension bounds)
+{
+    if (!root_node || !root_node->resize(bounds)) {
+        return false;
+    }
+
+    this->screen_bounds = bounds;
+    return true;
+}
+
 Dimension WindowManager::get_bounds() const { return screen_bounds; }
 
 void WindowManager::set_content(ContentWindow* content_window) {
@@ -84,7 +94,7 @@ ContentWindow* WindowManager::_find_content_node(Window* node)
 }
 
 
-void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow *new_content) {
+void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content) {
     assert(split_container);
 
     if (orig_parent) {
@@ -102,7 +112,7 @@ void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_
     split_container->arrange_children();
 }
 
-bool WindowManager::split_horizontal(ContentWindow *new_content) {
+bool WindowManager::split_horizontal(ContentWindow* new_content) {
     if (!current_node) {
         return false;
     }
@@ -112,7 +122,7 @@ bool WindowManager::split_horizontal(ContentWindow *new_content) {
     return true;
 }
 
-bool WindowManager::split_vertical(ContentWindow *new_content) {
+bool WindowManager::split_vertical(ContentWindow* new_content) {
     if (!current_node) {
         return false;
     }

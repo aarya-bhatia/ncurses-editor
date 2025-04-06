@@ -1,6 +1,6 @@
 #pragma once
 struct Scroll
 {
-    int dy;
-    int dx;
+    int dy = 0;
+    int dx = 0;
 };

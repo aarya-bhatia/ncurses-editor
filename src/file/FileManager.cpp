@@ -1,112 +1,95 @@
 #include "FileManager.h"
 #include "log.h"
+#include <assert.h>
 
-File* FileManager::get_file()
+ContentWindow* FileManager::get_file_view(const std::shared_ptr<File>& file)
 {
-    if (_files.empty())
-    {
-        return NULL;
+    if (!file) {
+        return nullptr;
     }
 
-    return _files[_index];
+    if (_file_views.find(file) == _file_views.end()) {
+        _file_views[file] = new FileView(file);
+    }
+
+    return _file_views[file];
 }
 
-int FileManager::open_file(const char* filename)
+std::shared_ptr<File> FileManager::get_file(const char* filename)
+{
+    for (auto& file : _files) {
+        if (!strncmp(file->filename, filename, strlen(filename))) {
+            return file;
+        }
+    }
+
+    return nullptr;
+}
+
+std::shared_ptr<File> FileManager::open_file(const char* filename)
 {
     log_debug("Opening file: %s", filename);
-    for (size_t i = 0; i < _files.size(); i++)
-    {
-        if (!strncmp(_files[i]->filename, filename, strlen(filename)))
-        {
-            log_info("opened file %s at index %d", filename, _index);
-            _index = i;
-            return 0;
-        }
+    auto file = get_file(filename);
+    if (file) {
+        return file;
     }
 
     FileID id = get_new_file_id();
-    File* new_file = new File(id, filename);
+    std::shared_ptr<File> new_file = std::shared_ptr<File>(new File(id, filename));
     if (new_file->load_file() != 0)
     {
         log_warn("Failed to load file %s", filename);
-        delete new_file;
-        return 1;
+        return nullptr;
     }
 
     _files.push_back(new_file);
-    _index = _files.size() - 1;
-    log_info("New file %s added at index %d", filename, _index);
-
-    return 0;
+    log_info("Added file: %s", filename);
+    return new_file;
 }
 
-int FileManager::close_file()
+void FileManager::close_file(const std::shared_ptr<File>& file)
 {
-    if (_files.empty())
-    {
-        return 1;
-    }
-
-    delete _files[_index];
-    _files.erase(_files.begin() + _index);
-    _index = 0;
-    return 0;
+    _files.erase(std::find(_files.begin(), _files.end(), file));
+    _file_views.erase(file);
 }
 
-int FileManager::next_file()
+std::shared_ptr<File> FileManager::next_file(const std::shared_ptr<File>& file)
 {
-    if (_files.empty())
-    {
-        return 1;
-    }
-
-    if (_index >= _files.size() - 1)
-    {
-        _index = 0;
-    }
-    else
-    {
-        _index++;
-    }
-
-    return 0;
-}
-
-int FileManager::prev_file()
-{
-    if (_files.empty())
-    {
-        return 1;
-    }
-
-    if (_index == 0)
-    {
-        _index = _files.size() - 1;
-    }
-    else
-    {
-        _index--;
-    }
-
-    return 0;
-}
-
-bool FileManager::has_file(const char* filename)
-{
-    for (size_t i = 0; i < _files.size(); i++)
-    {
-        if (!strncmp(_files[i]->filename, filename, strlen(filename)))
-        {
-            return true;
+    for (size_t i = 0; i < _files.size(); i++) {
+        if (_files[i] == file) {
+            if (i == _files.size() - 1) {
+                return _files[0];
+            }
+            else {
+                return _files[i + 1];
+            }
         }
     }
 
-    return false;
+    return file;
+}
+
+std::shared_ptr<File> FileManager::prev_file(const std::shared_ptr<File>& file)
+{
+    for (size_t i = 0; i < _files.size(); i++) {
+        if (_files[i] == file) {
+            if (i == 0) {
+                return _files[_files.size() - 1];
+            }
+            else {
+                return _files[i - 1];
+            }
+        }
+    }
+
+    return file;
 }
 
 FileID FileManager::get_new_file_id() const
 {
     size_t id = 0;
+
+    // find next available id from file list
     for (size_t i = 0; i < _files.size(); i++)
     {
         if (_files[i]->id > id)
@@ -118,11 +101,10 @@ FileID FileManager::get_new_file_id() const
     return id + 1;
 }
 
-File* FileManager::open_untitled_file()
+std::shared_ptr<File> FileManager::open_untitled_file()
 {
     size_t id = get_new_file_id();
-    File* new_file = new File(id, nullptr);
+    std::shared_ptr<File> new_file = std::shared_ptr<File>(new File(id, nullptr));
     _files.push_back(new_file);
-    _index = _files.size() - 1;
     return new_file;
 }

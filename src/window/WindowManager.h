@@ -17,6 +17,8 @@ struct WindowManager
 
     Dimension get_bounds() const;
 
+    bool resize(Dimension bounds);
+
     void set_content(ContentWindow* content_window);
 
     ContentWindow* get_content_node();

@@ -6,7 +6,8 @@
 #include <vector>
 #include <assert.h>
 #include "common.h"
-#include "FileManager.h"
+#include "file/FileManager.h"
+#include "window/WindowManager.h"
 
 #include <ncurses.h>
 
@@ -17,7 +18,7 @@ enum Mode
     COMMAND_MODE
 };
 
-static std::map<Mode, const char *> mode_names = {
+static std::map<Mode, const char*> mode_names = {
     {NORMAL_MODE, "NORMAL"},
     {COMMAND_MODE, "COMMAND"},
     {INSERT_MODE, "INSERT"},
@@ -26,10 +27,10 @@ static std::map<Mode, const char *> mode_names = {
 struct Editor
 {
     FileManager file_manager;
+    WindowManager window_manager;
 
-    WINDOW *edit_window = NULL;
-    WINDOW *status_window = NULL;
-    WINDOW *console_window = NULL;
+    WINDOW* status_window = NULL;
+    WINDOW* console_window = NULL;
 
     std::string mode_line = "";
     std::string statusline = "status";
@@ -42,7 +43,7 @@ struct Editor
     Editor();
     ~Editor();
 
-    void command(const std::string &command);
+    void command(const std::string& command);
 
     void handle_event(unsigned c);
     void handle_command_mode_event(unsigned c);
@@ -64,10 +65,5 @@ struct Editor
 
     void resize();
 
-    void open(const std::vector<std::string> &filenames);
-    void close(const std::string &filename);
-
-    const char * get_current_filename() {
-        return file_manager.get_file()->filename;
-    }
+    void open(const std::vector<std::string>& filenames);
 };

@@ -2,108 +2,122 @@
 
 #include <ncurses.h>
 #include "File.h"
+#include "window/ContentWindow.h"
 
-struct FileView
+struct WindowDeleter {
+    void operator()(WINDOW* window) const {
+        if (window) {
+            delwin(window);
+        }
+    }
+};
+
+struct NcursesWindow {
+    std::unique_ptr<WINDOW, WindowDeleter> window;
+
+    NcursesWindow() {
+    }
+
+    NcursesWindow(Dimension dim) {
+        window = std::unique_ptr<WINDOW, WindowDeleter>(
+            newwin(dim.height, dim.width, dim.y, dim.x)
+        );
+    }
+
+    WINDOW* get() const noexcept { return window.get(); }
+};
+
+struct FileView : public ContentWindow
 {
-    File* file = NULL;
-    WINDOW* window = NULL;
-    Scroll scroll;
+    std::shared_ptr<File> file;
+    NcursesWindow window;
+    Scroll page_scroll;
 
-    FileView(File* file, int x, int y, int width, int height)
+    FileView(const std::shared_ptr<File>& file) : ContentWindow(Dimension()), file(file)
     {
-        this->file = file;
-        this->window = newwin(y, x, height, width);
     }
 
-    ~FileView()
-    {
-        delwin(window);
-        window = NULL;
+    void draw() override {
+        if (window.get()) {
+            wclear(window.get());
+            wprintw(window.get(), "Test");
+        }
     }
 
-    void Draw(Dimension dim);
-
-    void scrollY(int dy)
-    {
-        scroll.dy += dy;
+    void show() override {
+        if (window.get()) {
+            wrefresh(window.get());
+        }
     }
 
-    void scrollX(int dx)
-    {
-        scroll.dx += dx;
+    bool resize(Dimension bounds) override {
+        ContentWindow::resize(bounds);
+        window = NcursesWindow(bounds);
+        return true;
     }
 
-    int getScrollY() const
+    int get_relative_y(int absy) const
     {
-        return scroll.dy;
+        return absy - page_scroll.dy;
     }
 
-    int getScrollX() const
+    int get_relative_x(int absx) const
     {
-        return scroll.dx;
+        return absx - page_scroll.dx;
     }
 
-    int getRelativeY(int absy) const
+    int get_display_y(int absy) const
     {
-        return absy - getScrollY();
+        return get_relative_y(absy) - page_scroll.dy;
     }
 
-    int getRelativeX(int absx) const
+    int get_display_x(int absx) const
     {
-        return absx - getScrollX();
+        return get_relative_x(absx) - page_scroll.dx;
     }
 
-    int getDisplayY(int absy) const
+    int height() const
     {
-        return getRelativeY(absy) - getScrollY();
+        return getmaxy(window.get());
     }
 
-    int getDisplayX(int absx) const
+    int width() const
     {
-        return getRelativeX(absx) - getScrollX();
+        return getmaxx(window.get());
     }
 
-    int getMaxY() const
-    {
-        return getmaxy(window);
-    }
-
-    int getMaxX() const
-    {
-        return getmaxx(window);
-    }
-
-    bool adjustScroll()
+    bool adjust_page_scroll()
     {
         Cursor& cursor = file->cursor;
 
-        // adjust horizontal scroll
-        if (cursor.x - scroll.dx < 0)
+        // adjust horizontal page_scroll
+        if (cursor.x - page_scroll.dx < 0)
         {
-            log_debug("scrolling left");
-            scroll.dx = cursor.x;
+            log_debug("page_scrolling left");
+            page_scroll.dx = cursor.x;
             return true;
         }
-        else if (cursor.x - scroll.dx >= getMaxX())
+        else if (cursor.x - page_scroll.dx >= width())
         {
-            log_debug("scrolling right");
-            scroll.dx = cursor.x - getMaxX() + 1;
+            log_debug("page_scrolling right");
+            page_scroll.dx = cursor.x - width() + 1;
             return true;
         }
 
-        // adjust vertical scroll
-        if (cursor.y - scroll.dy < 0)
+        // adjust vertical page_scroll
+        if (cursor.y - page_scroll.dy < 0)
         {
-            log_debug("scrolling up");
-            scroll.dy = cursor.y;
+            log_debug("page_scrolling up");
+            page_scroll.dy = cursor.y;
             return true;
         }
-        else if (cursor.y - scroll.dy >= getMaxY())
+        else if (cursor.y - page_scroll.dy >= height())
         {
-            log_debug("scrolling down");
-            scroll.dy = cursor.y - getMaxY() + 1;
+            log_debug("page_scrolling down");
+            page_scroll.dy = cursor.y - height() + 1;
             return true;
         }
+
+        return false;
     }
-
 };
