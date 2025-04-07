@@ -13,8 +13,11 @@ Editor::Editor()
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
-    status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
-    console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
+    this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
+    this->console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
+
+    auto new_file = this->file_manager->open_untitled_file();
+    this->file_manager->open_in_current_window(new_file);
 
     refresh();
     move(0, 0);
@@ -81,89 +84,6 @@ std::shared_ptr<File> Editor::get_current_file()
     return std::static_pointer_cast<File>(file_view->get_model());
 }
 
-void Editor::move_cursor_eol()
-{
-    auto file = get_current_file();
-    assert(file);
-    Cursor& cursor = file->cursor;
-    cursor.col = --(*cursor.line).end();
-    std::list<char>& line_val = *cursor.line;
-    cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
-}
-
-void Editor::cursor_up()
-{
-    auto file = get_current_file();
-    assert(file);
-    Cursor& cursor = file->cursor;
-
-    if (cursor.y > 0)
-    {
-        --cursor.y;
-        --cursor.line;
-
-        if (cursor.x >= (*cursor.line).size())
-        {
-            move_cursor_eol();
-        }
-        else
-        {
-            cursor.col = (*cursor.line).begin();
-            std::advance(cursor.col, cursor.x);
-        }
-    }
-}
-
-void Editor::cursor_down()
-{
-    auto file = get_current_file();
-    assert(file);
-    auto& lines = file->lines;
-    Cursor& cursor = file->cursor;
-
-    if (cursor.y < lines.size() - 1)
-    {
-        ++cursor.y;
-        ++cursor.line;
-
-        std::list<char>& line_val = *cursor.line;
-        if (cursor.x >= line_val.size())
-        {
-            cursor.x = line_val.empty() ? 0 : line_val.size() - 1;
-        }
-
-        cursor.col = line_val.begin();
-        std::advance(cursor.col, cursor.x);
-    }
-}
-
-void Editor::cursor_left()
-{
-    auto file = get_current_file();
-    assert(file);
-    Cursor& cursor = file->cursor;
-
-    if (cursor.x > 0)
-    {
-        --cursor.x;
-        --cursor.col;
-    }
-}
-
-void Editor::cursor_right()
-{
-    auto file = get_current_file();
-    assert(file);
-    Cursor& cursor = file->cursor;
-    std::list<char>& line_val = *cursor.line;
-
-    if (line_val.size() > 0 && cursor.x < line_val.size() - 1)
-    {
-        ++cursor.x;
-        ++cursor.col;
-    }
-}
-
 void Editor::command(const std::string& command)
 {
     FileView* file_view = get_current_view();
@@ -193,54 +113,22 @@ void Editor::command(const std::string& command)
 void Editor::handle_insert_mode_event(unsigned c)
 {
     auto file = get_current_file();
-    assert(file);
-    std::list<char>& line_val = *file->cursor.line;
 
     switch (c)
     {
     case CTRL_ESCAPE:
-        cursor_left();
+        if (file) {
+            file->cursor_left();
+        }
         mode = NORMAL_MODE;
         break;
 
     default:
         if (PRINTABLE(c))
         {
-            file->cursor.col = line_val.insert(file->cursor.col, c);
-            file->cursor.col++;
-            file->cursor.x++;
-            // file->dirty_lines.push_back(file->cursor);
+            file->insert_character(c);
         }
     }
-}
-
-void Editor::redraw_line(Cursor info)
-{
-    // auto file = get_current_file();
-    // if (!file)
-    // {
-    //     return;
-    // }
-    // Scroll& scroll = file->scroll;
-
-    // int display_line = info.y - scroll.dy;
-    // if (display_line < 0 || display_line >= getmaxy(edit_window))
-    // {
-    //     return;
-    // }
-
-    // wmove(edit_window, display_line, 0);
-    // wclrtoeol(edit_window);
-    // int max_cols = getmaxx(edit_window);
-
-    // std::list<char>& line = *info.line;
-    // auto col_itr = line.begin();
-    // std::advance(col_itr, scroll.dx);
-    // int count_cols = 0;
-    // for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
-    // {
-    //     waddch(edit_window, *col_itr);
-    // }
 }
 
 void Editor::handle_normal_mode_event(unsigned c)
@@ -264,36 +152,35 @@ void Editor::handle_normal_mode_event(unsigned c)
         switch (c)
         {
         case 'h':
-            cursor_left();
+            file->cursor_left();
             break;
 
         case 'l':
-            cursor_right();
+            file->cursor_right();
             break;
 
         case 'j':
-            cursor_down();
+            file->cursor_down();
             break;
 
         case 'k':
-            cursor_up();
-            break;
-
-        case CTRL_ESCAPE:
-            statusline = "";
+            file->cursor_up();
             break;
 
         case '0':
-            file->cursor.x = 0;
-            file->cursor.col = (*file->cursor.line).begin();
+            file->move_begin();
             break;
 
         case '$':
-            move_cursor_eol();
+            file->move_cursor_eol();
             break;
 
         case 'i':
             mode = INSERT_MODE;
+            break;
+
+        case CTRL_ESCAPE:
+            statusline = "";
             break;
 
         case ':':
@@ -330,6 +217,11 @@ void Editor::show() {
 
 void Editor::draw()
 {
+    FileView* view = get_current_view();
+    if (view) {
+        view->scroll_to_ensure_cursor_visible();
+    }
+
     window_manager->draw();
     status_window->draw();
 
@@ -360,18 +252,15 @@ void Editor::draw()
     //     return;
     // }
 
-    FileView* view = get_current_view();
     std::shared_ptr<File> file = get_current_file();
     if (!file) {
         move(0, 0);
         return;
     }
 
-    Scroll& scroll = file->scroll;
-    Cursor& cursor = file->cursor;
+    int cy = view->get_display_y(file->cursor.y);
+    int cx = view->get_display_x(file->cursor.x);
 
-    int cy = cursor.y - scroll.dy;
-    int cx = cursor.x - scroll.dx;
     if (cy < 0 || cy >= view->height())
     {
         cy = 0;

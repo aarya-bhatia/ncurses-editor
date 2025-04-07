@@ -54,13 +54,6 @@ struct Editor
     void draw();
     void show();
 
-    void cursor_up();
-    void cursor_down();
-    void cursor_left();
-    void cursor_right();
-
-    void move_cursor_eol();
-    void scroll_to_ensure_cursor_visible();
     void force_redraw_editor();
     void redraw_line(Cursor);
 

@@ -54,6 +54,7 @@ int main()
     signal(SIGWINCH, handle_resize);
 
     Editor editor;
+    editor.open({"main.cpp"});
 
     while (!editor.quit)
     {

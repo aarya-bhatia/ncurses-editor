@@ -69,68 +69,61 @@ struct FileView : public ContentWindow
         window = NcursesWindow(bounds);
     }
 
-    int get_relative_y(int absy) const
+    int get_absolute_y(int rely) const
     {
-        return absy - page_scroll.dy;
+        return rely + bounds.y;
     }
 
-    int get_relative_x(int absx) const
+    int get_absolute_x(int relx) const
     {
-        return absx - page_scroll.dx;
+        return relx + bounds.x;
     }
 
-    int get_display_y(int absy) const
+    int get_display_y(int rely) const
     {
-        return get_relative_y(absy) - page_scroll.dy;
+        return rely - page_scroll.dy;
     }
 
-    int get_display_x(int absx) const
+    int get_display_x(int relx) const
     {
-        return get_relative_x(absx) - page_scroll.dx;
+        return relx - page_scroll.dx;
     }
 
     int height() const
     {
-        return getmaxy(window.get());
+        return bounds.height;
     }
 
     int width() const
     {
-        return getmaxx(window.get());
+        return bounds.width;
     }
 
-    bool adjust_page_scroll()
-    {
-        Cursor& cursor = file->cursor;
-
-        // adjust horizontal page_scroll
-        if (cursor.x - page_scroll.dx < 0)
-        {
-            log_debug("page_scrolling left");
-            page_scroll.dx = cursor.x;
-            return true;
-        }
-        else if (cursor.x - page_scroll.dx >= width())
-        {
-            log_debug("page_scrolling right");
-            page_scroll.dx = cursor.x - width() + 1;
-            return true;
-        }
-
-        // adjust vertical page_scroll
-        if (cursor.y - page_scroll.dy < 0)
-        {
-            log_debug("page_scrolling up");
-            page_scroll.dy = cursor.y;
-            return true;
-        }
-        else if (cursor.y - page_scroll.dy >= height())
-        {
-            log_debug("page_scrolling down");
-            page_scroll.dy = cursor.y - height() + 1;
-            return true;
-        }
-
-        return false;
-    }
+    bool scroll_to_ensure_cursor_visible();
 };
+
+// auto file = get_current_file();
+// if (!file)
+// {
+//     return;
+// }
+// Scroll& scroll = file->scroll;
+
+// int display_line = info.y - scroll.dy;
+// if (display_line < 0 || display_line >= getmaxy(edit_window))
+// {
+//     return;
+// }
+
+// wmove(edit_window, display_line, 0);
+// wclrtoeol(edit_window);
+// int max_cols = getmaxx(edit_window);
+
+// std::list<char>& line = *info.line;
+// auto col_itr = line.begin();
+// std::advance(col_itr, scroll.dx);
+// int count_cols = 0;
+// for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
+// {
+//     waddch(edit_window, *col_itr);
+// }

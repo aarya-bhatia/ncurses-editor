@@ -111,12 +111,16 @@ std::shared_ptr<File> FileManager::open_untitled_file()
 
 void FileManager::open_in_splith(std::shared_ptr<File> file) {
     ContentWindow* content = new FileView(file, window_manager->get_bounds());
-    window_manager->split_horizontal(content);
+    if (!window_manager->split_horizontal(content)) {
+        window_manager->set_content(content);
+    }
 }
 
 void FileManager::open_in_splitv(std::shared_ptr<File> file) {
     ContentWindow* content = new FileView(file, window_manager->get_bounds());
-    window_manager->split_vertical(content);
+    if (!window_manager->split_vertical(content)) {
+        window_manager->set_content(content);
+    }
 }
 
 void FileManager::open_in_current_window(std::shared_ptr<File> file)
