@@ -8,20 +8,17 @@
 
 Editor::Editor()
 {
-    this->window_manager = std::shared_ptr<IWindowManager>(new WindowManager(Dimension(0, 0, COLS, LINES - 2)));
-    this->file_manager = std::unique_ptr<FileManager>(new FileManager(this->window_manager));
-
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
+    this->window_manager = std::shared_ptr<IWindowManager>(new WindowManager(Dimension(0, 0, COLS, LINES - 2)));
+    this->file_manager = std::unique_ptr<FileManager>(new FileManager(this->window_manager));
     this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
-    this->console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
+    this->console_window = std::unique_ptr<ConsoleWindow>(new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1)));
 
     refresh();
 
     auto new_file = this->file_manager->open_untitled_file();
     this->file_manager->open_in_current_window(new_file);
-
-    move(0, 0);
 }
 
 void Editor::resize()
@@ -32,10 +29,8 @@ void Editor::resize()
     }
 
     log_info("resize(): lines:%d cols:%d", LINES, COLS);
-
-    status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
-    console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
-
+    status_window->resize(Dimension(0, LINES - 2, COLS, 1));
+    console_window->resize(Dimension(0, LINES - 1, COLS, 1));
     refresh();
 }
 
@@ -210,7 +205,7 @@ void Editor::handle_command_mode_event(unsigned c)
 void Editor::show() {
     window_manager->show();
     status_window->show();
-    wrefresh(console_window.get());
+    console_window->show();
 }
 
 void Editor::draw()
@@ -222,27 +217,7 @@ void Editor::draw()
 
     window_manager->draw();
     status_window->draw();
-
-    wclear(console_window.get());
-    wprintw(console_window.get(), "Console Window");
-
-    werase(console_window.get());
-    int ncols = getmaxx(console_window.get());
-    if (mode == COMMAND_MODE)
-    {
-        std::string tmp = ":" + mode_line;
-        if (tmp.size() >= ncols)
-        {
-            tmp = tmp.substr(tmp.size() - ncols - 1);
-        }
-        mvwprintw(console_window.get(), 0, 0, tmp.substr(0, ncols).c_str());
-    }
-    else
-    {
-        mvwprintw(console_window.get(), 0, 0, statusline.substr(0, ncols).c_str());
-    }
-
-    wrefresh(console_window.get());
+    console_window->draw();
 
     std::shared_ptr<File> file = get_current_file();
     if (!file) {

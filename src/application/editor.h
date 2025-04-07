@@ -9,6 +9,7 @@
 #include "file/FileManager.h"
 #include "window/IWindowManager.h"
 #include "StatusWindow.h"
+#include "ConsoleWindow.h"
 
 #include <ncurses.h>
 
@@ -30,8 +31,7 @@ struct Editor
     std::unique_ptr<FileManager> file_manager;
     std::shared_ptr<IWindowManager> window_manager;
     std::unique_ptr<StatusWindow> status_window;
-
-    NcursesWindow console_window;
+    std::unique_ptr<ConsoleWindow> console_window;
 
     std::string mode_line = "";
     std::string statusline = "";

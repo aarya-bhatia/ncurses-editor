@@ -2,19 +2,16 @@
 
 #include "NcursesWindow.h"
 #include <string>
-#include <vector>
 
 struct Editor;
 
-struct StatusWindow
+struct ConsoleWindow
 {
     Editor& editor;
     Dimension bounds;
     NcursesWindow window;
 
-    StatusWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {}
-
-    std::string get_status();
+    ConsoleWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {}
 
     void draw();
     void show();
