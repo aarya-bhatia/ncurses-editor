@@ -103,6 +103,7 @@ FileID FileManager::get_new_file_id() const
 
 std::shared_ptr<File> FileManager::open_untitled_file()
 {
+    log_info("opening untitled file.");
     size_t id = get_new_file_id();
     std::shared_ptr<File> new_file = std::shared_ptr<File>(new File(id, nullptr));
     _files.push_back(new_file);

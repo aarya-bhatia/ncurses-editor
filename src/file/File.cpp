@@ -7,6 +7,8 @@
 
 File::File(FileID id, const char* filename = nullptr)
 {
+    log_debug("File created with id:%d", id);
+
     this->id = id;
     this->filename = filename ? strdup(filename) : nullptr;
     this->lines.push_back({});
@@ -18,6 +20,11 @@ File::File(FileID id, const char* filename = nullptr)
 
 int File::load_file()
 {
+    if (!filename) {
+        log_warn("Cannot load untitled file.");
+        return 0;
+    }
+
     FILE* file = fopen(filename, "r");
     if (!file)
     {
@@ -50,6 +57,11 @@ int File::load_file()
 
 int File::save_file()
 {
+    if (!filename) {
+        log_warn("Cannot load untitled file.");
+        return 1;
+    }
+
     FILE* file = fopen(filename, "w");
     if (!file)
     {

@@ -54,7 +54,9 @@ int main()
     signal(SIGWINCH, handle_resize);
 
     Editor editor;
-    editor.open({ "main.cpp" });
+    // editor.open({ "main.cpp" });
+
+    assert(editor.file_manager->count_files() == 1);
 
     while (!editor.quit)
     {

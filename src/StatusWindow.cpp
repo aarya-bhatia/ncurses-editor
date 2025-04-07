@@ -31,8 +31,14 @@ std::string StatusWindow::get_status()
     }
     if (file)
     {
-        right_oss << file->filename << " | " << "Ln:" << file->cursor.y
-            << " Col:" << file->cursor.x;
+        if (file->filename) {
+            right_oss << file->filename;
+        }
+        else {
+            right_oss << "Untitled";
+        }
+
+        right_oss << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
     }
     else
     {

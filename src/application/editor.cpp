@@ -16,10 +16,11 @@ Editor::Editor()
     this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
     this->console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
 
-    // auto new_file = this->file_manager->open_untitled_file();
-    // this->file_manager->open_in_current_window(new_file);
-
     refresh();
+
+    auto new_file = this->file_manager->open_untitled_file();
+    this->file_manager->open_in_current_window(new_file);
+
     move(0, 0);
 }
 
