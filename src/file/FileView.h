@@ -17,6 +17,10 @@ struct FileView : public ContentWindow
         page_scroll.dy = 0;
     }
 
+    FileView(const FileView& other) :
+        FileView(other.file, other.bounds) {
+    }
+
     ContentType get_content_type() override { return ContentType::FileContent; }
 
     std::shared_ptr<void> get_model() override {

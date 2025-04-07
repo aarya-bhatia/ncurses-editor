@@ -12,6 +12,12 @@ void NcursesWindow::draw_till_eol(int y, int x, const std::string& content) {
     }
 }
 
+void NcursesWindow::draw_character(int y, int x, char c) {
+    if (is_valid_position(y, x)) {
+        mvwaddch(window.get(), y, x, c);
+    }
+}
+
 void NcursesWindow::clear() {
     wclear(window.get());
 }

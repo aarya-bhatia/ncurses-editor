@@ -97,6 +97,18 @@ void Editor::command(const std::string& command)
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         this->open(filenames);
     }
+    else if (!strncmp(command.c_str(), "sp", 2) || !strncmp(command.c_str(), "split", 5))
+    {
+        if (file_view) {
+            window_manager->split_horizontal(new FileView(*file_view));
+        }
+    }
+    else if (!strncmp(command.c_str(), "vs", 2) || !strncmp(command.c_str(), "vsplit", 6))
+    {
+        if (file_view) {
+            window_manager->split_vertical(new FileView(*file_view));
+        }
+    }
     else
     {
         statusline = "no such command";

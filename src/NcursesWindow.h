@@ -35,6 +35,7 @@ struct NcursesWindow : public Painter {
 
     void draw_line(int y, const std::string& content) override;
     void draw_till_eol(int y, int x, const std::string& content) override;
+    void draw_character(int y, int x, char c) override;
     void clear() override;
     void clear_line(int y) override;
     void clear_till_eol(int y, int x) override;
