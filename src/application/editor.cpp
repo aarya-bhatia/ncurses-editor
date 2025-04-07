@@ -82,7 +82,7 @@ void Editor::command(const std::string& command)
     FileView* file_view = get_current_view();
     std::shared_ptr<File> file = get_current_file();
 
-    if (command == "q")
+    if (command == "q" || command == "quit")
     {
         quit = true;
     }
@@ -111,7 +111,7 @@ void Editor::command(const std::string& command)
     }
     else
     {
-        statusline = "no such command";
+        statusline = "no such command: " + command;
     }
 }
 
@@ -207,11 +207,20 @@ void Editor::handle_command_mode_event(unsigned c)
         command(mode_line);
         break;
 
+    case CTRL_BACKSPACE:
+    case CTRL_DEL:
+        if (!mode_line.empty())
+        {
+            mode_line = mode_line.substr(0, mode_line.size() - 1);
+        }
+        break;
+
     default:
         if (PRINTABLE(c))
         {
             mode_line += c;
         }
+        break;
     }
 }
 
