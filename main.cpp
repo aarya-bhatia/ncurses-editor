@@ -47,16 +47,26 @@ void handle_resize(int sig)
     }
 }
 
-int main()
+int main(int argc, const char **argv)
 {
     init();
     init_screen();
     signal(SIGWINCH, handle_resize);
 
-    Editor editor;
-    // editor.open({ "main.cpp" });
+    std::vector<std::string> filenames;
+    for(const char** arg = argv + 1; *arg != NULL; arg++) {
+        filenames.push_back(std::string(*arg));
+    }
 
-    assert(editor.file_manager->count_files() == 1);
+    Editor editor;
+    editor.open(filenames);
+
+    if(editor.file_manager->count_files() == 0) {
+        auto new_file = editor.file_manager->open_untitled_file();
+        editor.file_manager->open_in_current_window(new_file);
+    }
+
+    assert(editor.file_manager->count_files() > 0);
 
     while (!editor.quit)
     {

@@ -16,9 +16,6 @@ Editor::Editor()
     this->console_window = std::unique_ptr<ConsoleWindow>(new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1)));
 
     refresh();
-
-    auto new_file = this->file_manager->open_untitled_file();
-    this->file_manager->open_in_current_window(new_file);
 }
 
 void Editor::resize()
@@ -83,10 +80,7 @@ std::shared_ptr<File> Editor::get_current_file()
 void Editor::command(const std::string& command)
 {
     FileView* file_view = get_current_view();
-    std::shared_ptr<File> file = nullptr;
-    if (file_view) {
-        file = file_view->file;
-    }
+    std::shared_ptr<File> file = get_current_file();
 
     if (command == "q")
     {
@@ -96,6 +90,12 @@ void Editor::command(const std::string& command)
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         this->open(filenames);
+    }
+    else if (strncmp(command.c_str(), "save", 5) == 0)
+    {
+        if(file) {
+            file->save_file();
+        }
     }
     else if (!strncmp(command.c_str(), "sp", 2) || !strncmp(command.c_str(), "split", 5))
     {
@@ -144,11 +144,13 @@ void Editor::handle_normal_mode_event(unsigned c)
         switch (c) {
         case CTRL_ESCAPE:
             statusline = "";
-            break;
+            return;
         case ':':
             mode = COMMAND_MODE;
             mode_line = "";
-            break;
+            return;
+        default: 
+            return;
         }
     }
     else {
@@ -158,40 +160,40 @@ void Editor::handle_normal_mode_event(unsigned c)
         {
         case 'h':
             file->cursor_left();
-            break;
+            return;
 
         case 'l':
             file->cursor_right();
-            break;
+            return;
 
         case 'j':
             file->cursor_down();
-            break;
+            return;
 
         case 'k':
             file->cursor_up();
-            break;
+            return;
 
         case '0':
             file->move_begin();
-            break;
+            return;
 
         case '$':
             file->move_cursor_eol();
-            break;
+            return;
 
         case 'i':
             mode = INSERT_MODE;
-            break;
+            return;
 
         case CTRL_ESCAPE:
             statusline = "";
-            break;
+            return;
 
         case ':':
             mode = COMMAND_MODE;
             mode_line = "";
-            break;
+            return;
         }
     }
 }
@@ -250,7 +252,7 @@ void Editor::draw()
         cx = 0;
         log_warn("illegal cursor or scroll value");
     }
-    log_debug("file:%d:'%s' display cursor: y:%d x:%d", file->id, file->filename, cy, cx);
+    // log_debug("file:%d:'%s' display cursor: y:%d x:%d", file->id, file->filename, cy, cx);
     move(cy, cx);
 }
 
