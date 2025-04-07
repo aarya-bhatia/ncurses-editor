@@ -18,7 +18,7 @@
 std::shared_ptr<File> FileManager::get_file(const char* filename)
 {
     for (auto& file : _files) {
-        if (!strncmp(file->filename, filename, strlen(filename))) {
+        if (file->filename != nullptr && !strncmp(file->filename, filename, strlen(filename))) {
             return file;
         }
     }

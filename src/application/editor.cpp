@@ -16,8 +16,8 @@ Editor::Editor()
     this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
     this->console_window = NcursesWindow(Dimension(0, LINES - 1, COLS, 1));
 
-    auto new_file = this->file_manager->open_untitled_file();
-    this->file_manager->open_in_current_window(new_file);
+    // auto new_file = this->file_manager->open_untitled_file();
+    // this->file_manager->open_in_current_window(new_file);
 
     refresh();
     move(0, 0);
@@ -228,29 +228,23 @@ void Editor::draw()
     wclear(console_window.get());
     wprintw(console_window.get(), "Console Window");
 
-    // werase(console_window);
-    // ncols = getmaxx(console_window);
-    // if (mode == COMMAND_MODE)
-    // {
-    //     std::string tmp = ":" + mode_line;
-    //     if (tmp.size() >= ncols)
-    //     {
-    //         tmp = tmp.substr(tmp.size() - ncols - 1);
-    //     }
-    //     mvwprintw(console_window, 0, 0, tmp.substr(0, ncols).c_str());
-    // }
-    // else
-    // {
-    //     mvwprintw(console_window, 0, 0, statusline.substr(0, ncols).c_str());
-    // }
+    werase(console_window.get());
+    int ncols = getmaxx(console_window.get());
+    if (mode == COMMAND_MODE)
+    {
+        std::string tmp = ":" + mode_line;
+        if (tmp.size() >= ncols)
+        {
+            tmp = tmp.substr(tmp.size() - ncols - 1);
+        }
+        mvwprintw(console_window.get(), 0, 0, tmp.substr(0, ncols).c_str());
+    }
+    else
+    {
+        mvwprintw(console_window.get(), 0, 0, statusline.substr(0, ncols).c_str());
+    }
 
-    // wrefresh(console_window);
-
-    // if (!file)
-    // {
-    //     move(0, 0);
-    //     return;
-    // }
+    wrefresh(console_window.get());
 
     std::shared_ptr<File> file = get_current_file();
     if (!file) {
