@@ -1,7 +1,10 @@
 #include "WindowResizeStrategies.h"
+#include "log.h"
 
 bool VSplitResizeStrategy::execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound)
 {
+    log_debug("Resizing child nodes to %d lines x %d cols", new_bound.height, new_bound.width);
+
     if (children.empty())
     {
         return false;

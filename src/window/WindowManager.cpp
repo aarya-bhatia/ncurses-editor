@@ -2,20 +2,25 @@
 #include "WindowManager.h"
 
 void WindowManager::set_content(ContentWindow* content_window) {
+    log_info("setting new window content node");
+
     assert(content_window);
     assert(content_window->get_content());
 
     if (!root_node) {
+        log_debug("root node added");
         assert(!current_node);
         current_node = root_node = content_window;
     }
     else if (current_node == root_node) {
+        log_debug("new root node");
         ContentWindow* tmp = current_node->get_content();
         assert(tmp);
         current_node = root_node = content_window;
         delete tmp;
     }
     else {
+        log_debug("swapping current node with new content");
         assert(current_node->parent);
         ContentWindow* tmp = current_node->get_content();
         assert(tmp);

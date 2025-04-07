@@ -13,6 +13,8 @@ struct FileView : public ContentWindow
 
     FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension()) : ContentWindow(bounds), file(file)
     {
+        page_scroll.dx = 0;
+        page_scroll.dy = 0;
     }
 
     ContentType get_content_type() override { return ContentType::FileContent; }
@@ -21,39 +23,7 @@ struct FileView : public ContentWindow
         return file;
     }
 
-    void draw() override {
-        if (window.get()) {
-            wclear(window.get());
-            wprintw(window.get(), "Test");
-        }
-
-        // werase(edit_window);
-
-        // if (!file)
-        // {
-        //     return;
-        // }
-        // Scroll& scroll = file->scroll;
-        // auto& lines = file->lines;
-
-        // auto line_itr = lines.begin();
-        // std::advance(line_itr, scroll.dy);
-        // int count_lines = 0;
-        // int max_lines, max_cols;
-        // getmaxyx(edit_window, max_lines, max_cols);
-        // for (; line_itr != lines.end() && count_lines < max_lines; line_itr++, count_lines++)
-        // {
-        //     wmove(edit_window, count_lines, 0);
-        //     auto& line = *line_itr;
-        //     auto col_itr = line.begin();
-        //     std::advance(col_itr, scroll.dx);
-        //     int count_cols = 0;
-        //     for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
-        //     {
-        //         waddch(edit_window, *col_itr);
-        //     }
-        // }
-    }
+    void draw() override;
 
     void show() override {
         if (window.get()) {

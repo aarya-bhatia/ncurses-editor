@@ -1,5 +1,6 @@
 #pragma once
 #include "Window.h"
+#include "log.h"
 #include <vector>
 
 struct WindowResizeStrategy
@@ -13,6 +14,8 @@ struct ProportionalResizeStrategy : public WindowResizeStrategy
 {
     bool execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound) override
     {
+        log_debug("Resizing child nodes to %d lines x %d cols", new_bound.height, new_bound.width);
+
         if (prev_bound.height == 0 || prev_bound.width == 0) {
             return false;
         }

@@ -100,10 +100,7 @@ void Editor::command(const std::string& command)
     else if (strncmp(command.c_str(), "open ", 5) == 0)
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
-        for (std::string& filename : filenames)
-        {
-            file_manager->open_file(filename.c_str());
-        }
+        this->open(filenames);
     }
     else
     {
@@ -266,7 +263,7 @@ void Editor::draw()
         cx = 0;
         log_warn("illegal cursor or scroll value");
     }
-    log_debug("display cursor: y:%d x:%d", cy, cx);
+    log_debug("file:%d:'%s' display cursor: y:%d x:%d", file->id, file->filename, cy, cx);
     move(cy, cx);
 }
 

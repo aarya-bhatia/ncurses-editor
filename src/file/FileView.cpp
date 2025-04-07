@@ -34,3 +34,27 @@ bool FileView::scroll_to_ensure_cursor_visible()
 
     return false;
 }
+
+void FileView::draw() {
+    if (!window.get()) {
+        return;
+    }
+
+    wclear(window.get());
+
+    auto line_itr = file->lines.begin();
+    std::advance(line_itr, page_scroll.dy);
+    int count_lines = 0;
+    for (; line_itr != file->lines.end() && count_lines < height(); line_itr++, count_lines++)
+    {
+        wmove(window.get(), count_lines, 0);
+        auto& line = *line_itr;
+        auto col_itr = line.begin();
+        std::advance(col_itr, page_scroll.dx);
+        int count_cols = 0;
+        for (; col_itr != line.end() && count_cols < width(); col_itr++, count_cols++)
+        {
+            waddch(window.get(), *col_itr);
+        }
+    }
+}
