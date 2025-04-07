@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <memory>
 #include "window/Dimension.h"
+#include "Painter.h"
 
 struct WindowDeleter {
     void operator()(WINDOW* window) const {
@@ -11,7 +12,7 @@ struct WindowDeleter {
     }
 };
 
-struct NcursesWindow {
+struct NcursesWindow : public Painter {
     std::unique_ptr<WINDOW, WindowDeleter> window;
 
     NcursesWindow() {
@@ -23,6 +24,20 @@ struct NcursesWindow {
         );
     }
 
+    int height() const { return getmaxy(window.get()); }
+    int width() const { return getmaxx(window.get()); }
+
     WINDOW* get() const noexcept { return window.get(); }
+
+    bool is_valid_position(int y, int x) {
+        return x >= 0 && y >= 0 && x < width() && y < height();
+    }
+
+    void draw_line(int y, const std::string& content) override;
+    void draw_till_eol(int y, int x, const std::string& content) override;
+    void clear() override;
+    void clear_line(int y) override;
+    void clear_till_eol(int y, int x) override;
+    void move(int y, int x) override;
 };
 
