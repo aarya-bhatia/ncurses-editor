@@ -4,6 +4,7 @@
 #include <list>
 #include "Cursor.h"
 #include "Scroll.h"
+#include "FileSubscriber.h"
 
 typedef unsigned int FileID;
 
@@ -13,6 +14,8 @@ struct File
     char* filename;
     std::list<std::list<char>> lines;
     Cursor cursor;
+    
+    std::vector<FileSubscriber *> subscribers;
 
     File(FileID id, const char* filename);
 
@@ -20,9 +23,18 @@ struct File
     {
         free(this->filename);
         this->filename = nullptr;
+        this->subscribers.clear();
     }
 
     FileID get_id() const { return this->id; }
+
+    bool operator==(const File &other) { return this->id == other.id; }
+    bool operator!=(const File &other) { return !(*this == other); }
+
+    void add_subscriber(FileSubscriber *subscriber)
+    {
+        subscribers.push_back(subscriber);
+    }
 
     void set_filename(const char* filename)
     {

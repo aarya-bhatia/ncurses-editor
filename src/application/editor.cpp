@@ -234,9 +234,6 @@ void Editor::show() {
 void Editor::draw()
 {
     FileView* view = get_current_view();
-    if (view) {
-        view->scroll_to_ensure_cursor_visible();
-    }
 
     window_manager->draw();
     status_window->draw();
@@ -261,7 +258,7 @@ void Editor::draw()
         cx = 0;
         log_warn("illegal cursor or scroll value");
     }
-    // log_debug("file:%d:'%s' display cursor: y:%d x:%d", file->id, file->filename, cy, cx);
+
     move(cy, cx);
 }
 

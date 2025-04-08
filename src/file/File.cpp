@@ -52,6 +52,10 @@ int File::load_file()
     cursor.line = lines.begin();
     cursor.col = lines.front().begin();
 
+    for(auto &subscriber: subscribers) {
+        subscriber->on_file_reload(*this);
+    }
+
     return 0;
 }
 
@@ -169,4 +173,12 @@ void File::insert_character(int c)
     cursor.col = cursor.line->insert(cursor.col, c);
     cursor.col++;
     cursor.x++;
+
+    Cursor insert_position = cursor;
+    insert_position.col--;
+    insert_position.x--;
+
+    for(auto &subsciber: subscribers) {
+        subsciber->on_insert_character(*this, insert_position, c);
+    }
 }

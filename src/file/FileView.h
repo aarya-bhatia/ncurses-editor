@@ -1,25 +1,39 @@
 #pragma once
 
 #include <ncurses.h>
-#include "File.h"
 #include "window/ContentWindow.h"
+#include "file/File.h"
+#include "file/FileSubscriber.h"
 #include "NcursesWindow.h"
 
-struct FileView : public ContentWindow
+struct FileView : public ContentWindow, FileSubscriber
 {
     std::shared_ptr<File> file;
     NcursesWindow window;
     Scroll page_scroll;
+    bool redraw = true;
 
     FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension()) : ContentWindow(bounds), file(file)
     {
         page_scroll.dx = 0;
         page_scroll.dy = 0;
+
+        file->add_subscriber(this);
     }
 
     FileView(const FileView& other) :
         FileView(other.file, other.bounds) {
     }
+
+    void on_file_reload(File& file) override {
+        redraw = true;
+    }
+
+    bool is_visible(int y, int x) const {
+        return y >= 0 && x >= 0 && y < height() && x < width();
+    }
+
+    void on_insert_character(File& file, Cursor position, char c) override;
 
     ContentType get_content_type() override { return ContentType::FileContent; }
 
@@ -41,6 +55,7 @@ struct FileView : public ContentWindow
         }
         ContentWindow::resize(bounds);
         window = NcursesWindow(bounds);
+        redraw = true;
     }
 
     int get_absolute_y(int rely) const

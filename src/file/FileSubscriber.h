@@ -3,17 +3,10 @@
 #include "Cursor.h"
 #include "Scroll.h"
 
+struct File;
 struct FileSubscriber
 {
     virtual ~FileSubscriber() = default;
-
-    virtual void line_changed(int y) = 0;
-    virtual void line_added(int y) = 0;
-    virtual void line_removed(int y) = 0;
-
-    virtual void cursor_changed(Cursor cur_prev, Cursor cur_new) = 0;
-    virtual void scroll_changed(Scroll scroll_prev, Scroll scroll_new) = 0;
-
-    virtual void file_loaded() = 0;
-    virtual void file_closed() = 0;
+    virtual void on_file_reload(File &file) = 0;
+    virtual void on_insert_character(File &file, Cursor position, char c) = 0;
 };

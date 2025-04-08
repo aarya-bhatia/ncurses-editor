@@ -1,4 +1,5 @@
 #include "FileView.h"
+#include <assert.h>
 
 bool FileView::scroll_to_ensure_cursor_visible()
 {
@@ -40,21 +41,53 @@ void FileView::draw() {
         return;
     }
 
-    wclear(window.get());
+    if (scroll_to_ensure_cursor_visible()) {
+        redraw = true;
+    }
+
+    if (!redraw) { return; }
+
+    window.clear();
 
     auto line_itr = file->lines.begin();
     std::advance(line_itr, page_scroll.dy);
     int count_lines = 0;
     for (; line_itr != file->lines.end() && count_lines < height(); line_itr++, count_lines++)
     {
-        wmove(window.get(), count_lines, 0);
+        window.move(count_lines, 0);
         auto& line = *line_itr;
         auto col_itr = line.begin();
         std::advance(col_itr, page_scroll.dx);
         int count_cols = 0;
         for (; col_itr != line.end() && count_cols < width(); col_itr++, count_cols++)
         {
-            waddch(window.get(), *col_itr);
+            window.draw_character(count_lines, count_cols, *col_itr);
         }
+    }
+
+    redraw = false;
+}
+
+void FileView::on_insert_character(File& file, Cursor position, char c)
+{
+    if (*this->file.get() != file) {
+        return;
+    }
+
+    log_debug("redrawing partial line on insert character at Ln:%d Col:%d", position.y, position.x);
+
+    window.clear_till_eol(position.y, position.x);
+    auto col_itr = position.col;
+    assert(*col_itr == c);
+
+    for (int x = position.x; x < position.line->size() && col_itr != position.line->end(); x++, col_itr++) {
+        int dpy = get_display_y(position.y);
+        int dpx = get_display_x(x);
+        if (!is_visible(dpy, dpx)) {
+            break;
+        }
+
+        char ch = *col_itr;
+        window.draw_character(dpy, dpx, ch);
     }
 }
