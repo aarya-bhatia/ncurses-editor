@@ -33,7 +33,7 @@ struct Editor
     std::unique_ptr<StatusWindow> status_window;
     std::unique_ptr<ConsoleWindow> console_window;
 
-    std::vector<std::unique_ptr<Command>> commands;
+    std::list<std::unique_ptr<Command>> commands;
 
     std::string mode_line = "";
     std::string statusline = "";
