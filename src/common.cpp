@@ -26,9 +26,9 @@ int char_type(char c)
     return C_UNDEFINED;
 }
 
-std::list<std::string> readlines(const char *filename)
+std::list<std::string> readlines(const char* filename)
 {
-    FILE *file = fopen(filename, "r");
+    FILE* file = fopen(filename, "r");
     if (!file)
     {
         perror("fopen");
@@ -36,7 +36,7 @@ std::list<std::string> readlines(const char *filename)
     }
 
     std::list<std::string> ans;
-    char *line = NULL;
+    char* line = NULL;
     size_t len = 0;
     ssize_t nread;
     while ((nread = getline(&line, &len, file)) > 0)
@@ -53,7 +53,7 @@ std::list<std::string> readlines(const char *filename)
 }
 
 // Get list of non-empty tokens from 'line' separated by the exact substring of 'delim'.
-std::vector<std::string> splitwords(const std::string &line, const std::string &delim)
+std::vector<std::string> splitwords(const std::string& line, const std::string& delim)
 {
     std::vector<std::string> tokens;
     size_t start = 0, end;
@@ -73,4 +73,9 @@ std::vector<std::string> splitwords(const std::string &line, const std::string &
     }
 
     return tokens;
+}
+
+bool is_number(const std::string& str) {
+    return !str.empty() &&
+        std::all_of(str.begin(), str.end(), ::isdigit);
 }

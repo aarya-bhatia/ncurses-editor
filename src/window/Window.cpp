@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "ContainerWindow.h"
 #include "ContentWindow.h"
+#include <assert.h>
+#include "log.h"
 
 bool Window::resizable(Dimension bounds) {
     if (get_container()) {
@@ -14,9 +16,9 @@ bool Window::resizable(Dimension bounds) {
 }
 
 void Window::resize(Dimension bounds) {
-    if (!resizable(bounds)) {
-        return;
-    }
+    if (get_container()) log_debug("resizing container window to %d lines x %d cols", bounds.height, bounds.width);
+    else log_debug("resizing content window to %d lines x %d cols", bounds.height, bounds.width);
+    assert(resizable(bounds));
 
     if (get_container()) {
         ContainerWindow* container = get_container();

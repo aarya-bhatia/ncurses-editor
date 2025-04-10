@@ -39,6 +39,12 @@ std::string StatusWindow::get_status()
         }
 
         right_oss << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
+
+        if (file->count_lines() > 0) {
+            float percent_read = 100.0 * (1 + file->cursor.y) / file->count_lines();
+            int rounded = std::round(percent_read * 10.0f) / 10.0f;
+            right_oss << " | " << rounded << "%%";
+        }
     }
     else
     {

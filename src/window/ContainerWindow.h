@@ -12,6 +12,8 @@ struct ContainerWindow : public Window
 
     virtual ~ContainerWindow();
 
+    std::vector<Window*>& get_children() { return children; }
+
     size_t count_children() const { return children.size(); }
 
     bool has_child(Window* child) const;

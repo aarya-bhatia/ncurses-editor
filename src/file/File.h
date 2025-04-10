@@ -14,8 +14,8 @@ struct File
     char* filename;
     std::list<std::list<char>> lines;
     Cursor cursor;
-    
-    std::vector<FileSubscriber *> subscribers;
+
+    std::vector<FileSubscriber*> subscribers;
 
     File(FileID id, const char* filename);
 
@@ -28,10 +28,10 @@ struct File
 
     FileID get_id() const { return this->id; }
 
-    bool operator==(const File &other) { return this->id == other.id; }
-    bool operator!=(const File &other) { return !(*this == other); }
+    bool operator==(const File& other) { return this->id == other.id; }
+    bool operator!=(const File& other) { return !(*this == other); }
 
-    void add_subscriber(FileSubscriber *subscriber)
+    void add_subscriber(FileSubscriber* subscriber)
     {
         subscribers.push_back(subscriber);
     }
@@ -68,6 +68,8 @@ struct File
     void cursor_left();
     void cursor_right();
     void move_cursor_eol();
+    void move_cursor_eof();
+    void goto_line(int line_no);
     void move_begin();
 
     void insert_character(int c);

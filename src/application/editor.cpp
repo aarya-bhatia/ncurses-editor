@@ -77,10 +77,12 @@ std::shared_ptr<File> Editor::get_current_file()
     return std::static_pointer_cast<File>(file_view->get_model());
 }
 
+
 void Editor::command(const std::string& command)
 {
     FileView* file_view = get_current_view();
     std::shared_ptr<File> file = get_current_file();
+    log_debug("Got command: %s", command.c_str());
 
     if (command == "q" || command == "quit")
     {
@@ -93,7 +95,7 @@ void Editor::command(const std::string& command)
     }
     else if (strncmp(command.c_str(), "save", 5) == 0)
     {
-        if(file) {
+        if (file) {
             file->save_file();
         }
     }
@@ -107,6 +109,12 @@ void Editor::command(const std::string& command)
     {
         if (file_view) {
             window_manager->split_vertical(new FileView(*file_view));
+        }
+    }
+    else if (is_number(command))
+    {
+        if (file) {
+            file->goto_line(atoi(command.c_str()));
         }
     }
     else
@@ -149,7 +157,7 @@ void Editor::handle_normal_mode_event(unsigned c)
             mode = COMMAND_MODE;
             mode_line = "";
             return;
-        default: 
+        default:
             return;
         }
     }
@@ -180,6 +188,14 @@ void Editor::handle_normal_mode_event(unsigned c)
 
         case '$':
             file->move_cursor_eol();
+            return;
+
+        case 'G':
+            file->move_cursor_eof();
+            return;
+
+        case 'g':
+            file->goto_line(0);
             return;
 
         case 'i':

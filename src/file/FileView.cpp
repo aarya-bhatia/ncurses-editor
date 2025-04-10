@@ -74,7 +74,7 @@ void FileView::on_insert_character(File& file, Cursor position, char c)
         return;
     }
 
-    log_debug("redrawing partial line on insert character at Ln:%d Col:%d", position.y, position.x);
+    log_debug("partial redraw at Ln:%d Col:%d", position.y, position.x);
 
     window.clear_till_eol(position.y, position.x);
     auto col_itr = position.col;

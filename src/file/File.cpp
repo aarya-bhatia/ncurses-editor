@@ -52,7 +52,7 @@ int File::load_file()
     cursor.line = lines.begin();
     cursor.col = lines.front().begin();
 
-    for(auto &subscriber: subscribers) {
+    for (auto& subscriber : subscribers) {
         subscriber->on_file_reload(*this);
     }
 
@@ -142,6 +142,23 @@ void File::move_cursor_eol()
     cursor.x = cursor.line->empty() ? 0 : cursor.line->size() - 1;
 }
 
+void File::move_cursor_eof()
+{
+    log_info("jump to last line");
+    if (count_lines() > 0) {
+        goto_line(count_lines() - 1);
+    }
+}
+
+void File::goto_line(int line_no)
+{
+    if (line_no < 0 || line_no >= count_lines()) {
+        return;
+    }
+
+    _move_cursor_y(line_no - cursor.y);
+}
+
 void File::cursor_up()
 {
     _move_cursor_y(-1);
@@ -178,7 +195,7 @@ void File::insert_character(int c)
     insert_position.col--;
     insert_position.x--;
 
-    for(auto &subsciber: subscribers) {
+    for (auto& subsciber : subscribers) {
         subsciber->on_insert_character(*this, insert_position, c);
     }
 }

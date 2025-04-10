@@ -10,33 +10,29 @@ void WindowManager::set_content(ContentWindow* content_window) {
     if (!root_node) {
         log_debug("root node added");
         assert(!current_node);
-        current_node = root_node = content_window;
+        root_node = content_window;
     }
     else if (current_node == root_node) {
         log_debug("new root node");
-        ContentWindow* tmp = current_node->get_content();
-        assert(tmp);
-        current_node = root_node = content_window;
-        delete tmp;
+        root_node = content_window;
     }
     else {
         log_debug("swapping current node with new content");
         assert(current_node->parent);
-        ContentWindow* tmp = current_node->get_content();
-        assert(tmp);
         current_node->parent->swap_child(current_node, content_window);
-        delete tmp;
     }
 
     if (content_window->parent) {
+        assert(content_window != root_node);
         content_window->parent->arrange_children();
     }
     else {
+        assert(content_window == root_node);
         content_window->resize(screen_bounds);
     }
 
     assert(root_node);
-    current_node = content_window;
+    delete current_node; current_node = content_window;
 }
 
 ContentWindow* WindowManager::get_content_node() {
@@ -45,7 +41,9 @@ ContentWindow* WindowManager::get_content_node() {
     }
 
     if (root_node) {
-        return _find_content_node(root_node);
+        if ((current_node = _find_content_node(root_node)) != nullptr) {
+            return current_node->get_content();
+        }
     }
 
     log_info("No content node");
@@ -60,7 +58,7 @@ ContentWindow* WindowManager::_find_content_node(Window* node)
 
     assert(node->get_container());
 
-    for (auto child : node->get_container()->children) {
+    for (auto child : node->get_container()->get_children()) {
         ContentWindow* result = _find_content_node(child);
         if (result) {
             return result;
@@ -87,10 +85,14 @@ void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_
     split_container->add_child(current_node);
     split_container->add_child(new_content);
     split_container->arrange_children();
+
+    assert(current_node->parent == split_container);
+    assert(split_container->count_children() >= 2);
+    assert(split_container->get_children().front() == current_node);
 }
 
 bool WindowManager::split_horizontal(ContentWindow* new_content) {
-    if (!current_node) {
+    if (!current_node || !current_node->get_content()) {
         return false;
     }
 
@@ -100,7 +102,7 @@ bool WindowManager::split_horizontal(ContentWindow* new_content) {
 }
 
 bool WindowManager::split_vertical(ContentWindow* new_content) {
-    if (!current_node) {
+    if (!current_node || !current_node->get_content()) {
         return false;
     }
 
