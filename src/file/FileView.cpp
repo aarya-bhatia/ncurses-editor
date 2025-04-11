@@ -68,26 +68,54 @@ void FileView::draw() {
     redraw = false;
 }
 
-void FileView::on_insert_character(File& file, Cursor position, char c)
+void FileView::partial_draw_character(Cursor position)
 {
-    if (*this->file.get() != file) {
+    int dpy = get_display_y(position.y);
+    int dpx = get_display_x(position.x);
+    if (!is_visible(dpy, dpx)) {
         return;
     }
+    window.draw_character(dpy, dpx, *position.col);
+}
 
+void FileView::partial_draw_line(Cursor position)
+{
     log_debug("partial redraw at Ln:%d Col:%d", position.y, position.x);
 
     window.clear_till_eol(position.y, position.x);
     auto col_itr = position.col;
-    assert(*col_itr == c);
-
     for (int x = position.x; x < position.line->size() && col_itr != position.line->end(); x++, col_itr++) {
         int dpy = get_display_y(position.y);
         int dpx = get_display_x(x);
         if (!is_visible(dpy, dpx)) {
             break;
         }
-
         char ch = *col_itr;
         window.draw_character(dpy, dpx, ch);
     }
+}
+
+void FileView::on_insert_character(File& file, Cursor position, char c)
+{
+    if (*this->file.get() != file) {
+        return;
+    }
+
+    partial_draw_line(position);
+}
+
+void FileView::on_erase_character(File& file, Cursor position) {
+    if (*this->file.get() != file) {
+        return;
+    }
+
+    partial_draw_line(position);
+}
+
+void FileView::on_replace_character(File& file, Cursor position) {
+    if (*this->file.get() != file) {
+        return;
+    }
+
+    partial_draw_character(position);
 }

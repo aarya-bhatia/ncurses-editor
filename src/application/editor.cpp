@@ -5,6 +5,8 @@
 #include "log.h"
 #include <sys/types.h>
 #include "window/WindowManager.h"
+#include "file/FileView.h"
+#include "file/FileSubscriber.h"
 
 Editor::Editor()
 {

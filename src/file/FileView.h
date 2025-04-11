@@ -33,7 +33,12 @@ struct FileView : public ContentWindow, FileSubscriber
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
 
+    void partial_draw_character(Cursor position);
+    void partial_draw_line(Cursor position);
+
     void on_insert_character(File& file, Cursor position, char c) override;
+    void on_erase_character(File& file, Cursor position) override;
+    void on_replace_character(File& file, Cursor position) override;
 
     ContentType get_content_type() override { return ContentType::FileContent; }
 
@@ -90,29 +95,3 @@ struct FileView : public ContentWindow, FileSubscriber
 
     bool scroll_to_ensure_cursor_visible();
 };
-
-// auto file = get_current_file();
-// if (!file)
-// {
-//     return;
-// }
-// Scroll& scroll = file->scroll;
-
-// int display_line = info.y - scroll.dy;
-// if (display_line < 0 || display_line >= getmaxy(edit_window))
-// {
-//     return;
-// }
-
-// wmove(edit_window, display_line, 0);
-// wclrtoeol(edit_window);
-// int max_cols = getmaxx(edit_window);
-
-// std::list<char>& line = *info.line;
-// auto col_itr = line.begin();
-// std::advance(col_itr, scroll.dx);
-// int count_cols = 0;
-// for (; col_itr != line.end() && count_cols < max_cols; col_itr++, count_cols++)
-// {
-//     waddch(edit_window, *col_itr);
-// }

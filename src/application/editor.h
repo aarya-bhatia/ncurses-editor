@@ -10,6 +10,7 @@
 #include "window/IWindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
+#include "commands/Command.h"
 
 #include <ncurses.h>
 
@@ -32,6 +33,8 @@ struct Editor
     std::shared_ptr<IWindowManager> window_manager;
     std::unique_ptr<StatusWindow> status_window;
     std::unique_ptr<ConsoleWindow> console_window;
+
+    std::vector<std::unique_ptr<Command>> commands;
 
     std::string mode_line = "";
     std::string statusline = "";
