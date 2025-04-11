@@ -16,6 +16,7 @@ struct File
     Cursor cursor;
 
     std::vector<FileSubscriber*> subscribers;
+    std::string normal_mode_buffer = "";
 
     File(FileID id, const char* filename);
 

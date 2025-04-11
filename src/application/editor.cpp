@@ -197,7 +197,13 @@ void Editor::handle_normal_mode_event(unsigned c)
             return;
 
         case 'g':
-            file->goto_line(0);
+            if (file->normal_mode_buffer == "g") {
+                file->normal_mode_buffer = "";
+                file->goto_line(0);
+            }
+            else {
+                file->normal_mode_buffer += c;
+            }
             return;
 
         case 'i':
@@ -206,6 +212,7 @@ void Editor::handle_normal_mode_event(unsigned c)
 
         case CTRL_ESCAPE:
             statusline = "";
+            file->normal_mode_buffer.clear();
             return;
 
         case ':':

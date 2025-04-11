@@ -45,10 +45,14 @@ std::string StatusWindow::get_status()
             int rounded = std::round(percent_read * 10.0f) / 10.0f;
             right_oss << " | " << rounded << "%%";
         }
+
+        if (!file->normal_mode_buffer.empty()) {
+            right_oss << " | " << file->normal_mode_buffer;
+        }
     }
     else
     {
-        right_oss << "no file" << " | " << "Ln:0 Col:0";
+        right_oss << "no file";
     }
 
     std::string left_str = left_oss.str();
