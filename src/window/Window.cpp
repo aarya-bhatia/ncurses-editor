@@ -3,6 +3,7 @@
 #include "ContentWindow.h"
 #include <assert.h>
 #include "log.h"
+#include <string>
 
 bool Window::resizable(Dimension bounds) {
     if (get_container()) {
@@ -26,4 +27,8 @@ void Window::resize(Dimension bounds) {
     }
 
     this->bounds = bounds;
+}
+
+std::string Window::debug_string()const {
+    return "window-" + std::to_string(id);
 }

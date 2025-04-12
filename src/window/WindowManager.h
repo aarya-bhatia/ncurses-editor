@@ -5,6 +5,7 @@
 #include "ContentWindow.h"
 #include "ContainerWindow.h"
 #include <assert.h>
+#include "SequenceGenerator.h"
 
 struct WindowManager : public IWindowManager
 {
@@ -12,46 +13,25 @@ struct WindowManager : public IWindowManager
     Window* root_node = nullptr;
     Window* current_node = nullptr;
 
-    WindowManager(Dimension bounds) : screen_bounds(bounds) {
-    }
+    LinearSequenceGenerator<int> window_id_generator;
 
-    ~WindowManager() {
-        delete root_node;
-        root_node = current_node = nullptr;
-    }
+    WindowManager(Dimension bounds);
+    ~WindowManager();
 
     Dimension get_bounds() const override { return screen_bounds; }
 
-    bool resize(Dimension bounds) override {
-        if (root_node && root_node->resizable(bounds)) {
-            root_node->resize(bounds);
-            screen_bounds = bounds;
-            return true;
-        }
+    void draw() override { if (root_node) { root_node->draw(); } }
+    void show() override { if (root_node) { root_node->show(); } }
 
-        return false;
-    }
-
+    bool resize(Dimension bounds) override;
     void focus(ContentWindow* node) override;
     void unfocus(ContentWindow* node) override;
-
     void set_content(ContentWindow* content_window) override;
     ContentWindow* get_content_node() override;
-
-    void draw() override {
-        if (root_node) { root_node->draw(); }
-    }
-
-    void show() override {
-        if (root_node) { root_node->show(); }
-    }
-
     bool split_vertical(ContentWindow* new_content) override;
     bool split_horizontal(ContentWindow* new_content) override;
-
     ContentWindow* _find_content_node(Window* node);
     void _split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content);
-
     ContentWindow* get_content_node_right(Window* current) override;
     ContentWindow* get_content_node_left(Window* current) override;
     ContentWindow* get_content_node_top(Window* current) override;

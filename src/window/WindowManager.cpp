@@ -3,6 +3,25 @@
 #include "HSplitContainerWindow.h"
 #include "VSplitContainerWindow.h"
 
+WindowManager::WindowManager(Dimension bounds) : screen_bounds(bounds), window_id_generator(1) {
+}
+
+WindowManager::~WindowManager() {
+    delete root_node;
+    root_node = current_node = nullptr;
+}
+
+bool WindowManager::resize(Dimension bounds) {
+    if (root_node && root_node->resizable(bounds)) {
+        root_node->resize(bounds);
+        screen_bounds = bounds;
+        return true;
+    }
+
+    return false;
+}
+
+
 void WindowManager::focus(ContentWindow* node)
 {
     assert(node);
@@ -59,6 +78,8 @@ void WindowManager::set_content(ContentWindow* content_window) {
     assert(root_node);
     delete current_node; current_node = content_window;
     current_node->on_focus();
+
+    content_window->id = window_id_generator.next();
 }
 
 ContentWindow* WindowManager::get_content_node() {

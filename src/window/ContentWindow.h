@@ -29,8 +29,8 @@ struct ContentWindow : public Window
         return "[content window at " + bounds.debug_string() + "]";
     }
 
-    Window* get_right_most_content_node() override { return this; }
-    Window* get_left_most_content_node() override { return this; }
-    Window* get_top_most_content_node() override { return this; }
-    Window* get_bottom_most_content_node() override { return this; }
+    ContentWindow* get_right_most_content_node() override { return this; }
+    ContentWindow* get_left_most_content_node() override { return this; }
+    ContentWindow* get_top_most_content_node() override { return this; }
+    ContentWindow* get_bottom_most_content_node() override { return this; }
 };

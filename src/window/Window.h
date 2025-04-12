@@ -7,6 +7,7 @@ struct ContentWindow;
 
 struct Window
 {
+    int id = 0;
     static const unsigned MIN_WINDOW_SIZE = 10;
 
     Dimension bounds;
@@ -39,4 +40,6 @@ struct Window
     virtual ContentWindow* get_left_most_content_node() { return nullptr; }
     virtual ContentWindow* get_top_most_content_node() { return nullptr; }
     virtual ContentWindow* get_bottom_most_content_node() { return nullptr; }
+
+    virtual std::string debug_string() const;
 };
