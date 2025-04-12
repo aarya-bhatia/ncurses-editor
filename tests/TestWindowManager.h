@@ -34,4 +34,11 @@ struct TestWindowManager : public IWindowManager
     bool split_horizontal(ContentWindow* new_content) {
         return false;
     }
+
+    void focus(ContentWindow* node) {}
+    void unfocus(ContentWindow* node) {}
+    ContentWindow* get_content_node_right(Window* current) { return nullptr; }
+    ContentWindow* get_content_node_left(Window* current) { return nullptr; }
+    ContentWindow* get_content_node_top(Window* current) { return nullptr; }
+    ContentWindow* get_content_node_bottom(Window* current) { return nullptr; }
 };
