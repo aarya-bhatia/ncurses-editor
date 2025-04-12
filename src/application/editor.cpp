@@ -293,7 +293,12 @@ void Editor::handle_command_mode_event(unsigned c)
 
     case CTRL_BACKSPACE:
     case CTRL_DEL:
-        if (!mode_line.empty())
+        if (mode_line.empty())
+        {
+            mode = NORMAL_MODE;
+            break;
+        }
+        else
         {
             mode_line = mode_line.substr(0, mode_line.size() - 1);
         }
