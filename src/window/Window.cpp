@@ -30,5 +30,5 @@ void Window::resize(Dimension bounds) {
 }
 
 std::string Window::debug_string()const {
-    return "window-" + std::to_string(id);
+    return "window-" + std::to_string(id) + "+" + bounds.debug_string();
 }

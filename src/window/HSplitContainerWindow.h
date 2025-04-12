@@ -14,4 +14,8 @@ struct HSplitContainerWindow : public ContainerWindow
 
     ContentWindow* get_top_most_content_node() override;
     ContentWindow* get_bottom_most_content_node() override;
+
+    std::string debug_string() const override {
+        return "hsplit-" + ContainerWindow::debug_string();
+    }
 };

@@ -25,8 +25,8 @@ struct ContentWindow : public Window
         log_info("Lost focus from %s", debug_string().c_str());
     }
 
-    std::string debug_string() {
-        return "[content window at " + bounds.debug_string() + "]";
+    std::string debug_string() const override {
+        return "content-" + Window::debug_string();
     }
 
     ContentWindow* get_right_most_content_node() override { return this; }

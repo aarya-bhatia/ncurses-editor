@@ -10,12 +10,16 @@ struct SequenceGenerator
 };
 
 template<typename T>
-struct LinearSequenceGenerator : public SequenceGenerator {
+struct LinearSequenceGenerator : public SequenceGenerator<T> {
     T current;
 
     LinearSequenceGenerator(T start) : current(start) {}
 
-    virtual T next() {
+    void reset(T start) override {
+        current = start;
+    }
+
+    T next() override {
         int ret = current;
         current = current + 1;
         return ret;

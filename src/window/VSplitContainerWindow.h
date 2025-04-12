@@ -14,4 +14,8 @@ struct VSplitContainerWindow : public ContainerWindow
 
     ContentWindow* get_left_most_content_node() override;
     ContentWindow* get_right_most_content_node() override;
+
+    std::string debug_string() const override {
+        return "vsplit-" + ContainerWindow::debug_string();
+    }
 };

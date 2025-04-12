@@ -35,4 +35,8 @@ struct ContainerWindow : public Window
 
     void draw() override;
     void show() override;
+
+    std::string debug_string() const override {
+        return "container-" + Window::debug_string();
+    }
 };
