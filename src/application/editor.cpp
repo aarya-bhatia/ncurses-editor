@@ -279,6 +279,10 @@ void Editor::draw()
 {
     FileView* view = get_current_view();
 
+    if (view) {
+        view->scroll_to_ensure_cursor_visible();
+    }
+
     window_manager->draw();
     status_window->draw();
     console_window->draw();

@@ -41,10 +41,6 @@ void FileView::draw() {
         return;
     }
 
-    if (scroll_to_ensure_cursor_visible()) {
-        redraw = true;
-    }
-
     if (!redraw) { return; }
 
     window.clear();
