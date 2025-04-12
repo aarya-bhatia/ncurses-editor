@@ -146,6 +146,19 @@ void Editor::handle_insert_mode_event(unsigned c)
     }
 }
 
+void Editor::handle_normal_mode_two_key_seq()
+{
+    auto file = get_current_file();
+    assert(file);
+    assert(file->normal_mode_buffer.size() == 2);
+
+    if (file->normal_mode_buffer == "gg") {
+        file->goto_line(0);
+    }
+
+    file->normal_mode_buffer = "";
+}
+
 void Editor::handle_normal_mode_event(unsigned c)
 {
     auto file = get_current_file();
@@ -165,6 +178,12 @@ void Editor::handle_normal_mode_event(unsigned c)
     }
     else {
         assert(file);
+
+        if (file->normal_mode_buffer.size() > 0) {
+            file->normal_mode_buffer += c;
+            handle_normal_mode_two_key_seq();
+            return;
+        }
 
         switch (c)
         {
@@ -197,13 +216,7 @@ void Editor::handle_normal_mode_event(unsigned c)
             return;
 
         case 'g':
-            if (file->normal_mode_buffer == "g") {
-                file->normal_mode_buffer = "";
-                file->goto_line(0);
-            }
-            else {
-                file->normal_mode_buffer += c;
-            }
+            file->normal_mode_buffer += c;
             return;
 
         case 'i':

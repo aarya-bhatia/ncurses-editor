@@ -53,6 +53,7 @@ struct Editor
     void handle_command_mode_event(unsigned c);
     void handle_insert_mode_event(unsigned c);
     void handle_normal_mode_event(unsigned c);
+    void handle_normal_mode_two_key_seq();
 
     void draw();
     void show();
