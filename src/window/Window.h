@@ -34,4 +34,9 @@ struct Window
 
     virtual bool resizable(Dimension bounds);
     virtual void resize(Dimension bounds);
+
+    virtual ContentWindow* get_right_most_content_node() { return nullptr; }
+    virtual ContentWindow* get_left_most_content_node() { return nullptr; }
+    virtual ContentWindow* get_top_most_content_node() { return nullptr; }
+    virtual ContentWindow* get_bottom_most_content_node() { return nullptr; }
 };

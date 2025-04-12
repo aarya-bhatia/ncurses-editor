@@ -1,4 +1,4 @@
-#include "ContainerWindow.h"
+#include "HSplitContainerWindow.h"
 
 Window* HSplitContainerWindow::get_top_child(Window* child)
 {
@@ -16,4 +16,26 @@ Window* HSplitContainerWindow::get_bottom_child(Window* child)
     }
 
     return (children[0] == child) ? children[1] : nullptr;
+}
+
+ContentWindow* HSplitContainerWindow::get_top_most_content_node() {
+    for (auto child : children) {
+        ContentWindow* w = child->get_top_most_content_node();
+        if (w) {
+            return w;
+        }
+    }
+    return nullptr;
+}
+
+ContentWindow* HSplitContainerWindow::get_bottom_most_content_node() {
+    for (auto it = children.rbegin(); it != children.rend(); ++it) {
+        Window* child = *it;
+        ContentWindow* w = child->get_bottom_most_content_node();
+        if (w) {
+            return w;
+        }
+    }
+    return nullptr;
+
 }

@@ -1,5 +1,7 @@
 #include "log.h"
 #include "WindowManager.h"
+#include "HSplitContainerWindow.h"
+#include "VSplitContainerWindow.h"
 
 void WindowManager::focus(ContentWindow* node)
 {
@@ -143,7 +145,7 @@ ContentWindow* WindowManager::get_content_node_right(Window* current)
 
     Window* child = current->parent->get_right_child(current);
     if (child) {
-        return _find_content_node(child);
+        return child->get_left_most_content_node();
     }
 
     return get_content_node_right(current->parent);
@@ -157,7 +159,7 @@ ContentWindow* WindowManager::get_content_node_left(Window* current)
 
     Window* child = current->parent->get_left_child(current);
     if (child) {
-        return _find_content_node(child);
+        return child->get_right_most_content_node();
     }
 
     return get_content_node_left(current->parent);
@@ -172,7 +174,7 @@ ContentWindow* WindowManager::get_content_node_top(Window* current)
 
     Window* child = current->parent->get_top_child(current);
     if (child) {
-        return _find_content_node(child);
+        return child->get_bottom_most_content_node();
     }
 
     return get_content_node_top(current->parent);
@@ -186,7 +188,7 @@ ContentWindow* WindowManager::get_content_node_bottom(Window* current)
 
     Window* child = current->parent->get_bottom_child(current);
     if (child) {
-        return _find_content_node(child);
+        return child->get_top_most_content_node();
     }
 
     return get_content_node_bottom(current->parent);

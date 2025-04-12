@@ -36,25 +36,3 @@ struct ContainerWindow : public Window
     void draw() override;
     void show() override;
 };
-
-struct HSplitContainerWindow : public ContainerWindow
-{
-    HSplitContainerWindow(Dimension bounds) :
-        ContainerWindow(bounds, new HSplitResizeStrategy())
-    {
-    }
-
-    Window* get_top_child(Window* child) override;
-    Window* get_bottom_child(Window* child) override;
-};
-
-struct VSplitContainerWindow : public ContainerWindow
-{
-    VSplitContainerWindow(Dimension bounds) :
-        ContainerWindow(bounds, new VSplitResizeStrategy())
-    {
-    }
-
-    Window* get_right_child(Window* child) override;
-    Window* get_left_child(Window* child) override;
-};
