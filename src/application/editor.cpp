@@ -35,6 +35,11 @@ void Editor::resize()
 
 void Editor::handle_event(unsigned c)
 {
+    if (quit) {
+        log_info("event skipped as quit flag is on.");
+        return;
+    }
+
     if (c == CTRL_C)
     {
         quit = true;
@@ -88,6 +93,7 @@ void Editor::command(const std::string& command)
 
     if (command == "q" || command == "quit")
     {
+        log_warn("quit flag set");
         quit = true;
     }
     else if (strncmp(command.c_str(), "open ", 5) == 0)

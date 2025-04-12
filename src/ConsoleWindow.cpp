@@ -9,11 +9,6 @@ void ConsoleWindow::draw() {
     if (editor.mode == COMMAND_MODE)
     {
         std::string tmp = ":" + editor.mode_line;
-        if (tmp.size() >= ncols)
-        {
-            tmp = tmp.substr(tmp.size() - ncols - 1);
-        }
-
         wprintw(window.get(), tmp.substr(0, ncols).c_str());
     }
     else
