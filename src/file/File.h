@@ -71,6 +71,7 @@ struct File
     void move_cursor_eol();
     void move_cursor_eof();
     void goto_line(int line_no);
+    void goto_column(int col);
     void move_begin();
 
     void insert_character(int c);

@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 struct Dimension
 {
@@ -35,5 +36,12 @@ struct Dimension
 
     bool contains(const Dimension& other) const {
         return other.x >= x && other.y >= y && other.x + other.width <= width && other.y + other.height <= height;
+    }
+
+    std::string debug_string() const {
+        return std::to_string(x) + "x" +
+            std::to_string(y) + "x" +
+            std::to_string(width) + "x" +
+            std::to_string(height);
     }
 };

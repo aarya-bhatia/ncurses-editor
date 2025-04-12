@@ -119,6 +119,46 @@ void Editor::command(const std::string& command)
             window_manager->split_vertical(new FileView(*file_view));
         }
     }
+    else if (command == "right")
+    {
+        if (file_view) {
+            ContentWindow* node = window_manager->get_content_node_right(file_view);
+            log_debug("content window found: %d", !!node);
+            if (node) {
+                window_manager->focus(node);
+            }
+        }
+    }
+    else if (command == "left")
+    {
+        if (file_view) {
+            ContentWindow* node = window_manager->get_content_node_left(file_view);
+            log_debug("content window found: %d", !!node);
+            if (node) {
+                window_manager->focus(node);
+            }
+        }
+    }
+    else if (command == "top")
+    {
+        if (file_view) {
+            ContentWindow* node = window_manager->get_content_node_top(file_view);
+            log_debug("content window found: %d", !!node);
+            if (node) {
+                window_manager->focus(node);
+            }
+        }
+    }
+    else if (command == "bottom")
+    {
+        if (file_view) {
+            ContentWindow* node = window_manager->get_content_node_bottom(file_view);
+            log_debug("content window found: %d", !!node);
+            if (node) {
+                window_manager->focus(node);
+            }
+        }
+    }
     else if (is_number(command))
     {
         if (file) {
@@ -278,36 +318,19 @@ void Editor::show() {
 void Editor::draw()
 {
     FileView* view = get_current_view();
-
     if (view) {
-        view->scroll_to_ensure_cursor_visible();
+        log_debug("Active window: %s", view->debug_string().c_str());
+        if (view->scroll_to_ensure_cursor_visible()) {
+            view->redraw = true;
+        }
     }
 
     window_manager->draw();
     status_window->draw();
     console_window->draw();
 
-    std::shared_ptr<File> file = get_current_file();
-    if (!file) {
-        move(0, 0);
-        return;
-    }
-
-    int cy = view->get_display_y(file->cursor.y);
-    int cx = view->get_display_x(file->cursor.x);
-
-    if (cy < 0 || cy >= view->height())
-    {
-        cy = 0;
-        log_warn("illegal cursor or scroll value");
-    }
-    if (cx < 0 || cx >= view->width())
-    {
-        cx = 0;
-        log_warn("illegal cursor or scroll value");
-    }
-
-    move(cy, cx);
+    if (view) { view->draw_cursor(); }
+    else { move(0, 0); }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

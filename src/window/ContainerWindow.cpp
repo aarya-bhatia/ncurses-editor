@@ -1,10 +1,9 @@
 #include "ContainerWindow.h"
+#include <assert.h>
 
 ContainerWindow::ContainerWindow(Dimension bounds, WindowResizeStrategy* resize_strategy) :
     Window(bounds), resize_strategy(resize_strategy) {
-    if (!resize_strategy) {
-        resize_strategy = new ProportionalResizeStrategy;
-    }
+      assert(resize_strategy);
 }
 
 ContainerWindow::~ContainerWindow() {

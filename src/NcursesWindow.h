@@ -40,5 +40,9 @@ struct NcursesWindow : public Painter {
     void clear_line(int y) override;
     void clear_till_eol(int y, int x) override;
     void move(int y, int x) override;
+
+    void move_cursor(int y, int x) override {
+        move(y, x);
+    }
 };
 

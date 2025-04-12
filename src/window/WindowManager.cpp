@@ -1,11 +1,34 @@
 #include "log.h"
 #include "WindowManager.h"
 
+void WindowManager::focus(ContentWindow* node)
+{
+    assert(node);
+    if (current_node) {
+        current_node->on_unfocus();
+    }
+    current_node = node;
+    current_node->on_focus();
+}
+
+void WindowManager::unfocus(ContentWindow* node)
+{
+    assert(node);
+    if (current_node == node) {
+        current_node->on_unfocus();
+        current_node = nullptr;
+    }
+}
+
 void WindowManager::set_content(ContentWindow* content_window) {
     log_info("setting new window content node");
 
     assert(content_window);
     assert(content_window->get_content());
+
+    if (current_node) {
+        current_node->on_unfocus();
+    }
 
     if (!root_node) {
         log_debug("root node added");
@@ -33,6 +56,7 @@ void WindowManager::set_content(ContentWindow* content_window) {
 
     assert(root_node);
     delete current_node; current_node = content_window;
+    current_node->on_focus();
 }
 
 ContentWindow* WindowManager::get_content_node() {
@@ -109,4 +133,61 @@ bool WindowManager::split_vertical(ContentWindow* new_content) {
     ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
     _split(current_node->parent, container, new_content);
     return true;
+}
+
+ContentWindow* WindowManager::get_content_node_right(Window* current)
+{
+    if (!current->parent) {
+        return nullptr;
+    }
+
+    Window* child = current->parent->get_right_child(current);
+    if (child) {
+        return _find_content_node(child);
+    }
+
+    return get_content_node_right(current->parent);
+}
+
+ContentWindow* WindowManager::get_content_node_left(Window* current)
+{
+    if (!current->parent) {
+        return nullptr;
+    }
+
+    Window* child = current->parent->get_left_child(current);
+    if (child) {
+        return _find_content_node(child);
+    }
+
+    return get_content_node_left(current->parent);
+}
+
+
+ContentWindow* WindowManager::get_content_node_top(Window* current)
+{
+    if (!current->parent) {
+        return nullptr;
+    }
+
+    Window* child = current->parent->get_top_child(current);
+    if (child) {
+        return _find_content_node(child);
+    }
+
+    return get_content_node_top(current->parent);
+}
+
+ContentWindow* WindowManager::get_content_node_bottom(Window* current)
+{
+    if (!current->parent) {
+        return nullptr;
+    }
+
+    Window* child = current->parent->get_bottom_child(current);
+    if (child) {
+        return _find_content_node(child);
+    }
+
+    return get_content_node_bottom(current->parent);
 }

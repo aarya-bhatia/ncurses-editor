@@ -13,6 +13,9 @@ struct FileView : public ContentWindow, FileSubscriber
     Scroll page_scroll;
     bool redraw = true;
 
+    int save_cursor_y = 0;
+    int save_cursor_x = 0;
+
     FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension()) : ContentWindow(bounds), file(file)
     {
         page_scroll.dx = 0;
@@ -24,6 +27,9 @@ struct FileView : public ContentWindow, FileSubscriber
     FileView(const FileView& other) :
         FileView(other.file, other.bounds) {
     }
+
+    void on_focus() override;
+    void on_unfocus() override;
 
     void on_file_reload(File& file) override {
         redraw = true;
@@ -94,4 +100,7 @@ struct FileView : public ContentWindow, FileSubscriber
     }
 
     bool scroll_to_ensure_cursor_visible();
+
+    void draw_cursor();
+    void draw_content();
 };

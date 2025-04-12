@@ -32,6 +32,9 @@ struct WindowManager : public IWindowManager
         return false;
     }
 
+    void focus(ContentWindow* node) override;
+    void unfocus(ContentWindow* node) override;
+
     void set_content(ContentWindow* content_window) override;
     ContentWindow* get_content_node() override;
 
@@ -48,4 +51,9 @@ struct WindowManager : public IWindowManager
 
     ContentWindow* _find_content_node(Window* node);
     void _split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content);
+
+    ContentWindow* get_content_node_right(Window* current) override;
+    ContentWindow* get_content_node_left(Window* current) override;
+    ContentWindow* get_content_node_top(Window* current) override;
+    ContentWindow* get_content_node_bottom(Window* current) override;
 };

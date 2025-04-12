@@ -36,7 +36,7 @@ bool FileView::scroll_to_ensure_cursor_visible()
     return false;
 }
 
-void FileView::draw() {
+void FileView::draw_content() {
     if (!window.get()) {
         return;
     }
@@ -62,6 +62,10 @@ void FileView::draw() {
     }
 
     redraw = false;
+}
+
+void FileView::draw() {
+    draw_content();
 }
 
 void FileView::partial_draw_character(Cursor position)
@@ -114,4 +118,35 @@ void FileView::on_replace_character(File& file, Cursor position) {
     }
 
     partial_draw_character(position);
+}
+
+void FileView::draw_cursor()
+{
+    int cy = get_display_y(file->cursor.y);
+    int cx = get_display_x(file->cursor.x);
+    assert(cy >= 0 && cy < height());
+    assert(cx >= 0 && cx < width());
+    move(get_absolute_y(cy), get_absolute_x(cx));
+}
+
+void FileView::on_focus()
+{
+    ContentWindow::on_focus();
+
+    if (save_cursor_y < file->count_lines())
+    {
+        file->goto_line(save_cursor_y);
+    }
+
+    if (save_cursor_x < file->cursor.line->size()) {
+        file->goto_column(save_cursor_x);
+    }
+}
+
+void FileView::on_unfocus()
+{
+    ContentWindow::on_unfocus();
+
+    save_cursor_x = file->cursor.x;
+    save_cursor_y = file->cursor.y;
 }

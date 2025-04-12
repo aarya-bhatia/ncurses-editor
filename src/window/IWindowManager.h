@@ -13,4 +13,10 @@ struct IWindowManager
     virtual void set_content(ContentWindow* content_window) = 0;
     virtual bool split_vertical(ContentWindow* new_content) = 0;
     virtual bool split_horizontal(ContentWindow* new_content) = 0;
+    virtual void focus(ContentWindow* node) = 0;
+    virtual void unfocus(ContentWindow* node) = 0;
+    virtual ContentWindow* get_content_node_right(Window* current) = 0;
+    virtual ContentWindow* get_content_node_left(Window* current) = 0;
+    virtual ContentWindow* get_content_node_top(Window* current) = 0;
+    virtual ContentWindow* get_content_node_bottom(Window* current) = 0;
 };

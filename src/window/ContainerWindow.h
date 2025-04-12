@@ -28,6 +28,11 @@ struct ContainerWindow : public Window
 
     ContainerWindow* get_container() override { return this; }
 
+    virtual Window* get_right_child(Window* child) { return nullptr; }
+    virtual Window* get_top_child(Window* child) { return nullptr; }
+    virtual Window* get_bottom_child(Window* child) { return nullptr; }
+    virtual Window* get_left_child(Window* child) { return nullptr; }
+
     void draw() override;
     void show() override;
 };
@@ -38,6 +43,9 @@ struct HSplitContainerWindow : public ContainerWindow
         ContainerWindow(bounds, new HSplitResizeStrategy())
     {
     }
+
+    Window* get_top_child(Window* child) override;
+    Window* get_bottom_child(Window* child) override;
 };
 
 struct VSplitContainerWindow : public ContainerWindow
@@ -46,4 +54,7 @@ struct VSplitContainerWindow : public ContainerWindow
         ContainerWindow(bounds, new VSplitResizeStrategy())
     {
     }
+
+    Window* get_right_child(Window* child) override;
+    Window* get_left_child(Window* child) override;
 };

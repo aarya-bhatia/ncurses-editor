@@ -29,6 +29,9 @@ struct Window
     virtual void draw() = 0;
     virtual void show() = 0;
 
+    virtual void on_focus() {}
+    virtual void on_unfocus() {}
+
     virtual bool resizable(Dimension bounds);
     virtual void resize(Dimension bounds);
 };

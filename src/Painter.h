@@ -11,4 +11,5 @@ struct Painter
     virtual void clear_line(int y) = 0;
     virtual void clear_till_eol(int y, int x) = 0;
     virtual void move(int y, int x) = 0;
+    virtual void move_cursor(int y, int x) = 0;
 };

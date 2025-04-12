@@ -159,6 +159,11 @@ void File::goto_line(int line_no)
     _move_cursor_y(line_no - cursor.y);
 }
 
+void File::goto_column(int col)
+{
+    _move_cursor_y(col - cursor.x);
+}
+
 void File::cursor_up()
 {
     _move_cursor_y(-1);
