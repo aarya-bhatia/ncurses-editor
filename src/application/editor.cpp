@@ -96,7 +96,7 @@ void Editor::command(const std::string& command)
         log_warn("quit flag set");
         quit = true;
     }
-    else if (command == "open")
+    else if (command.substr(0, 5) == "open ")
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         this->open(filenames);

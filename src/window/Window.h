@@ -8,7 +8,7 @@ struct ContentWindow;
 struct Window
 {
     int id = 0;
-    static const unsigned MIN_WINDOW_SIZE = 10;
+    static const unsigned MIN_WINDOW_SIZE = 6;
 
     Dimension bounds;
     ContainerWindow* parent = nullptr;
