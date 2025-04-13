@@ -67,6 +67,9 @@ void ContainerWindow::detach_from_layout()
 
 void ContainerWindow::adopt_child(Window* child)
 {
+    if (!child) {
+        return;
+    }
     detach_from_layout();
     this->parent = child->parent;
     if (this->parent) this->parent->swap_child(child, this);

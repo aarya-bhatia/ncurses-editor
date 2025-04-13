@@ -22,6 +22,8 @@ struct NcursesWindow : public Painter {
         window = std::unique_ptr<WINDOW, WindowDeleter>(
             newwin(dim.height, dim.width, dim.y, dim.x)
         );
+
+        wrefresh(window.get());
     }
 
     int height() const { return getmaxy(window.get()); }

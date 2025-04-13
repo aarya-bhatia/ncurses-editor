@@ -25,9 +25,9 @@ void Window::resize(Dimension bounds) {
     }
 
     this->bounds = bounds;
-    log_debug("Resized %s", debug_string().c_str());
+    log_debug("Resized node: %s", debug_string().c_str());
 }
 
 std::string Window::debug_string()const {
-    return "window-" + std::to_string(id) + "+" + bounds.debug_string();
+    return "window-" + std::to_string(id) + "-" + bounds.debug_string();
 }

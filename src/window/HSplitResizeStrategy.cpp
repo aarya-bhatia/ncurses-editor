@@ -3,8 +3,6 @@
 
 bool HSplitResizeStrategy::execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound)
 {
-    log_debug("Resizing child nodes to %d lines x %d cols", new_bound.height, new_bound.width);
-
     if (children.empty())
     {
         return false;
@@ -13,7 +11,9 @@ bool HSplitResizeStrategy::execute(std::vector<Window*>& children, Dimension pre
     unsigned child_height = new_bound.height / children.size();
 
     for (int i = 0; i < children.size(); i++) {
+        log_debug("Resizing child %d to %d lines x %d cols", i, child_height, new_bound.width);
         children[i]->resize(Dimension(new_bound.x, new_bound.y + i * child_height, new_bound.width, child_height));
+        log_debug("child %d: %s", i, children[i]->debug_string().c_str());
     }
 
     return true;

@@ -39,9 +39,9 @@ struct Dimension
     }
 
     std::string debug_string() const {
-        return std::to_string(x) + "x" +
-            std::to_string(y) + "x" +
-            std::to_string(width) + "x" +
-            std::to_string(height);
+        return std::to_string(y) + "x" +
+            std::to_string(x) + "x" +
+            std::to_string(height) + "x" +
+            std::to_string(width);
     }
 };

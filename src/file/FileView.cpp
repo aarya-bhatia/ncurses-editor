@@ -1,6 +1,15 @@
 #include "FileView.h"
 #include <assert.h>
 
+FileView::FileView(const std::shared_ptr<File>& file, Dimension bounds) : ContentWindow(bounds), file(file)
+{
+    log_debug("New file view %s", ContentWindow::debug_string().c_str());
+    page_scroll.dx = 0;
+    page_scroll.dy = 0;
+
+    file->add_subscriber(this);
+}
+
 bool FileView::scroll_to_ensure_cursor_visible()
 {
     Cursor& cursor = file->cursor;
@@ -149,4 +158,13 @@ void FileView::on_unfocus()
 
     save_cursor_x = file->cursor.x;
     save_cursor_y = file->cursor.y;
+}
+
+void FileView::resize(Dimension bounds) {
+    if (!ContentWindow::resizable(bounds)) {
+        return;
+    }
+    ContentWindow::resize(bounds);
+    window = NcursesWindow(bounds);
+    redraw = true;
 }

@@ -110,13 +110,19 @@ void Editor::command(const std::string& command)
     else if (command == "sp" || command == "split")
     {
         if (file_view) {
-            window_manager->split_horizontal(new FileView(*file_view));
+            FileView* new_view = new FileView(*file_view);
+            if (!window_manager->split_horizontal(new FileView(*file_view))) {
+                delete new_view;
+            }
         }
     }
     else if (command == "vs" || command == "vsplit")
     {
         if (file_view) {
-            window_manager->split_vertical(new FileView(*file_view));
+            FileView* new_view = new FileView(*file_view);
+            if (!window_manager->split_vertical(new FileView(*file_view))) {
+                delete new_view;
+            }
         }
     }
     else if (command == "right")

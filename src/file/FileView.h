@@ -16,13 +16,7 @@ struct FileView : public ContentWindow, FileSubscriber
     int save_cursor_y = 0;
     int save_cursor_x = 0;
 
-    FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension()) : ContentWindow(bounds), file(file)
-    {
-        page_scroll.dx = 0;
-        page_scroll.dy = 0;
-
-        file->add_subscriber(this);
-    }
+    FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension());
 
     FileView(const FileView& other) :
         FileView(other.file, other.bounds) {
@@ -60,14 +54,7 @@ struct FileView : public ContentWindow, FileSubscriber
         }
     }
 
-    void resize(Dimension bounds) override {
-        if (!ContentWindow::resizable(bounds)) {
-            return;
-        }
-        ContentWindow::resize(bounds);
-        window = NcursesWindow(bounds);
-        redraw = true;
-    }
+    void resize(Dimension bounds) override;
 
     int get_absolute_y(int rely) const
     {

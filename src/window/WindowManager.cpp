@@ -120,6 +120,10 @@ bool WindowManager::split_horizontal(ContentWindow* new_content) {
     assert(current_node);
     assert(new_content);
 
+    if (current_node && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
+        return false;
+    }
+
     ContainerWindow* container = new HSplitContainerWindow(current_node->bounds);
     container->adopt_child(current_node);
     container->add_child(new_content);
@@ -134,6 +138,10 @@ bool WindowManager::split_horizontal(ContentWindow* new_content) {
 bool WindowManager::split_vertical(ContentWindow* new_content) {
     assert(current_node);
     assert(new_content);
+
+    if (current_node && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
+        return false;
+    }
 
     ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
     container->adopt_child(current_node);
