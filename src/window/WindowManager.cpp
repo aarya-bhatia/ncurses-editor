@@ -42,10 +42,10 @@ void WindowManager::unfocus(ContentWindow* node)
 }
 
 void WindowManager::set_content(ContentWindow* content_window) {
-    log_info("setting new window content node");
-
     assert(content_window);
     assert(content_window->get_content());
+
+    content_window->id = window_id_generator.next();
 
     if (current_node) {
         current_node->on_unfocus();
@@ -77,9 +77,9 @@ void WindowManager::set_content(ContentWindow* content_window) {
 
     assert(root_node);
     delete current_node; current_node = content_window;
-    current_node->on_focus();
 
-    content_window->id = window_id_generator.next();
+    current_node->on_focus();
+    log_debug("Added node %s", content_window->debug_string().c_str());
 }
 
 ContentWindow* WindowManager::get_content_node() {

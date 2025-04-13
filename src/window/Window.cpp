@@ -17,8 +17,6 @@ bool Window::resizable(Dimension bounds) {
 }
 
 void Window::resize(Dimension bounds) {
-    if (get_container()) log_debug("resizing container window to %d lines x %d cols", bounds.height, bounds.width);
-    else log_debug("resizing content window to %d lines x %d cols", bounds.height, bounds.width);
     assert(resizable(bounds));
 
     if (get_container()) {
@@ -27,6 +25,7 @@ void Window::resize(Dimension bounds) {
     }
 
     this->bounds = bounds;
+    log_debug("Resized %s", debug_string().c_str());
 }
 
 std::string Window::debug_string()const {

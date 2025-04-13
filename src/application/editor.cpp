@@ -96,24 +96,24 @@ void Editor::command(const std::string& command)
         log_warn("quit flag set");
         quit = true;
     }
-    else if (strncmp(command.c_str(), "open ", 5) == 0)
+    else if (command == "open")
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         this->open(filenames);
     }
-    else if (strncmp(command.c_str(), "save", 5) == 0)
+    else if (command == "save")
     {
         if (file) {
             file->save_file();
         }
     }
-    else if (!strncmp(command.c_str(), "sp", 2) || !strncmp(command.c_str(), "split", 5))
+    else if (command == "sp" || command == "split")
     {
         if (file_view) {
             window_manager->split_horizontal(new FileView(*file_view));
         }
     }
-    else if (!strncmp(command.c_str(), "vs", 2) || !strncmp(command.c_str(), "vsplit", 6))
+    else if (command == "vs" || command == "vsplit")
     {
         if (file_view) {
             window_manager->split_vertical(new FileView(*file_view));
@@ -167,7 +167,7 @@ void Editor::command(const std::string& command)
     }
     else
     {
-        statusline = "no such command: " + command;
+        log_warn("no such command: %s", command.c_str());
     }
 }
 
