@@ -17,14 +17,12 @@ struct ContainerWindow : public Window
     size_t count_children() const { return children.size(); }
 
     bool has_child(Window* child) const;
-
     void swap_child(Window* old_child, Window* new_child);
-
     void add_child(Window* child);
-
     void remove_child(Window* child);
-
     void arrange_children();
+    void adopt_child(Window* child);
+    void detach_from_layout();
 
     ContainerWindow* get_container() override { return this; }
 

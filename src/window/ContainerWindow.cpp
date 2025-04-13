@@ -3,7 +3,7 @@
 
 ContainerWindow::ContainerWindow(Dimension bounds, WindowResizeStrategy* resize_strategy) :
     Window(bounds), resize_strategy(resize_strategy) {
-      assert(resize_strategy);
+    assert(resize_strategy);
 }
 
 ContainerWindow::~ContainerWindow() {
@@ -55,4 +55,22 @@ void ContainerWindow::show() {
     for (auto child : children) {
         child->show();
     }
+}
+
+void ContainerWindow::detach_from_layout()
+{
+    if (this->parent) {
+        this->parent->remove_child(this);
+        this->parent = nullptr;
+    }
+}
+
+void ContainerWindow::adopt_child(Window* child)
+{
+    detach_from_layout();
+    this->parent = child->parent;
+    if (this->parent) this->parent->swap_child(child, this);
+    this->add_child(child);
+    child->parent = this;
+    // this->arrange_children();
 }

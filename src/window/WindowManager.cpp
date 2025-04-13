@@ -116,45 +116,33 @@ ContentWindow* WindowManager::_find_content_node(Window* node)
 }
 
 
-void WindowManager::_split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content) {
-    assert(split_container);
-
-    if (orig_parent) {
-        log_info("splitting current node");
-        orig_parent->swap_child(current_node, split_container);
-        assert(split_container->parent == orig_parent);
-    }
-    else {
-        log_info("splitting root node");
-        root_node = split_container;
-    }
-
-    split_container->add_child(current_node);
-    split_container->add_child(new_content);
-    split_container->arrange_children();
-
-    assert(current_node->parent == split_container);
-    assert(split_container->count_children() >= 2);
-    assert(split_container->get_children().front() == current_node);
-}
-
 bool WindowManager::split_horizontal(ContentWindow* new_content) {
-    if (!current_node || !current_node->get_content()) {
-        return false;
-    }
+    assert(current_node);
+    assert(new_content);
 
     ContainerWindow* container = new HSplitContainerWindow(current_node->bounds);
-    _split(current_node->parent, container, new_content);
+    container->adopt_child(current_node);
+    container->add_child(new_content);
+    container->arrange_children();
+    if (root_node == current_node) {
+        root_node = container;
+    }
+
     return true;
 }
 
 bool WindowManager::split_vertical(ContentWindow* new_content) {
-    if (!current_node || !current_node->get_content()) {
-        return false;
-    }
+    assert(current_node);
+    assert(new_content);
 
     ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
-    _split(current_node->parent, container, new_content);
+    container->adopt_child(current_node);
+    container->add_child(new_content);
+    container->arrange_children();
+    if (root_node == current_node) {
+        root_node = container;
+    }
+
     return true;
 }
 
