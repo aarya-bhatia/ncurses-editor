@@ -36,4 +36,7 @@ struct WindowManager : public IWindowManager
     ContentWindow* get_content_node_left(Window* current) override;
     ContentWindow* get_content_node_top(Window* current) override;
     ContentWindow* get_content_node_bottom(Window* current) override;
+
+    int count_nodes() const override;
+    int count_content_nodes() const override;
 };

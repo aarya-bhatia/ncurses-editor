@@ -47,21 +47,21 @@ void handle_resize(int sig)
     }
 }
 
-int main(int argc, const char **argv)
+int main(int argc, const char** argv)
 {
     init();
     init_screen();
     signal(SIGWINCH, handle_resize);
 
     std::vector<std::string> filenames;
-    for(const char** arg = argv + 1; *arg != NULL; arg++) {
+    for (const char** arg = argv + 1; *arg != NULL; arg++) {
         filenames.push_back(std::string(*arg));
     }
 
     Editor editor;
     editor.open(filenames);
 
-    if(editor.file_manager->count_files() == 0) {
+    if (editor.file_manager->count_files() == 0) {
         auto new_file = editor.file_manager->open_untitled_file();
         editor.file_manager->open_in_current_window(new_file);
     }
@@ -89,6 +89,9 @@ int main(int argc, const char **argv)
         }
 
         editor.handle_event(ch);
+
+        log_info("total window nodes: %d", editor.window_manager->count_nodes());
+        log_info("total content nodes: %d", editor.window_manager->count_content_nodes());
     }
 
     cleanup();

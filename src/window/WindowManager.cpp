@@ -2,6 +2,7 @@
 #include "WindowManager.h"
 #include "HSplitContainerWindow.h"
 #include "VSplitContainerWindow.h"
+#include <list>
 
 WindowManager::WindowManager(Dimension bounds) : screen_bounds(bounds), window_id_generator(1) {
 }
@@ -20,7 +21,6 @@ bool WindowManager::resize(Dimension bounds) {
 
     return false;
 }
-
 
 void WindowManager::focus(ContentWindow* node)
 {
@@ -120,9 +120,10 @@ bool WindowManager::split_horizontal(ContentWindow* new_content) {
     assert(current_node);
     assert(new_content);
 
-    if (current_node && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
-        return false;
-    }
+    // if (current_node) {//} && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
+    //     log_warn("not resizable");
+    //     return false;
+    // }
 
     ContainerWindow* container = new HSplitContainerWindow(current_node->bounds);
     container->adopt_child(current_node);
@@ -139,9 +140,10 @@ bool WindowManager::split_vertical(ContentWindow* new_content) {
     assert(current_node);
     assert(new_content);
 
-    if (current_node && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
-        return false;
-    }
+    // if (current_node) {//} && (current_node->bounds.width / 2 < Window::MIN_WINDOW_SIZE || current_node->bounds.height / 2 < Window::MIN_WINDOW_SIZE)) {
+    //     log_warn("not resizable");
+    //     return false;
+    //     }
 
     ContainerWindow* container = new VSplitContainerWindow(current_node->bounds);
     container->adopt_child(current_node);
@@ -209,4 +211,55 @@ ContentWindow* WindowManager::get_content_node_bottom(Window* current)
     }
 
     return get_content_node_bottom(current->parent);
+}
+
+int WindowManager::count_nodes() const
+{
+    int ans = 0;
+    std::list<Window*> q;
+    q.push_back(root_node);
+    while (!q.empty())
+    {
+        Window* cur = q.front();
+        q.pop_front();
+
+        if (!cur) {
+            continue;
+        }
+
+        ans += 1;
+        if (cur->get_container()) {
+            for (auto child : cur->get_container()->children) {
+                q.push_back(child);
+            }
+        }
+    }
+    return ans;
+}
+
+int WindowManager::count_content_nodes() const
+{
+    int ans = 0;
+    std::list<Window*> q;
+    q.push_back(root_node);
+    while (!q.empty())
+    {
+        Window* cur = q.front();
+        q.pop_front();
+
+        if (!cur) {
+            continue;
+        }
+
+        if (cur->get_content()) {
+            ans += 1;
+        }
+
+        if (cur->get_container()) {
+            for (auto child : cur->get_container()->children) {
+                q.push_back(child);
+            }
+        }
+    }
+    return ans;
 }

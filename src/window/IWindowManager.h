@@ -19,4 +19,6 @@ struct IWindowManager
     virtual ContentWindow* get_content_node_left(Window* current) = 0;
     virtual ContentWindow* get_content_node_top(Window* current) = 0;
     virtual ContentWindow* get_content_node_bottom(Window* current) = 0;
+    virtual int count_nodes() const = 0;
+    virtual int count_content_nodes() const = 0;
 };
