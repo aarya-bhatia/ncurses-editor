@@ -1,5 +1,5 @@
 #include "WindowResizeStrategies.h"
-#include "log.h"
+#include "util/log.h"
 
 bool HSplitResizeStrategy::execute(std::vector<Window*>& children, Dimension prev_bound, Dimension new_bound)
 {

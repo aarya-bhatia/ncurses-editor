@@ -2,11 +2,11 @@
 #include <curses.h>
 #include <ncurses.h>
 #include <string.h>
-#include "log.h"
+#include "util/log.h"
 #include <sys/types.h>
 #include "window/WindowManager.h"
-#include "file/FileView.h"
-#include "file/FileSubscriber.h"
+#include "FileView.h"
+#include "FileSubscriber.h"
 
 Editor::Editor()
 {

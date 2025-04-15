@@ -1,5 +1,5 @@
 #include "FileManager.h"
-#include "log.h"
+#include "util/log.h"
 #include <assert.h>
 
 // ContentWindow* FileManager::get_file_view(const std::shared_ptr<File>& file)

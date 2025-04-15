@@ -2,7 +2,7 @@
 #include "ContainerWindow.h"
 #include "ContentWindow.h"
 #include <assert.h>
-#include "log.h"
+#include "util/log.h"
 #include <string>
 
 bool Window::resizable(Dimension bounds) {

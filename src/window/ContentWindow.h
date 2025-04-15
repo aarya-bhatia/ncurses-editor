@@ -2,11 +2,11 @@
 #include "Window.h"
 #include <memory>
 #include <string>
-#include "log.h"
+#include "util/log.h"
 
 struct ContentWindow : public Window
 {
-    enum ContentType { TestContent, FileContent };
+    enum ContentType { NilContent, TestContent, FileContent };
 
     ContentWindow(Dimension bounds) : Window(bounds) {}
     ContentWindow(const ContentWindow& other) : ContentWindow(other.bounds) {
@@ -14,8 +14,8 @@ struct ContentWindow : public Window
 
     virtual ~ContentWindow() = default;
     ContentWindow* get_content() override { return this; }
-    virtual std::shared_ptr<void> get_model() = 0;
-    virtual ContentType get_content_type() = 0;
+    virtual std::shared_ptr<void> get_model() { return nullptr; }
+    virtual ContentType get_content_type() { return NilContent; }
 
     virtual void on_focus() override {
         log_info("Got focus on %s", debug_string().c_str());

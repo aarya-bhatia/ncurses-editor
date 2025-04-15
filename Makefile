@@ -1,8 +1,12 @@
 OBJDIR=.obj
 BINDIR=bin
 SRCDIR=src
-CFLAGS=-c -Wall -Werror -pedantic -g -D_GNU_SOURCE -Isrc
+CFLAGS=-c -Wall -Werror -pedantic -g -D_GNU_SOURCE
 LDFLAGS=-lncurses -lm
+
+INCLUDE_DIRS=$(shell find src -type d)
+INCLUDES := $(patsubst %, -I%, $(INCLUDE_DIRS))
+CFLAGS += $(INCLUDES)
 
 SRC_FILES=$(shell find src -type f -name "*.cpp" -o -name "*.c")
 SRC_OBJS=$(SRC_FILES:%=$(OBJDIR)/%.o)

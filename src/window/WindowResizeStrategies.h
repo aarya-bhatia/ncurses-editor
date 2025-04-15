@@ -1,6 +1,6 @@
 #pragma once
 #include "Window.h"
-#include "log.h"
+#include "util/log.h"
 #include <vector>
 
 struct WindowResizeStrategy

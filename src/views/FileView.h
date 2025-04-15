@@ -2,8 +2,8 @@
 
 #include <ncurses.h>
 #include "window/ContentWindow.h"
-#include "file/File.h"
-#include "file/FileSubscriber.h"
+#include "File.h"
+#include "FileSubscriber.h"
 #include "NcursesWindow.h"
 
 struct FileView : public ContentWindow, FileSubscriber

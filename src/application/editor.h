@@ -6,7 +6,7 @@
 #include <vector>
 #include <assert.h>
 #include "common.h"
-#include "file/FileManager.h"
+#include "FileManager.h"
 #include "window/IWindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"

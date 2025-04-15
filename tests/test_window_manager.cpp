@@ -1,9 +1,9 @@
 #include "catch.hpp"
-#include "window/WindowManager.h"
-#include "window/Window.h"
-#include "window/ContentWindow.h"
-#include "window/HSplitContainerWindow.h"
-#include "window/VSplitContainerWindow.h"
+#include "WindowManager.h"
+#include "Window.h"
+#include "ContentWindow.h"
+#include "HSplitContainerWindow.h"
+#include "VSplitContainerWindow.h"
 #include "TestContentView.h"
 
 TEST_CASE("WM works with one content window", "[windows]") {

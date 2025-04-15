@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "file/FileManager.h"
+#include "FileManager.h"
 #include "TestWindowManager.h"
 
 TEST_CASE("simple", "[files]") {
