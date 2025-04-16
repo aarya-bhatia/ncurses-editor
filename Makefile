@@ -14,6 +14,9 @@ SRC_OBJS=$(SRC_FILES:%=$(OBJDIR)/%.o)
 MAIN_FILE=main.cpp
 MAIN_OBJ=$(OBJDIR)/$(MAIN_FILE).o
 
+TEST_SRC_FILES=$(shell find tests -type f -name "*.cpp")
+TEST_OBJS=$(TEST_SRC_FILES:%=$(OBJDIR)/%.o)
+
 all: main
 
 main: $(BINDIR)/main
@@ -22,8 +25,8 @@ test: $(BINDIR)/test
 $(BINDIR)/main: $(MAIN_OBJ) $(SRC_OBJS)
 	mkdir -p $(dir $@)
 	g++ $^ $(LDFLAGS) -o $@
-
-$(BINDIR)/test: $(OBJDIR)/tests/test.cpp.o $(SRC_OBJS)
+	
+$(BINDIR)/test: $(TEST_OBJS) $(SRC_OBJS)
 	mkdir -p $(dir $@)
 	g++ $^ $(LDFLAGS) -o $@
 

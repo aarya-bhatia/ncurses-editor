@@ -1,9 +1,6 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "test_window_manager.cpp"
-#include "test_file_manager.cpp"
-
 unsigned int Factorial(unsigned int number) {
     return number <= 1 ? number : Factorial(number - 1) * number;
 }

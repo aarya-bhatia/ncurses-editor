@@ -6,6 +6,94 @@
 #include "VSplitContainerWindow.h"
 #include "TestContentView.h"
 
+
+TEST_CASE("check horizontal split resize strategy", "[windows]") {
+    HSplitResizeStrategy* resize_strategy = new HSplitResizeStrategy;
+    std::vector<Window*> children;
+    Dimension orig_bounds = Dimension(50, 50, 200, 200);
+    children.push_back(new TestContentView(Dimension(orig_bounds)));
+    children.push_back(new TestContentView(Dimension(orig_bounds)));
+    assert(resize_strategy->execute(children, orig_bounds, orig_bounds) == true);
+    assert(children.size() == 2);
+    assert(children[0]);
+    assert(children[1]);
+
+    Dimension bounds = children[0]->get_bounds();
+    assert(bounds.x == 50);
+    assert(bounds.y == 50);
+    assert(bounds.width == 200);
+    assert(bounds.height == 100);
+
+    bounds = children[1]->get_bounds();
+    assert(bounds.x == 50);
+    assert(bounds.y == 150);
+    assert(bounds.width == 200);
+    assert(bounds.height == 100);
+
+    delete resize_strategy;
+    delete children[0];
+    delete children[1];
+}
+
+TEST_CASE("check vertical split resize strategy", "[windows]") {
+    VSplitResizeStrategy* resize_strategy = new VSplitResizeStrategy;
+    std::vector<Window*> children;
+    Dimension orig_bounds = Dimension(50, 50, 200, 200);
+    children.push_back(new TestContentView(Dimension(orig_bounds)));
+    children.push_back(new TestContentView(Dimension(orig_bounds)));
+    assert(resize_strategy->execute(children, orig_bounds, orig_bounds) == true);
+    assert(children.size() == 2);
+    assert(children[0]);
+    assert(children[1]);
+
+    Dimension bounds = children[0]->get_bounds();
+    assert(bounds.x == 50);
+    assert(bounds.y == 50);
+    assert(bounds.width == 100);
+    assert(bounds.height == 200);
+
+    bounds = children[1]->get_bounds();
+    assert(bounds.x == 150);
+    assert(bounds.y == 50);
+    assert(bounds.width == 100);
+    assert(bounds.height == 200);
+
+    delete resize_strategy;
+    delete children[0];
+    delete children[1];
+}
+
+TEST_CASE("check container window arrange children", "[windows]") {
+    Dimension bounds(0, 0, 200, 200);
+
+    HSplitContainerWindow* container1 = new HSplitContainerWindow(bounds);
+    container1->add_child(new TestContentView());
+    container1->add_child(new HSplitContainerWindow(bounds));
+    ContainerWindow* container2 = container1->children[1]->get_container();
+    container2->add_child(new TestContentView());
+    container2->add_child(new TestContentView());
+
+    container1->arrange_children();
+
+    assert(container1->count_children() == 2);
+    assert(container1->get_bounds() == Dimension(0, 0, 200, 200));
+    assert(container1->children[0]);
+    assert(container1->children[0]->get_content());
+    assert(container1->children[0]->get_bounds() == Dimension(0, 0, 200, 100));
+
+    assert(container2->count_children() == 2);
+    assert(container2->get_bounds() == Dimension(0, 100, 200, 100));
+    assert(container2->children[0]);
+    assert(container2->children[0]->get_content());
+    assert(container2->children[0]->get_bounds() == Dimension(0, 100, 200, 50));
+
+    assert(container2->children[1]);
+    assert(container2->children[1]->get_content());
+    assert(container2->children[1]->get_bounds() == Dimension(0, 150, 200, 50));
+
+    delete container1;
+}
+
 TEST_CASE("WM works with one content window", "[windows]") {
     Dimension bounds(0, 0, 100, 100);
     WindowManager wm(bounds);
