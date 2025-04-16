@@ -1,7 +1,7 @@
 OBJDIR=.obj
 BINDIR=bin
 SRCDIR=src
-CFLAGS=-c -Wall -Werror -pedantic -g -D_GNU_SOURCE
+CFLAGS=-c -Wall -Werror -pedantic -g -D_GNU_SOURCE -MMD -MP
 LDFLAGS=-lncurses -lm
 
 INCLUDE_DIRS=$(shell find src -type d)
@@ -42,3 +42,5 @@ clean:
 	/bin/rm -rf $(OBJDIR) $(BINDIR) vgcore*
 
 .PHONY: clean main test
+
+-include $(SRC_OBJS:.o=.d) $(TEST_OBJS:.o=.d) $(MAIN_OBJ:.o=.d)
