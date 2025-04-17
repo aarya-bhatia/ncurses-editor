@@ -36,9 +36,7 @@ struct FileView : public Window, FileSubscriber
     void draw() override;
 
     void show() override {
-        if (window.get()) {
-            wrefresh(window.get());
-        }
+        window.show();
     }
 
     void resize(Dimension bounds) override;

@@ -35,6 +35,13 @@ struct NcursesWindow : public Painter {
         return x >= 0 && y >= 0 && x < width() && y < height();
     }
 
+    void show()
+    {
+        if(window) {
+            wrefresh(window.get());
+        }
+    }
+
     void draw_line(int y, const std::string& content) override;
     void draw_till_eol(int y, int x, const std::string& content) override;
     void draw_character(int y, int x, char c) override;
@@ -45,6 +52,12 @@ struct NcursesWindow : public Painter {
 
     void move_cursor(int y, int x) override {
         move(y, x);
+    }
+
+    void draw_border() {
+        if(window) {
+            box(window.get(), '|', '-');
+        }
     }
 };
 
