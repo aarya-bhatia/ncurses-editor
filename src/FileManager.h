@@ -9,9 +9,36 @@ class FileManager
     std::list<FMNode*> nodes;
 
 public:
-    FileManager();
-    ~FileManager();
+    FileManager()
+        :id_gen(1) {
+    }
 
-    FMNode* find(const char* filename);
-    FMNode* add_file(const char* filename);
+    ~FileManager()
+    {
+        for (auto* node : nodes)
+        {
+            delete node;
+        }
+    }
+
+    FMNode* find(const char* filename)
+    {
+
+        for (auto* node : nodes) {
+            if (node->has_file(filename)) return node;
+        }
+
+        return nullptr;
+    }
+
+    FMNode* add_file(const char* filename) {
+        FMNode* node = find(filename);
+        if (node) {
+            return node;
+        }
+
+        node = new FMNode(id_gen.next(), filename);
+        nodes.push_back(node);
+        return node;
+    }
 };

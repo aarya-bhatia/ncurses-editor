@@ -50,32 +50,35 @@ void Editor::handle_event(unsigned c)
     }
 }
 
-FileView* Editor::get_current_view()
+Window* Editor::get_current_view()
 {
-    WMNode* window = window_manager.current_node;
-    if (!window) {
+    WMNode* node = window_manager.current_node;
+    if (!node) {
         return nullptr;
     }
 
-    return dynamic_cast<FileView*>(window->get_current_tab_window());
+    return node->get_current_tab_window();
 }
 
 
 File* Editor::get_current_file()
 {
-    FileView* file_view = get_current_view();
-    if (!file_view) {
+    Window* window = get_current_view();
+    if (!window) {
         return nullptr;
     }
+    BorderedFileView* view = dynamic_cast<BorderedFileView*>(window);
+    if (view && view->file_view) {
+        return view->file_view->file;
+    }
 
-    return file_view->file;
+    return NULL;
 }
 
 
 void Editor::command(const std::string& command)
 {
-    FileView* file_view = get_current_view();
-    File* file = file_view->file;
+    File* file = get_current_file();
     log_debug("Got command: %s", command.c_str());
 
     if (command == "q" || command == "quit")
@@ -289,19 +292,19 @@ void Editor::show() {
 
 void Editor::draw()
 {
-    FileView* view = get_current_view();
-    if (view) {
-        if (view->scroll_to_ensure_cursor_visible()) {
-            view->redraw = true;
-        }
-    }
+    // FileView* view = get_current_view();
+    // if (view) {
+    //     if (view->scroll_to_ensure_cursor_visible()) {
+    //         view->redraw = true;
+    //     }
+    // }
 
     window_manager.draw();
     status_window->draw();
     console_window->draw();
 
-    if (view) { view->draw_cursor(); }
-    else { move(0, 0); }
+    // if (view) { view->draw_cursor(); }
+    // else { move(0, 0); }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

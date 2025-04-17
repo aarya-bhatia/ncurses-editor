@@ -7,6 +7,7 @@
 #include "log.h"
 #include "File.h"
 #include "FileView.h"
+#include "ViewFactory.h"
 
 struct WMNode
 {
@@ -57,7 +58,7 @@ struct WMNode
 
     void open_tab(File* f)
     {
-        open_tab(new FileView(f, bounds));
+        open_tab(ViewFactory::new_file_view(f, bounds));
     }
 
     void open_tab(Window* c)

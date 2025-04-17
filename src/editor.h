@@ -44,7 +44,7 @@ struct Editor
 
     Editor();
 
-    FileView* get_current_view();
+    Window* get_current_view();
     File* get_current_file();
 
     void command(const std::string& command);

@@ -2,7 +2,7 @@
 
 #include "FileView.h"
 
-struct BorderedFileView: public Window {
+struct BorderedFileView : public Window {
     Dimension bounds;
     FileView* file_view = nullptr;
     NcursesWindow frame;
@@ -22,10 +22,12 @@ struct BorderedFileView: public Window {
         this->file_view = file_view;
         bounds = file_view->bounds;
         frame = NcursesWindow(bounds);
-        resize(bounds);
+        if (file_view) {
+            file_view->resize(Dimension(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2));
+        }
     }
 
-    void resize(Dimension d)
+    void resize(Dimension d) override
     {
         bounds = d;
         frame = NcursesWindow(bounds);
@@ -34,7 +36,7 @@ struct BorderedFileView: public Window {
         }
     }
 
-    void draw()
+    void draw() override
     {
         frame.draw_border();
         if (file_view) {
@@ -42,7 +44,7 @@ struct BorderedFileView: public Window {
         }
     }
 
-    void show()
+    void show() override
     {
         frame.show();
         if (file_view) {
@@ -50,20 +52,20 @@ struct BorderedFileView: public Window {
         }
     }
 
-    void focus() {
-        if(file_view) {
+    void focus()  override {
+        if (file_view) {
             file_view->focus();
         }
     }
 
-    void unfocus() {
-        if(file_view) {
+    void unfocus()  override {
+        if (file_view) {
             file_view->unfocus();
         }
     }
 
-    Window* copy(Dimension d) {
-        BorderedFileView *w = new BorderedFileView((FileView *) file_view->copy(d));
+    Window* copy(Dimension d)  override {
+        BorderedFileView* w = new BorderedFileView((FileView*)file_view->copy(d));
         w->resize(d);
         return w;
     }
