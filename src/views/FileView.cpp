@@ -116,7 +116,7 @@ void FileView::draw_cursor()
     int cx = get_display_x(file->cursor.x);
     assert(cy >= 0 && cy < height());
     assert(cx >= 0 && cx < width());
-    log_debug("drawing cursor at Ln %d Col %d", cy, cx);
+    // log_debug("drawing cursor at Ln %d Col %d", cy, cx);
     move(get_absolute_y(cy), get_absolute_x(cx));
 }
 

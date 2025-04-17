@@ -52,7 +52,7 @@ struct BorderedFileView : public Window {
     }
 
     Window* copy(Dimension d)  override {
-        return new BorderedFileView(file_view->file, bounds);
+        return new BorderedFileView(file_view->file, d);
     }
 
     File* get_file() override { return file_view->file; }

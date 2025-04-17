@@ -38,11 +38,13 @@ struct WindowManager
     void splith() { 
         if(!current_node || !current_node->split_allowed()) return; 
         current_node->splith(); current_node = current_node->children[0];
+        refresh();
     }
 
     void splitv() { 
         if(!current_node || !current_node->split_allowed()) return; 
         current_node->splitv(); current_node = current_node->children[0];
+        refresh();
     }
 
     void draw() { if(root_node) root_node->draw(); }
