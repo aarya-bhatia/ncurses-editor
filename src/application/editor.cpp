@@ -116,7 +116,7 @@ void Editor::command(const std::string& command)
     }
     else if (command == "bottom")
     {
-        window_manager.focus_down();
+        window_manager.focus_bottom();
     }
     else if (is_number(command))
     {
@@ -283,7 +283,6 @@ void Editor::draw()
 {
     FileView* view = get_current_view();
     if (view) {
-        // log_debug("Active window: %s", view->debug_string().c_str());
         if (view->scroll_to_ensure_cursor_visible()) {
             view->redraw = true;
         }

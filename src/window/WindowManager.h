@@ -59,7 +59,7 @@ struct WindowManager
         if(current_node) current_node = current_node->find_top_adjacent_node();
     }
 
-    void focus_down() {
-        if(current_node) current_node = current_node->find_right_adjacent_node();
+    void focus_bottom() {
+        if(current_node) current_node = current_node->find_bottom_adjacent_node();
     }
 }; 

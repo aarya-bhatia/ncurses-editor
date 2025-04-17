@@ -81,7 +81,7 @@ struct FileView : public Window, FileSubscriber
     void focus() override {}
     void unfocus() override {}
 
-    Window* copy() override {
-        return new FileView(file, bounds);
+    Window* copy(Dimension d) override {
+        return new FileView(file, d);
     }
 };

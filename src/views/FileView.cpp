@@ -8,6 +8,8 @@ FileView::FileView(File* file, Dimension bounds) : bounds(bounds), file(file)
     this->scroll.dy = 0;
 
     file->add_subscriber(this);
+    window = NcursesWindow(bounds);
+    redraw = true;
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
@@ -17,13 +19,13 @@ bool FileView::scroll_to_ensure_cursor_visible()
     // adjust horizontal this->scroll
     if (cursor.x - this->scroll.dx < 0)
     {
-        log_debug("this->scrolling left");
+        // log_debug("this->scrolling left");
         this->scroll.dx = cursor.x;
         return true;
     }
     else if (cursor.x - this->scroll.dx >= width())
     {
-        log_debug("this->scrolling right");
+        // log_debug("this->scrolling right");
         this->scroll.dx = cursor.x - width() + 1;
         return true;
     }
@@ -31,13 +33,13 @@ bool FileView::scroll_to_ensure_cursor_visible()
     // adjust vertical this->scroll
     if (cursor.y - this->scroll.dy < 0)
     {
-        log_debug("this->scrolling up");
+        // log_debug("this->scrolling up");
         this->scroll.dy = cursor.y;
         return true;
     }
     else if (cursor.y - this->scroll.dy >= height())
     {
-        log_debug("this->scrolling down");
+        // log_debug("this->scrolling down");
         this->scroll.dy = cursor.y - height() + 1;
         return true;
     }
@@ -49,6 +51,8 @@ void FileView::draw_content() {
     if (!window.get()) {
         return;
     }
+
+    // log_debug("drawing content");
 
     if (!redraw) { return; }
 

@@ -3,6 +3,7 @@
 #include <vector>
 #include "Dimension.h"
 #include "Window.h"
+#include "log.h"
 
 struct WMNode
 {
@@ -22,6 +23,7 @@ struct WMNode
 
         content = c;
         content->focus();
+        log_info("Window content added to WMnode");
     }
 
     bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }
@@ -59,10 +61,12 @@ struct WMNode
         children.push_back(child2);
 
         if (content) {
-            child1->content = content;
-            child2->content = content->copy();
-            content = nullptr;
+            child1->content = content->copy(d1);
+            child2->content = content->copy(d2);
+            delete content; content = nullptr;
         }
+
+        log_info("horizontal split complete");
     }
 
     void splitv()
@@ -81,17 +85,17 @@ struct WMNode
         children.push_back(child2);
 
         if (content) {
-            child1->content = content;
-            child2->content = content->copy();
-            content = nullptr;
+            child1->content = content->copy(d1);
+            child2->content = content->copy(d2);
+            delete content; content = nullptr;
         }
+
+        log_info("horizontal split complete");
     }
 
     void draw()
     {
-        if (children.size() > 0) {
-            for (auto* child : children) { child->draw(); }
-        }
+        for (auto* child : children) { child->draw(); }
         if (content) {
             content->draw();
         }
@@ -99,9 +103,7 @@ struct WMNode
 
     void show()
     {
-        if (children.size() > 0) {
-            for (auto* child : children) { child->show(); }
-        }
+        for (auto* child : children) { child->show(); }
         if (content) {
             content->show();
         }
@@ -147,11 +149,15 @@ struct WMNode
             return nullptr;
         }
 
-        return children[0];
+        return children[1];
     }
 
     WMNode* find_left_content_node()
     {
+        if (layout == NORMAL) {
+            return this;
+        }
+
         if (layout != VSPLIT) {
             return nullptr;
         }
@@ -161,6 +167,10 @@ struct WMNode
 
     WMNode* find_right_content_node()
     {
+        if (layout == NORMAL) {
+            return this;
+        }
+
         if (layout != VSPLIT) {
             return nullptr;
         }
@@ -170,6 +180,10 @@ struct WMNode
 
     WMNode* find_top_content_node()
     {
+        if (layout == NORMAL) {
+            return this;
+        }
+
         if (layout != HSPLIT) {
             return nullptr;
         }
@@ -179,6 +193,10 @@ struct WMNode
 
     WMNode* find_bottom_content_node()
     {
+        if (layout == NORMAL) {
+            return this;
+        }
+
         if (layout != HSPLIT) {
             return nullptr;
         }

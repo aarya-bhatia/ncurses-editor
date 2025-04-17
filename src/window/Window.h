@@ -9,5 +9,5 @@ struct Window
     virtual void focus() = 0;
     virtual void unfocus() = 0;
     virtual void resize(Dimension d) = 0;
-    virtual Window* copy() = 0;
+    virtual Window* copy(Dimension d) = 0;
 };
