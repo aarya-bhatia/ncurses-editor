@@ -2,8 +2,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <ncurses.h>
-#include "window/WindowManager.h"
-#include "application/editor.h"
+#include "WindowManager.h"
+#include "editor.h"
 #include <memory>
 
 bool resized = false;

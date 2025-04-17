@@ -1,5 +1,5 @@
 #include "ConsoleWindow.h"
-#include "application/editor.h"
+#include "editor.h"
 
 void ConsoleWindow::draw() {
     wclear(window.get());

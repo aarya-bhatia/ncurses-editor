@@ -57,7 +57,11 @@ FileView* Editor::get_current_view()
         return nullptr;
     }
 
-    return dynamic_cast<FileView*>(window->content);
+    if(window->current_tab == window->tabs.end()) {
+        return nullptr;
+    }
+
+    return dynamic_cast<FileView*>(*window->current_tab);
 }
 
 
@@ -301,7 +305,6 @@ void Editor::open(const std::vector<std::string>& filenames)
     for (const std::string& filename : filenames)
     {
         FMNode* file_node = file_manager.add_file(filename.c_str());
-        Window* file_view = (Window*)file_node->add_view(window_manager.current_node->bounds);
-        window_manager.current_node->set_content(file_view);
+        window_manager.open(file_node->file);
     }
 }

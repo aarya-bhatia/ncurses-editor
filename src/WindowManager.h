@@ -20,8 +20,12 @@ struct WindowManager
         }
     }
 
+    void open(File *file){
+        current_node->open_tab(file);
+    }
+
     void open(Window *file_window){
-        current_node->content = file_window;
+        current_node->open_tab(file_window);
     }
 
     void splith() { 

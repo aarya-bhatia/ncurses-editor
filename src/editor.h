@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "common.h"
 #include "FileManager.h"
+#include "FileView.h"
 #include "WindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"

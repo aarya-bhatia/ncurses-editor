@@ -1,5 +1,5 @@
 #include "LoadFileCommand.h"
-#include "application/editor.h"
+#include "editor.h"
 
 Result LoadFileCommand::execute(Editor &editor)
 {

@@ -1,4 +1,4 @@
-#include "application/editor.h"
+#include "editor.h"
 #include "StatusWindow.h"
 #include <sstream>
 

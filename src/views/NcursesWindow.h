@@ -1,7 +1,7 @@
 #pragma once
 #include <ncurses.h>
 #include <memory>
-#include "window/Dimension.h"
+#include "Dimension.h"
 #include "Painter.h"
 
 struct WindowDeleter {

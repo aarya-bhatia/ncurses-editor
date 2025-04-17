@@ -1,28 +1,53 @@
 #pragma once
 
 #include <vector>
+#include <list>
 #include "Dimension.h"
 #include "Window.h"
 #include "log.h"
+#include "File.h"
+#include "FileView.h"
 
 struct WMNode
 {
     std::vector<WMNode*> children;
     Dimension bounds;
     WMNode* parent = nullptr;
-    Window* content = nullptr;
+
+    std::list<Window*> tabs;
+    std::list<Window*>::iterator current_tab;
+
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
-    WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent) {}
+    WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent) {
+        current_tab = tabs.end();
+    }
 
-    void set_content(Window* c)
+    ~WMNode()
     {
-        if (content) {
-            content->unfocus();
+        for (Window* tab : tabs) {
+            delete tab;
         }
 
-        content = c;
-        content->focus();
+        for (WMNode* child : children) {
+            delete child;
+        }
+    }
+
+    void open_tab(File* f)
+    {
+        open_tab(new FileView(f, bounds));
+    }
+
+    void open_tab(Window* c)
+    {
+        if (current_tab != tabs.end()) {
+            (*current_tab)->unfocus();
+        }
+
+        tabs.push_back(c);
+        current_tab = std::prev(tabs.end());
+        c->focus();
         log_info("Window content added to WMnode");
     }
 
@@ -38,13 +63,24 @@ struct WMNode
             child->resize(child_d);
         }
 
-        if (content) {
-            content->resize(d);
+        // note: resize other tabs when they are opened.
+        if (current_tab != tabs.end()) {
+            (*current_tab)->resize(d);
         }
 
         bounds = d;
     }
 
+    void close_tab()
+    {
+        if (current_tab != tabs.end()) {
+            log_info("tab closed");
+            tabs.erase(current_tab);
+        }
+        current_tab = tabs.end();
+    }
+
+    // TODO: transfer this nodes tabs to a child?
     void splith()
     {
         if (!split_allowed()) { return; }
@@ -60,10 +96,10 @@ struct WMNode
         children.push_back(child1);
         children.push_back(child2);
 
-        if (content) {
-            child1->content = content->copy(d1);
-            child2->content = content->copy(d2);
-            delete content; content = nullptr;
+        if (current_tab != tabs.end()) {
+            child1->open_tab((*current_tab)->copy(d1));
+            child2->open_tab((*current_tab)->copy(d2));
+            close_tab();
         }
 
         log_info("horizontal split complete");
@@ -84,10 +120,10 @@ struct WMNode
         children.push_back(child1);
         children.push_back(child2);
 
-        if (content) {
-            child1->content = content->copy(d1);
-            child2->content = content->copy(d2);
-            delete content; content = nullptr;
+        if (current_tab != tabs.end()) {
+            child1->open_tab((*current_tab)->copy(d1));
+            child2->open_tab((*current_tab)->copy(d2));
+            close_tab();
         }
 
         log_info("horizontal split complete");
@@ -96,16 +132,16 @@ struct WMNode
     void draw()
     {
         for (auto* child : children) { child->draw(); }
-        if (content) {
-            content->draw();
+        if (current_tab != tabs.end()) {
+            (*current_tab)->draw();
         }
     }
 
     void show()
     {
         for (auto* child : children) { child->show(); }
-        if (content) {
-            content->show();
+        if (current_tab != tabs.end()) {
+            (*current_tab)->show();
         }
     }
 
