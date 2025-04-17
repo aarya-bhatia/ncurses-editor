@@ -4,13 +4,14 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 
-Editor::Editor() :
-    window_manager(Dimension(0, 0, COLS, LINES - 2))
+Editor::Editor(): window_manager(Dimension(0, 0, COLS, LINES - 2))
 {
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
     this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
     this->console_window = std::unique_ptr<ConsoleWindow>(new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1)));
+    this->file_update_handler = std::unique_ptr<FileUpdateHandler>(new FileUpdateHandler(this->window_manager));
+    this->file_manager = std::unique_ptr<FileManager>(new FileManager(*this->file_update_handler));
 
     refresh();
 }
@@ -289,7 +290,7 @@ void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
     {
-        FMNode* file_node = file_manager.add_file(filename.c_str());
+        FMNode* file_node = file_manager->add_file(filename.c_str());
         window_manager.open(file_node->file);
     }
 }

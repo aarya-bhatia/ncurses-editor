@@ -6,8 +6,9 @@ struct BorderedFileView : public Window {
     Dimension bounds;
     FileView* file_view = nullptr;
     NcursesWindow frame;
+    bool redraw = true;
 
-    BorderedFileView(File *file, Dimension d){
+    BorderedFileView(File* file, Dimension d) {
         bounds = d;
         init(file, d);
     }
@@ -22,6 +23,7 @@ struct BorderedFileView : public Window {
         delete file_view;
         file_view = new FileView(file, child_bounds);
         frame = NcursesWindow(bounds);
+        redraw = true;
     }
 
     void resize(Dimension d) override
@@ -31,7 +33,7 @@ struct BorderedFileView : public Window {
 
     void draw() override
     {
-        frame.draw_border();
+        if (redraw) { frame.draw_border(); redraw = false; }
         file_view->draw();
     }
 
@@ -54,4 +56,17 @@ struct BorderedFileView : public Window {
     }
 
     File* get_file() override { return file_view->file; }
+
+    void partial_draw_character(Cursor position)override {
+        file_view->partial_draw_character(position);
+    }
+
+    void partial_draw_line(Cursor position) override {
+        file_view->partial_draw_line(position);
+    }
+
+    void force_redraw() override {
+        redraw = true;
+        file_view->force_redraw();
+    }
 };

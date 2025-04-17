@@ -6,7 +6,7 @@
 #include "Window.h"
 #include "NcursesWindow.h"
 
-struct FileView : public Window, FileSubscriber
+struct FileView : public Window
 {
     Dimension bounds;
     File* file = nullptr;
@@ -19,19 +19,12 @@ struct FileView : public Window, FileSubscriber
 
     FileView(File* file, Dimension bounds);
 
-    void on_file_reload(File& file) override {
-        redraw = true;
-    }
-
     bool is_visible(int y, int x) const {
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
 
-    void partial_draw_character(Cursor position);
-    void partial_draw_line(Cursor position);
-    void on_insert_character(File& file, Cursor position, char c) override;
-    void on_erase_character(File& file, Cursor position) override;
-    void on_replace_character(File& file, Cursor position) override;
+    void partial_draw_character(Cursor position) override;
+    void partial_draw_line(Cursor position) override;
 
     void draw() override;
 
@@ -83,5 +76,7 @@ struct FileView : public Window, FileSubscriber
         return new FileView(file, d);
     }
 
-    File *get_file() override { return file; }
+    File* get_file() override { return file; }
+
+    void force_redraw() override { redraw = true; }
 };

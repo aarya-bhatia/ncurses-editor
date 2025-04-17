@@ -56,12 +56,12 @@ struct WMNode
         resize(bounds);
     }
 
-    void open_tab(File* f)
+    Window *open_tab(File* f)
     {
-        open_tab(ViewFactory::new_file_view(f, bounds));
+        return open_tab(ViewFactory::new_file_view(f, bounds));
     }
 
-    void open_tab(Window* c)
+    Window *open_tab(Window* c)
     {
         if (current_tab != tabs.end()) {
             (*current_tab)->unfocus();
@@ -71,6 +71,7 @@ struct WMNode
         current_tab = std::prev(tabs.end());
         c->focus();
         log_info("Window content added to WMnode");
+        return *current_tab;
     }
 
     bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }

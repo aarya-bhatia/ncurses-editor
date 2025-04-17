@@ -9,6 +9,8 @@ struct WindowManager
     WMNode *current_node = nullptr;
     Dimension bounds;
 
+    std::unordered_map<File*, std::vector<Window *>> file_views;
+
     WindowManager(Dimension d): bounds(d){ init(); }
     ~WindowManager() { if(root_node) delete root_node;}
 
@@ -20,8 +22,13 @@ struct WindowManager
         }
     }
 
+    std::vector<Window *> &get_file_views(File *file) {
+        return file_views[file];
+    }
+
     void open(File *file){
-        current_node->open_tab(file);
+        Window *view = current_node->open_tab(file);
+        file_views[file].push_back(view);
     }
 
     void open(Window *file_window){

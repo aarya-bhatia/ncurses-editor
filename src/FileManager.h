@@ -1,16 +1,17 @@
 #pragma once
 #include "FMNode.h"
 #include "SequenceGenerator.h"
+#include "FileUpdateHandler.h"
 #include <list>
 
 class FileManager
 {
+    FileUpdateHandler& file_update_handler;
     LinearSequenceGenerator<int> id_gen;
     std::list<FMNode*> nodes;
 
 public:
-    FileManager()
-        :id_gen(1) {
+    FileManager(FileUpdateHandler& handler) : file_update_handler(handler), id_gen(1) {
     }
 
     ~FileManager()
@@ -39,6 +40,7 @@ public:
 
         node = new FMNode(id_gen.next(), filename);
         nodes.push_back(node);
+        node->file->add_subscriber(&file_update_handler);
         return node;
     }
 };

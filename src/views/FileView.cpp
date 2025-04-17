@@ -7,7 +7,6 @@ FileView::FileView(File* file, Dimension bounds) : bounds(bounds), file(file)
     this->scroll.dx = 0;
     this->scroll.dy = 0;
 
-    file->add_subscriber(this);
     window = NcursesWindow(bounds);
     redraw = true;
 }
@@ -109,31 +108,6 @@ void FileView::partial_draw_line(Cursor position)
         char ch = *col_itr;
         window.draw_character(dpy, dpx, ch);
     }
-}
-
-void FileView::on_insert_character(File& file, Cursor position, char c)
-{
-    if (this->file != &file) {
-        return;
-    }
-
-    partial_draw_line(position);
-}
-
-void FileView::on_erase_character(File& file, Cursor position) {
-    if (this->file != &file) {
-        return;
-    }
-
-    partial_draw_line(position);
-}
-
-void FileView::on_replace_character(File& file, Cursor position) {
-    if (this->file != &file) {
-        return;
-    }
-
-    partial_draw_character(position);
 }
 
 void FileView::draw_cursor()

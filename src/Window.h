@@ -12,4 +12,8 @@ struct Window
     virtual void unfocus() = 0;
     virtual void resize(Dimension d) = 0;
     virtual Window* copy(Dimension d) = 0;
+
+    virtual void partial_draw_character(Cursor position) = 0;
+    virtual void partial_draw_line(Cursor position) = 0;
+    virtual void force_redraw() = 0;
 };

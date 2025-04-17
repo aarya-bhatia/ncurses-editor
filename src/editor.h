@@ -12,6 +12,7 @@
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
 #include "commands/Command.h"
+#include "FileUpdateHandler.h"
 
 enum Mode
 {
@@ -28,7 +29,8 @@ static std::map<Mode, const char*> mode_names = {
 
 struct Editor
 {
-    FileManager file_manager;
+    std::unique_ptr<FileUpdateHandler> file_update_handler;
+    std::unique_ptr<FileManager> file_manager;
     WindowManager window_manager;
 
     std::unique_ptr<StatusWindow> status_window;
