@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Dimension.h"
+#include "log.h"
 
 struct ContainerWindow;
 struct ContentWindow;
@@ -17,7 +18,11 @@ struct Window
 
     virtual ~Window() = default;
 
+    virtual std::string debug_string() const { return "window-" + std::to_string(id) + "-" + bounds.debug_string(); }
+
     Dimension get_bounds() const { return bounds; }
+
+    bool is_legal() { return (get_container() || get_content()) && bounds.width >= MIN_WINDOW_SIZE && bounds.height >= MIN_WINDOW_SIZE && bounds.x >= 0 && bounds.y >= 0; }
 
     virtual ContainerWindow* get_container() {
         return nullptr;
@@ -30,16 +35,26 @@ struct Window
     virtual void draw() = 0;
     virtual void show() = 0;
 
-    virtual void on_focus() {}
-    virtual void on_unfocus() {}
+    void focus() { log_debug("focus gained by %s", debug_string().c_str()); on_focus(); }
+    void unfocus() { log_debug("focus lost by %s", debug_string().c_str()); on_unfocus(); }
 
     virtual bool resizable(Dimension bounds);
-    virtual void resize(Dimension bounds);
+    virtual bool split_allowed() { return bounds.width / 2 >= MIN_WINDOW_SIZE && bounds.height / 2 >= MIN_WINDOW_SIZE; }
 
-    virtual ContentWindow* get_right_most_content_node() { return nullptr; }
-    virtual ContentWindow* get_left_most_content_node() { return nullptr; }
-    virtual ContentWindow* get_top_most_content_node() { return nullptr; }
-    virtual ContentWindow* get_bottom_most_content_node() { return nullptr; }
+    void resize(Dimension bounds) {
+        if (!resizable(bounds)) { return; }
+        this->bounds = bounds;
+        on_resize();
+    }
 
-    virtual std::string debug_string() const;
+    virtual bool is_presentable() { return this->get_content() != nullptr; }
+    virtual ContentWindow* get_right_presentable_node() { return nullptr; }
+    virtual ContentWindow* get_left_presentable_node() { return nullptr; }
+    virtual ContentWindow* get_top_presentable_node() { return nullptr; }
+    virtual ContentWindow* get_bottom_presentable_node() { return nullptr; }
+
+protected:
+    virtual void on_resize() = 0;
+    virtual void on_focus() = 0;
+    virtual void on_unfocus() = 0;
 };

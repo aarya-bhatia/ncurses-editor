@@ -37,4 +37,12 @@ struct ContainerWindow : public Window
     std::string debug_string() const override {
         return "container-" + Window::debug_string();
     }
+
+    void on_resize() override {
+        resize_strategy->execute(children, bounds, bounds);
+    }
+
+    bool resizable(Dimension bounds) override {
+        return resize_strategy->is_executable(children, bounds, bounds);
+    }
 };
