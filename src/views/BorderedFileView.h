@@ -7,66 +7,51 @@ struct BorderedFileView : public Window {
     FileView* file_view = nullptr;
     NcursesWindow frame;
 
-    BorderedFileView(FileView* file_view = nullptr) {
-        init(file_view);
+    BorderedFileView(File *file, Dimension d){
+        bounds = d;
+        init(file, d);
     }
 
     ~BorderedFileView() {
         delete file_view;
     }
 
-    void init(FileView* file_view) {
-        if (!file_view) {
-            return;
-        }
-        this->file_view = file_view;
-        bounds = file_view->bounds;
+    void init(File* file, Dimension bounds) {
+        this->bounds = bounds;
+        Dimension child_bounds(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2);
+        delete file_view;
+        file_view = new FileView(file, child_bounds);
         frame = NcursesWindow(bounds);
-        if (file_view) {
-            file_view->resize(Dimension(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2));
-        }
     }
 
     void resize(Dimension d) override
     {
-        bounds = d;
-        frame = NcursesWindow(bounds);
-        if (file_view) {
-            file_view->resize(Dimension(bounds.x + 1, bounds.y + 1, bounds.width - 2, bounds.height - 2));
-        }
+        init(file_view->file, d);
     }
 
     void draw() override
     {
         frame.draw_border();
-        if (file_view) {
-            file_view->draw();
-        }
+        file_view->draw();
     }
 
     void show() override
     {
         frame.show();
-        if (file_view) {
-            file_view->show();
-        }
+        file_view->show();
     }
 
     void focus()  override {
-        if (file_view) {
-            file_view->focus();
-        }
+        file_view->focus();
     }
 
     void unfocus()  override {
-        if (file_view) {
-            file_view->unfocus();
-        }
+        file_view->unfocus();
     }
 
     Window* copy(Dimension d)  override {
-        BorderedFileView* w = new BorderedFileView((FileView*)file_view->copy(d));
-        w->resize(d);
-        return w;
+        return new BorderedFileView(file_view->file, bounds);
     }
+
+    File* get_file() override { return file_view->file; }
 };

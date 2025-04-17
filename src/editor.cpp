@@ -53,26 +53,14 @@ void Editor::handle_event(unsigned c)
 Window* Editor::get_current_view()
 {
     WMNode* node = window_manager.current_node;
-    if (!node) {
-        return nullptr;
-    }
-
-    return node->get_current_tab_window();
+    return node ? node->get_current_tab_window() : nullptr;
 }
 
 
 File* Editor::get_current_file()
 {
     Window* window = get_current_view();
-    if (!window) {
-        return nullptr;
-    }
-    BorderedFileView* view = dynamic_cast<BorderedFileView*>(window);
-    if (view && view->file_view) {
-        return view->file_view->file;
-    }
-
-    return NULL;
+    return window ? window->get_file() : nullptr;
 }
 
 
@@ -292,19 +280,9 @@ void Editor::show() {
 
 void Editor::draw()
 {
-    // FileView* view = get_current_view();
-    // if (view) {
-    //     if (view->scroll_to_ensure_cursor_visible()) {
-    //         view->redraw = true;
-    //     }
-    // }
-
     window_manager.draw();
     status_window->draw();
     console_window->draw();
-
-    // if (view) { view->draw_cursor(); }
-    // else { move(0, 0); }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

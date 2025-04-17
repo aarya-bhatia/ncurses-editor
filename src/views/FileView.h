@@ -82,4 +82,6 @@ struct FileView : public Window, FileSubscriber
     Window* copy(Dimension d) override {
         return new FileView(file, d);
     }
+
+    File *get_file() override { return file; }
 };

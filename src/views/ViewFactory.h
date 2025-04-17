@@ -3,6 +3,6 @@
 
 struct ViewFactory {
     static Window *new_file_view(File *file, Dimension d){
-        return new BorderedFileView(new FileView(file, d));
+        return new BorderedFileView(file, d);
     }
 };

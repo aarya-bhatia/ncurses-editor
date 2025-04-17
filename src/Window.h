@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Dimension.h"
+#include "File.h"
 struct Window
 {
     virtual ~Window() = default;
+    virtual File *get_file() = 0;
     virtual void draw() = 0;
     virtual void show() = 0;
     virtual void focus() = 0;

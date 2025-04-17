@@ -52,8 +52,6 @@ void FileView::draw_content() {
         return;
     }
 
-    // log_debug("drawing content");
-
     if (!redraw) { return; }
 
     window.clear();
@@ -78,6 +76,10 @@ void FileView::draw_content() {
 }
 
 void FileView::draw() {
+    if (scroll_to_ensure_cursor_visible()) {
+        redraw = true;
+    }
+
     draw_content();
     draw_cursor();
 }
