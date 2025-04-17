@@ -34,6 +34,27 @@ struct WMNode
         }
     }
 
+    Window* get_current_tab_window() {
+        if (current_tab != tabs.end()) {
+            return *current_tab;
+        }
+        return nullptr;
+    }
+
+    void open_prev_tab() {
+        if (tabs.empty()) return;
+        if (current_tab == tabs.begin()) { log_info("no prev tab"); return; }
+        current_tab = std::prev(current_tab);
+        resize(bounds);
+    }
+
+    void open_next_tab() {
+        if (tabs.empty()) return;
+        if (std::next(current_tab) == tabs.end()) { log_info("no next tab"); return; }
+        current_tab = std::next(current_tab);
+        resize(bounds);
+    }
+
     void open_tab(File* f)
     {
         open_tab(new FileView(f, bounds));

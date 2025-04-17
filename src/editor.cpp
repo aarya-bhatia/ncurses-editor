@@ -57,11 +57,7 @@ FileView* Editor::get_current_view()
         return nullptr;
     }
 
-    if(window->current_tab == window->tabs.end()) {
-        return nullptr;
-    }
-
-    return dynamic_cast<FileView*>(*window->current_tab);
+    return dynamic_cast<FileView*>(window->get_current_tab_window());
 }
 
 
@@ -121,6 +117,14 @@ void Editor::command(const std::string& command)
     else if (command == "bottom")
     {
         window_manager.focus_bottom();
+    }
+    else if (command == "next")
+    {
+        window_manager.current_node->open_next_tab();
+    }
+    else if (command == "prev")
+    {
+        window_manager.current_node->open_prev_tab();
     }
     else if (is_number(command))
     {
