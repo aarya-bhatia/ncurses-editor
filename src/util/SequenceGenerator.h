@@ -10,9 +10,11 @@ struct SequenceGenerator
 };
 
 template<typename T>
-struct LinearSequenceGenerator : public SequenceGenerator<T> {
+class LinearSequenceGenerator : public SequenceGenerator<T> {
+private:
     T current;
 
+public:
     LinearSequenceGenerator(T start) : current(start) {}
 
     void reset(T start) override {

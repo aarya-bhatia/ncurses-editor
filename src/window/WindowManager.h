@@ -1,42 +1,65 @@
 #pragma once
 
-#include "IWindowManager.h"
+#include "WMNode.h"
 #include "Window.h"
-#include "ContentWindow.h"
-#include "ContainerWindow.h"
-#include <assert.h>
-#include "SequenceGenerator.h"
 
-struct WindowManager : public IWindowManager
+struct WindowManager
 {
-    Dimension screen_bounds;
-    Window* root_node = nullptr;
-    Window* current_node = nullptr;
+    WMNode *root_node = nullptr;
+    WMNode *current_node = nullptr;
+    Dimension bounds;
 
-    LinearSequenceGenerator<int> window_id_generator;
+    WindowManager(Dimension d): bounds(d){ init(); }
+    ~WindowManager() { if(root_node) delete root_node;}
 
-    WindowManager(Dimension bounds);
-    ~WindowManager();
+    void init()
+    {
+        if(!root_node) {
+            root_node = new WMNode(bounds, nullptr);
+            current_node = root_node;
+        }
+    }
 
-    Dimension get_bounds() const override { return screen_bounds; }
+    void open(Window *file_window){
+        current_node->content = file_window;
+    }
 
-    void draw() override { if (root_node) { root_node->draw(); } }
-    void show() override { if (root_node) { root_node->show(); } }
+    void splith() { 
+        if(!current_node || !current_node->split_allowed()) return; 
+        current_node->splith(); current_node = current_node->children[0];
+    }
 
-    bool resize(Dimension bounds) override;
-    void focus(ContentWindow* node) override;
-    void unfocus(ContentWindow* node) override;
-    void set_content(ContentWindow* content_window) override;
-    ContentWindow* get_content_node() override;
-    bool split_vertical(ContentWindow* new_content) override;
-    bool split_horizontal(ContentWindow* new_content) override;
-    ContentWindow* _find_content_node(Window* node);
-    void _split(ContainerWindow* orig_parent, ContainerWindow* split_container, ContentWindow* new_content);
-    ContentWindow* get_content_node_right(Window* current) override;
-    ContentWindow* get_content_node_left(Window* current) override;
-    ContentWindow* get_content_node_top(Window* current) override;
-    ContentWindow* get_content_node_bottom(Window* current) override;
+    void splitv() { 
+        if(!current_node || !current_node->split_allowed()) return; 
+        current_node->splitv(); current_node = current_node->children[0];
+    }
 
-    int count_nodes() const override;
-    int count_content_nodes() const override;
-};
+    void draw() { if(root_node) root_node->draw(); }
+
+    void show() { if(root_node) root_node->show(); }
+
+    void resize(Dimension d) { 
+        bounds = d; 
+        if(!root_node) init(); else root_node->resize(d); 
+    }
+
+    void focus(WMNode *node) { 
+        current_node = node;
+    }
+
+    void focus_right() {
+        if(current_node) current_node = current_node->find_right_adjacent_node();
+    }
+
+    void focus_left() {
+        if(current_node) current_node = current_node->find_left_adjacent_node();
+    }
+
+    void focus_top() {
+        if(current_node) current_node = current_node->find_top_adjacent_node();
+    }
+
+    void focus_down() {
+        if(current_node) current_node = current_node->find_right_adjacent_node();
+    }
+}; 

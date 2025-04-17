@@ -61,13 +61,6 @@ int main(int argc, const char** argv)
     Editor editor;
     editor.open(filenames);
 
-    if (editor.file_manager->count_files() == 0) {
-        auto new_file = editor.file_manager->open_untitled_file();
-        editor.file_manager->open_in_current_window(new_file);
-    }
-
-    assert(editor.file_manager->count_files() > 0);
-
     while (!editor.quit)
     {
         if (resized)
@@ -89,9 +82,6 @@ int main(int argc, const char** argv)
         }
 
         editor.handle_event(ch);
-
-        log_info("total window nodes: %d", editor.window_manager->count_nodes());
-        log_info("total content nodes: %d", editor.window_manager->count_content_nodes());
     }
 
     cleanup();

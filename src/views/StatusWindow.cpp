@@ -23,7 +23,7 @@ std::string StatusWindow::get_status()
 {
     std::ostringstream left_oss;
     std::ostringstream right_oss;
-    std::shared_ptr<File> file = editor.get_current_file();
+    File* file = editor.get_current_file();
 
     auto mode_name = mode_names.find(editor.mode);
     if (mode_name != mode_names.end()) {

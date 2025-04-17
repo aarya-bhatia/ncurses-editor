@@ -1,30 +1,46 @@
 #pragma once
-#include <memory>
-#include <map>
+#include <vector>
 #include "File.h"
 #include "FileView.h"
-#include "window/IWindowManager.h"
+#include "SequenceGenerator.h"
+
+struct FMNode
+{
+    File* file = nullptr;
+    std::vector<FileView*> views;
+
+    FMNode(int file_id, const char* filename) {
+        file = new File(file_id, filename);
+    }
+
+    ~FMNode()
+    {
+        for (FileView* view : views) {
+            delete view;
+        }
+
+        delete file;
+    }
+
+    FileView* add_view(Dimension d) {
+        views.push_back(new FileView(file, d));
+        return views.back();
+    }
+
+    bool has_file(const char* filename) const {
+        return file->filename && !strncmp(file->filename, filename, strlen(filename));
+    }
+};
 
 class FileManager
 {
-    std::vector<std::shared_ptr<File>> _files;
-    std::shared_ptr<IWindowManager> window_manager;
+    LinearSequenceGenerator<int> id_gen;
+    std::list<FMNode*> nodes;
 
 public:
-    FileManager(std::shared_ptr<IWindowManager> wm) : window_manager(std::move(wm)) {
-    }
+    FileManager();
+    ~FileManager();
 
-    std::shared_ptr<File> get_file(const char* filename);
-
-    std::shared_ptr<File> open_untitled_file();
-    std::shared_ptr<File> open_file(const char* filename);
-    void close_file(const std::shared_ptr<File>& file);
-    std::shared_ptr<File> next_file(const std::shared_ptr<File>& file);
-    std::shared_ptr<File> prev_file(const std::shared_ptr<File>& file);
-    FileID get_new_file_id() const;
-    size_t count_files() const { return _files.size(); }
-
-    void open_in_current_window(std::shared_ptr<File> file);
-    void open_in_splith(std::shared_ptr<File> file);
-    void open_in_splitv(std::shared_ptr<File> file);
+    FMNode* find(const char* filename);
+    FMNode* add_file(const char* filename);
 };

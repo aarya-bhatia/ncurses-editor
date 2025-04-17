@@ -7,12 +7,10 @@
 #include <assert.h>
 #include "common.h"
 #include "FileManager.h"
-#include "window/IWindowManager.h"
+#include "WindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
 #include "commands/Command.h"
-
-#include <ncurses.h>
 
 enum Mode
 {
@@ -29,8 +27,9 @@ static std::map<Mode, const char*> mode_names = {
 
 struct Editor
 {
-    std::unique_ptr<FileManager> file_manager;
-    std::shared_ptr<IWindowManager> window_manager;
+    FileManager file_manager;
+    WindowManager window_manager;
+
     std::unique_ptr<StatusWindow> status_window;
     std::unique_ptr<ConsoleWindow> console_window;
 
@@ -45,7 +44,7 @@ struct Editor
     Editor();
 
     FileView* get_current_view();
-    std::shared_ptr<File> get_current_file();
+    File* get_current_file();
 
     void command(const std::string& command);
 
@@ -57,10 +56,6 @@ struct Editor
 
     void draw();
     void show();
-
-    void force_redraw_editor();
-    void redraw_line(Cursor);
-
     void resize();
 
     void open(const std::vector<std::string>& filenames);

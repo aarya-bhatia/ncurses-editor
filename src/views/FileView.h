@@ -1,29 +1,23 @@
 #pragma once
 
 #include <ncurses.h>
-#include "window/ContentWindow.h"
 #include "File.h"
 #include "FileSubscriber.h"
+#include "Window.h"
 #include "NcursesWindow.h"
 
-struct FileView : public ContentWindow, FileSubscriber
+struct FileView : public Window, FileSubscriber
 {
-    std::shared_ptr<File> file;
+    Dimension bounds;
+    File* file = nullptr;
     NcursesWindow window;
-    Scroll page_scroll;
+    Scroll scroll;
     bool redraw = true;
 
     int save_cursor_y = 0;
     int save_cursor_x = 0;
 
-    FileView(const std::shared_ptr<File>& file, Dimension bounds = Dimension());
-
-    FileView(const FileView& other) :
-        FileView(other.file, other.bounds) {
-    }
-
-    void on_focus() override;
-    void on_unfocus() override;
+    FileView(File* file, Dimension bounds);
 
     void on_file_reload(File& file) override {
         redraw = true;
@@ -35,16 +29,9 @@ struct FileView : public ContentWindow, FileSubscriber
 
     void partial_draw_character(Cursor position);
     void partial_draw_line(Cursor position);
-
     void on_insert_character(File& file, Cursor position, char c) override;
     void on_erase_character(File& file, Cursor position) override;
     void on_replace_character(File& file, Cursor position) override;
-
-    ContentType get_content_type() override { return ContentType::FileContent; }
-
-    std::shared_ptr<void> get_model() override {
-        return file;
-    }
 
     void draw() override;
 
@@ -68,12 +55,12 @@ struct FileView : public ContentWindow, FileSubscriber
 
     int get_display_y(int rely) const
     {
-        return rely - page_scroll.dy;
+        return rely - scroll.dy;
     }
 
     int get_display_x(int relx) const
     {
-        return relx - page_scroll.dx;
+        return relx - scroll.dx;
     }
 
     int height() const
@@ -90,4 +77,11 @@ struct FileView : public ContentWindow, FileSubscriber
 
     void draw_cursor();
     void draw_content();
+
+    void focus() override {}
+    void unfocus() override {}
+
+    Window* copy() override {
+        return new FileView(file, bounds);
+    }
 };

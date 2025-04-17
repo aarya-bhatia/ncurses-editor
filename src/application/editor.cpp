@@ -1,19 +1,14 @@
 #include "editor.h"
-#include <curses.h>
-#include <ncurses.h>
 #include <string.h>
-#include "util/log.h"
-#include <sys/types.h>
-#include "window/WindowManager.h"
+#include "log.h"
 #include "FileView.h"
 #include "FileSubscriber.h"
 
-Editor::Editor()
+Editor::Editor() :
+    window_manager(Dimension(0, 0, COLS, LINES - 2))
 {
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
-    this->window_manager = std::shared_ptr<IWindowManager>(new WindowManager(Dimension(0, 0, COLS, LINES - 2)));
-    this->file_manager = std::unique_ptr<FileManager>(new FileManager(this->window_manager));
     this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
     this->console_window = std::unique_ptr<ConsoleWindow>(new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1)));
 
@@ -22,12 +17,8 @@ Editor::Editor()
 
 void Editor::resize()
 {
-    if (!window_manager->resize(Dimension(0, 0, COLS, LINES - 2))) {
-        log_warn("resize failed");
-        return;
-    }
-
     log_info("resize(): lines:%d cols:%d", LINES, COLS);
+    window_manager.resize(Dimension(0, 0, COLS, LINES - 2));
     status_window->resize(Dimension(0, LINES - 2, COLS, 1));
     console_window->resize(Dimension(0, LINES - 1, COLS, 1));
     refresh();
@@ -61,34 +52,30 @@ void Editor::handle_event(unsigned c)
 
 FileView* Editor::get_current_view()
 {
-    ContentWindow* window = window_manager->get_content_node();
+    WMNode* window = window_manager.current_node;
     if (!window) {
         return nullptr;
     }
 
-    if (window->get_content_type() == ContentWindow::ContentType::FileContent) {
-        return static_cast<FileView*>(window);
-    }
-
-    return nullptr;
+    return dynamic_cast<FileView*>(window->content);
 }
 
 
-std::shared_ptr<File> Editor::get_current_file()
+File* Editor::get_current_file()
 {
     FileView* file_view = get_current_view();
     if (!file_view) {
         return nullptr;
     }
 
-    return std::static_pointer_cast<File>(file_view->get_model());
+    return file_view->file;
 }
 
 
 void Editor::command(const std::string& command)
 {
     FileView* file_view = get_current_view();
-    std::shared_ptr<File> file = get_current_file();
+    File* file = file_view->file;
     log_debug("Got command: %s", command.c_str());
 
     if (command == "q" || command == "quit")
@@ -109,61 +96,27 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
-        if (file_view) {
-            FileView* new_view = new FileView(*file_view);
-            if (!window_manager->split_horizontal(new FileView(*file_view))) {
-                delete new_view;
-            }
-        }
+        window_manager.splith();
     }
     else if (command == "vs" || command == "vsplit")
     {
-        if (file_view) {
-            FileView* new_view = new FileView(*file_view);
-            if (!window_manager->split_vertical(new FileView(*file_view))) {
-                delete new_view;
-            }
-        }
+        window_manager.splitv();
     }
     else if (command == "right")
     {
-        if (file_view) {
-            ContentWindow* node = window_manager->get_content_node_right(file_view);
-            log_debug("content window found: %d", !!node);
-            if (node) {
-                window_manager->focus(node);
-            }
-        }
+        window_manager.focus_right();
     }
     else if (command == "left")
     {
-        if (file_view) {
-            ContentWindow* node = window_manager->get_content_node_left(file_view);
-            log_debug("content window found: %d", !!node);
-            if (node) {
-                window_manager->focus(node);
-            }
-        }
+        window_manager.focus_left();
     }
     else if (command == "top")
     {
-        if (file_view) {
-            ContentWindow* node = window_manager->get_content_node_top(file_view);
-            log_debug("content window found: %d", !!node);
-            if (node) {
-                window_manager->focus(node);
-            }
-        }
+        window_manager.focus_top();
     }
     else if (command == "bottom")
     {
-        if (file_view) {
-            ContentWindow* node = window_manager->get_content_node_bottom(file_view);
-            log_debug("content window found: %d", !!node);
-            if (node) {
-                window_manager->focus(node);
-            }
-        }
+        window_manager.focus_down();
     }
     else if (is_number(command))
     {
@@ -321,7 +274,7 @@ void Editor::handle_command_mode_event(unsigned c)
 
 
 void Editor::show() {
-    window_manager->show();
+    window_manager.show();
     status_window->show();
     console_window->show();
 }
@@ -336,7 +289,7 @@ void Editor::draw()
         }
     }
 
-    window_manager->draw();
+    window_manager.draw();
     status_window->draw();
     console_window->draw();
 
@@ -348,6 +301,8 @@ void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
     {
-        file_manager->open_in_current_window(file_manager->open_file(filename.c_str()));
+        FMNode* file_node = file_manager.add_file(filename.c_str());
+        Window* file_view = (Window*)file_node->add_view(window_manager.current_node->bounds);
+        window_manager.current_node->set_content(file_view);
     }
 }
