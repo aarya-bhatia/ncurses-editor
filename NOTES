@@ -1,1 +1,3 @@
 - store file views in file manager so we can restore file state when switching back to it.
+
+- impl close tabs

@@ -284,6 +284,10 @@ void Editor::draw()
     window_manager.draw();
     status_window->draw();
     console_window->draw();
+
+    if(!window_manager.current_node || !window_manager.current_node->get_current_tab_window()) {
+        move(0, 0);
+    }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)
