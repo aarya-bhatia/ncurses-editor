@@ -104,34 +104,34 @@ struct WMNode : public IDrawable, IFocusable
     WMNode* get_left_child()
     {
         if (layout == VSPLIT) return children[0];
-        log_debug("no left child of layout %d", layout);
+        // log_debug("no left child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_right_child()
     {
         if (layout == VSPLIT) return children[1];
-        log_debug("no right child of layout %d", layout);
+        // log_debug("no right child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_top_child()
     {
         if (layout == HSPLIT) return children[0];
-        log_debug("no top child of layout %d", layout);
+        // log_debug("no top child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_bottom_child()
     {
         if (layout == HSPLIT) return children[1];
-        log_debug("no bottom child of layout %d", layout);
+        // log_debug("no bottom child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* find_left_content_node()
     {
-        log_debug("finding left content node in WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding left content node in WMNode %s", bounds.debug_string().c_str());
 
         if (layout == NORMAL) {
             return this;
@@ -146,7 +146,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_right_content_node()
     {
-        log_debug("finding right content node in WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding right content node in WMNode %s", bounds.debug_string().c_str());
 
         if (layout == NORMAL) {
             return this;
@@ -161,7 +161,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_top_content_node()
     {
-        log_debug("finding top content node in WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding top content node in WMNode %s", bounds.debug_string().c_str());
 
         if (layout == NORMAL) {
             return this;
@@ -176,7 +176,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_bottom_content_node()
     {
-        log_debug("finding bottom content node in WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding bottom content node in WMNode %s", bounds.debug_string().c_str());
 
         if (layout == NORMAL) {
             return this;
@@ -191,7 +191,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_right_adjacent_node()
     {
-        log_debug("finding right adjacent node of WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding right adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -205,7 +205,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_left_adjacent_node()
     {
-        log_debug("finding left adjacent node of WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding left adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -219,7 +219,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_top_adjacent_node()
     {
-        log_debug("finding top adjacent node of WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding top adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -233,7 +233,7 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_bottom_adjacent_node()
     {
-        log_debug("finding bottom adjacent node of WMNode %s", bounds.debug_string().c_str());
+        // log_debug("finding bottom adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }

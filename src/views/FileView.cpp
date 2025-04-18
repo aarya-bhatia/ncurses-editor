@@ -84,7 +84,7 @@ void FileView::draw() {
     draw_content();
 
     if (focused) {
-        log_debug("drawing cursor in focused file window %s", bounds.debug_string().c_str());
+        // log_debug("drawing cursor in focused file window %s", bounds.debug_string().c_str());
         draw_cursor();
     }
 }
