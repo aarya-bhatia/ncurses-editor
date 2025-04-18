@@ -44,6 +44,7 @@ struct BorderedFileView : public Window {
     }
 
     void focus()  override {
+        log_info("got focus on window %s", bounds.debug_string().c_str());
         file_view->focus();
     }
 

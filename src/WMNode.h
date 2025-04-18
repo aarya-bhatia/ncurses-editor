@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Types.h"
 #include <vector>
 #include <list>
+#include <assert.h>
 #include "Dimension.h"
 #include "Window.h"
 #include "log.h"
@@ -9,7 +11,7 @@
 #include "FileView.h"
 #include "ViewFactory.h"
 
-struct WMNode
+struct WMNode : public IDrawable, IFocusable
 {
     std::vector<WMNode*> children;
     Dimension bounds;
@@ -56,12 +58,12 @@ struct WMNode
         resize(bounds);
     }
 
-    Window *open_tab(File* f)
+    Window* open_tab(File* f)
     {
         return open_tab(ViewFactory::new_file_view(f, bounds));
     }
 
-    Window *open_tab(Window* c)
+    Window* open_tab(Window* c)
     {
         if (current_tab != tabs.end()) {
             (*current_tab)->unfocus();
@@ -76,7 +78,7 @@ struct WMNode
 
     bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }
 
-    void resize(Dimension d)
+    void resize(Dimension d) override
     {
         for (auto* child : children)
         {
@@ -126,6 +128,13 @@ struct WMNode
         }
 
         log_info("horizontal split complete");
+
+        assert(child1 == get_top_child());
+        assert(child2 == get_bottom_child());
+        assert(child1->find_bottom_adjacent_node() == child2);
+        assert(child2->find_top_adjacent_node() == child1);
+        assert(find_top_content_node() == child1);
+        assert(find_bottom_content_node() == child2);
     }
 
     void splitv()
@@ -150,19 +159,28 @@ struct WMNode
         }
 
         log_info("horizontal split complete");
+
+        assert(child1 == get_left_child());
+        assert(child2 == get_right_child());
+        assert(child1->find_right_adjacent_node() == child2);
+        assert(child2->find_left_adjacent_node() == child1);
+        assert(find_left_content_node() == child1);
+        assert(find_right_content_node() == child2);
     }
 
-    void draw()
+    void draw() override
     {
         for (auto* child : children) { child->draw(); }
+
         if (current_tab != tabs.end()) {
             (*current_tab)->draw();
         }
     }
 
-    void show()
+    void show() override
     {
         for (auto* child : children) { child->show(); }
+
         if (current_tab != tabs.end()) {
             (*current_tab)->show();
         }
@@ -177,42 +195,36 @@ struct WMNode
 
     WMNode* get_left_child()
     {
-        if (layout != VSPLIT) {
-            return nullptr;
-        }
-
-        return children[0];
+        if (layout == VSPLIT) return children[0];
+        log_debug("no left child of layout %d", layout);
+        return nullptr;
     }
 
     WMNode* get_right_child()
     {
-        if (layout != VSPLIT) {
-            return nullptr;
-        }
-
-        return children[1];
+        if (layout == VSPLIT) return children[1];
+        log_debug("no right child of layout %d", layout);
+        return nullptr;
     }
 
     WMNode* get_top_child()
     {
-        if (layout != HSPLIT) {
-            return nullptr;
-        }
-
-        return children[0];
+        if (layout == HSPLIT) return children[0];
+        log_debug("no top child of layout %d", layout);
+        return nullptr;
     }
 
     WMNode* get_bottom_child()
     {
-        if (layout != HSPLIT) {
-            return nullptr;
-        }
-
-        return children[1];
+        if (layout == HSPLIT) return children[1];
+        log_debug("no bottom child of layout %d", layout);
+        return nullptr;
     }
 
     WMNode* find_left_content_node()
     {
+        log_debug("finding left content node in WMNode %s", bounds.debug_string().c_str());
+
         if (layout == NORMAL) {
             return this;
         }
@@ -226,6 +238,8 @@ struct WMNode
 
     WMNode* find_right_content_node()
     {
+        log_debug("finding right content node in WMNode %s", bounds.debug_string().c_str());
+
         if (layout == NORMAL) {
             return this;
         }
@@ -239,6 +253,8 @@ struct WMNode
 
     WMNode* find_top_content_node()
     {
+        log_debug("finding top content node in WMNode %s", bounds.debug_string().c_str());
+
         if (layout == NORMAL) {
             return this;
         }
@@ -252,6 +268,8 @@ struct WMNode
 
     WMNode* find_bottom_content_node()
     {
+        log_debug("finding bottom content node in WMNode %s", bounds.debug_string().c_str());
+
         if (layout == NORMAL) {
             return this;
         }
@@ -265,6 +283,7 @@ struct WMNode
 
     WMNode* find_right_adjacent_node()
     {
+        log_debug("finding right adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -278,6 +297,7 @@ struct WMNode
 
     WMNode* find_left_adjacent_node()
     {
+        log_debug("finding left adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -291,6 +311,7 @@ struct WMNode
 
     WMNode* find_top_adjacent_node()
     {
+        log_debug("finding top adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -304,6 +325,7 @@ struct WMNode
 
     WMNode* find_bottom_adjacent_node()
     {
+        log_debug("finding bottom adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -313,5 +335,37 @@ struct WMNode
         }
 
         return parent->find_bottom_adjacent_node();
+    }
+
+    void focus() override {
+        log_debug("got focus on WMNode %s", bounds.debug_string().c_str());
+        if (current_tab != tabs.end()) {
+            (*current_tab)->focus();
+        }
+    }
+
+    void unfocus() override {
+        log_debug("lost focus on WMNode %s", bounds.debug_string().c_str());
+        if (current_tab != tabs.end()) {
+            (*current_tab)->unfocus();
+        }
+    }
+
+    void partial_draw_character(Cursor position) override {
+        if (current_tab != tabs.end()) {
+            (*current_tab)->partial_draw_character(position);
+        }
+    }
+
+    void partial_draw_line(Cursor position) override {
+        if (current_tab != tabs.end()) {
+            (*current_tab)->partial_draw_line(position);
+        }
+    }
+
+    void force_redraw() override {
+        if (current_tab != tabs.end()) {
+            (*current_tab)->force_redraw();
+        }
     }
 };

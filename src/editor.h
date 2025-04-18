@@ -11,7 +11,7 @@
 #include "WindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
-#include "commands/Command.h"
+#include "Command.h"
 #include "FileUpdateHandler.h"
 
 enum Mode

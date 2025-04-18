@@ -2,8 +2,6 @@
 
 #include <string>
 
-struct Editor;
-
 enum class Status
 {
     ok = 0,
@@ -25,10 +23,6 @@ struct Result
 };
 
 struct Command {
-
     virtual ~Command() = default;
-    virtual Result execute(Editor& editor) = 0;
-
-    // TODO: virtual bool undoable() = 0;
-    // TODO: virtual void undo();
+    virtual Result execute() = 0;
 };
