@@ -75,12 +75,16 @@ void FileView::draw_content() {
 }
 
 void FileView::draw() {
-    if (scroll_to_ensure_cursor_visible()) {
+    if (focused && scroll_to_ensure_cursor_visible()) {
         redraw = true;
     }
 
     draw_content();
-    draw_cursor();
+
+    if (focused) {
+        log_debug("drawing cursor in focused file window %s", bounds.debug_string().c_str());
+        draw_cursor();
+    }
 }
 
 void FileView::partial_draw_character(Cursor position)

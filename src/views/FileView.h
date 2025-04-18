@@ -13,6 +13,7 @@ struct FileView : public Window
     NcursesWindow window;
     Scroll scroll;
     bool redraw = true;
+    bool focused = false;
 
     int save_cursor_y = 0;
     int save_cursor_x = 0;
@@ -69,8 +70,13 @@ struct FileView : public Window
     void draw_cursor();
     void draw_content();
 
-    void focus() override {}
-    void unfocus() override {}
+    void focus() override {
+        focused = true;
+    }
+
+    void unfocus() override {
+        focused = false;
+    }
 
     Window* copy(Dimension d) override {
         return new FileView(file, d);

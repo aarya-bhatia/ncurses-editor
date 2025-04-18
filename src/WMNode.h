@@ -20,6 +20,8 @@ struct WMNode : public IDrawable, IFocusable
     std::list<Window*> tabs;
     std::list<Window*>::iterator current_tab;
 
+    bool focused = false;
+
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
     WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent) {
@@ -71,8 +73,12 @@ struct WMNode : public IDrawable, IFocusable
 
         tabs.push_back(c);
         current_tab = std::prev(tabs.end());
-        c->focus();
-        log_info("Window content added to WMnode");
+
+        if (focused) {
+            c->focus();
+        }
+
+        log_info("A new tab was opened in WMNode %s", bounds.debug_string().c_str());
         return *current_tab;
     }
 
@@ -339,6 +345,7 @@ struct WMNode : public IDrawable, IFocusable
 
     void focus() override {
         log_debug("got focus on WMNode %s", bounds.debug_string().c_str());
+        focused = true;
         if (current_tab != tabs.end()) {
             (*current_tab)->focus();
         }
@@ -346,6 +353,7 @@ struct WMNode : public IDrawable, IFocusable
 
     void unfocus() override {
         log_debug("lost focus on WMNode %s", bounds.debug_string().c_str());
+        focused = false;
         if (current_tab != tabs.end()) {
             (*current_tab)->unfocus();
         }
