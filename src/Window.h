@@ -8,4 +8,5 @@ struct Window : public IFocusable, IDrawable
     virtual File* get_file() = 0;
     virtual Window* copy(Dimension d) = 0;
     virtual void clear() = 0;
+    virtual Dimension get_bounds() = 0;
 };

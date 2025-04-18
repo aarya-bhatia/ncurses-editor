@@ -76,4 +76,6 @@ struct BorderedFileView : public Window {
         frame.clear();
         file_view->clear();
     }
+
+    Dimension get_bounds() override { return bounds; }
 };

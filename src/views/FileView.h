@@ -92,4 +92,6 @@ struct FileView : public Window
         redraw = true;
         window.clear();
     }
+
+    Dimension get_bounds() override { return bounds; }
 };

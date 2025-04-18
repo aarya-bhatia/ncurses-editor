@@ -1,10 +1,8 @@
 #pragma once
-#include "BorderedFileView.h"
+#include "ViewBuilder.h"
 
 struct ViewFactory {
-    static Window *new_file_view(File *file, Dimension d){
-        Window *window = new BorderedFileView(file, d);
-        // file->add_subscriber(window);
-        return window;
+    static Window* new_file_view(File* file, Dimension d) {
+        return ViewBuilder(file, d).add_border().build();
     }
 };
