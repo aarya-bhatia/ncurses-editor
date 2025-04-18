@@ -7,4 +7,5 @@ struct Window : public IFocusable, IDrawable
     virtual ~Window() = default;
     virtual File* get_file() = 0;
     virtual Window* copy(Dimension d) = 0;
+    virtual void clear() = 0;
 };

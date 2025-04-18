@@ -85,4 +85,9 @@ struct FileView : public Window
     File* get_file() override { return file; }
 
     void force_redraw() override { redraw = true; }
+
+    void clear() override {
+        redraw = true;
+        window.clear();
+    }
 };

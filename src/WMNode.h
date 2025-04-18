@@ -49,36 +49,36 @@ struct WMNode : public IDrawable, IFocusable
     void open_prev_tab() {
         if (tabs.empty()) return;
         if (current_tab == tabs.begin()) { log_info("no prev tab"); return; }
-        current_tab = std::prev(current_tab);
-        resize(bounds);
+        open_tab(std::prev(current_tab));
     }
 
     void open_next_tab() {
         if (tabs.empty()) return;
         if (std::next(current_tab) == tabs.end()) { log_info("no next tab"); return; }
-        current_tab = std::next(current_tab);
-        resize(bounds);
+        open_tab(std::next(current_tab));
     }
 
     Window* open_tab(File* f)
     {
-        return open_tab(ViewFactory::new_file_view(f, bounds));
+        Window* tab_window = ViewFactory::new_file_view(f, bounds);
+        tabs.push_back(tab_window);
+        return open_tab(std::prev(tabs.end()));
     }
 
-    Window* open_tab(Window* c)
+    Window* open_tab(std::list<Window*>::iterator tab)
     {
         if (current_tab != tabs.end()) {
             (*current_tab)->unfocus();
         }
 
-        tabs.push_back(c);
-        current_tab = std::prev(tabs.end());
+        current_tab = tab;
+        (*current_tab)->resize(bounds);
 
         if (focused) {
-            c->focus();
+            (*current_tab)->focus();
         }
 
-        log_info("A new tab was opened in WMNode %s", bounds.debug_string().c_str());
+        log_info("new tab opened in WMNode %s", bounds.debug_string().c_str());
         return *current_tab;
     }
 
@@ -106,6 +106,8 @@ struct WMNode : public IDrawable, IFocusable
     {
         if (current_tab != tabs.end()) {
             log_info("tab closed");
+            (*current_tab)->unfocus();
+            delete (*current_tab);
             tabs.erase(current_tab);
         }
         current_tab = tabs.end();
@@ -128,8 +130,8 @@ struct WMNode : public IDrawable, IFocusable
         children.push_back(child2);
 
         if (current_tab != tabs.end()) {
-            child1->open_tab((*current_tab)->copy(d1));
-            child2->open_tab((*current_tab)->copy(d2));
+            child1->open_tab((*current_tab)->get_file());
+            child2->open_tab((*current_tab)->get_file());
             close_tab();
         }
 
@@ -159,8 +161,8 @@ struct WMNode : public IDrawable, IFocusable
         children.push_back(child2);
 
         if (current_tab != tabs.end()) {
-            child1->open_tab((*current_tab)->copy(d1));
-            child2->open_tab((*current_tab)->copy(d2));
+            child1->open_tab((*current_tab)->get_file());
+            child2->open_tab((*current_tab)->get_file());
             close_tab();
         }
 
@@ -236,7 +238,7 @@ struct WMNode : public IDrawable, IFocusable
         }
 
         if (layout != VSPLIT) {
-            return nullptr;
+            return children[0]->find_left_content_node();
         }
 
         return children[0]->find_left_content_node();
@@ -251,7 +253,7 @@ struct WMNode : public IDrawable, IFocusable
         }
 
         if (layout != VSPLIT) {
-            return nullptr;
+            return children[0]->find_right_content_node();
         }
 
         return children[1]->find_right_content_node();
@@ -266,7 +268,7 @@ struct WMNode : public IDrawable, IFocusable
         }
 
         if (layout != HSPLIT) {
-            return nullptr;
+            return children[0]->find_top_content_node();
         }
 
         return children[0]->find_top_content_node();
@@ -281,7 +283,7 @@ struct WMNode : public IDrawable, IFocusable
         }
 
         if (layout != HSPLIT) {
-            return nullptr;
+            return children[0]->find_bottom_content_node();
         }
 
         return children[1]->find_bottom_content_node();

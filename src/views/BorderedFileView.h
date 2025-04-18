@@ -70,4 +70,10 @@ struct BorderedFileView : public Window {
         redraw = true;
         file_view->force_redraw();
     }
+
+    void clear() override {
+        redraw = true;
+        frame.clear();
+        file_view->clear();
+    }
 };
