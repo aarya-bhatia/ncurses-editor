@@ -52,6 +52,8 @@ void FileView::draw_content() {
     }
 
     if (!redraw) { return; }
+    redraw_count += 1;
+    log_debug("redraw count: %d in %s", redraw_count, bounds.debug_string().c_str());
 
     window.clear();
 

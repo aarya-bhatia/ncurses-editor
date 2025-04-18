@@ -18,6 +18,8 @@ struct FileView : public Window
     int save_cursor_y = 0;
     int save_cursor_x = 0;
 
+    int redraw_count = 0;
+
     FileView(File* file, Dimension bounds);
 
     bool is_visible(int y, int x) const {
