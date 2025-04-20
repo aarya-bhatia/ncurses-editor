@@ -3,15 +3,30 @@
 
 void WMNode::close_tab()
 {
-    if (current_tab != tabs.end()) {
-        log_info("tab closed");
-        (*current_tab)->unfocus();
-        (*current_tab)->clear();
-        (*current_tab)->show();
-        delete (*current_tab);
-        tabs.erase(current_tab);
+    if (current_tab == tabs.end()) {
+        log_debug("no tab is open");
+        return;
     }
+
+    Tab new_tab = tabs.end();
+    if (tabs.size() > 1) {
+        if (std::next(current_tab) != tabs.end()) {
+            new_tab = std::next(current_tab);
+        }
+        else {
+            new_tab = std::prev(current_tab);
+        }
+    }
+
+    log_info("tab closed");
+    (*current_tab)->unfocus();
+    (*current_tab)->clear();
+    (*current_tab)->show();
+    delete (*current_tab);
+    tabs.erase(current_tab);
+
     current_tab = tabs.end();
+    open_tab(new_tab);
 }
 
 void WMNode::resize(Dimension d)
@@ -32,7 +47,7 @@ void WMNode::resize(Dimension d)
     bounds = d;
 }
 
-Window* WMNode::open_tab(std::list<Window*>::iterator tab)
+Window* WMNode::open_tab(Tab tab)
 {
     if (current_tab != tabs.end()) {
         (*current_tab)->unfocus();

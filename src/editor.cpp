@@ -4,7 +4,7 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 
-Editor::Editor(): window_manager(Dimension(0, 0, COLS, LINES - 2))
+Editor::Editor() : window_manager(Dimension(0, 0, COLS, LINES - 2))
 {
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 
@@ -117,6 +117,10 @@ void Editor::command(const std::string& command)
     else if (command == "prev")
     {
         window_manager.current_node->open_prev_tab();
+    }
+    else if (command == "close")
+    {
+        window_manager.current_node->close_tab();
     }
     else if (is_number(command))
     {
@@ -285,7 +289,7 @@ void Editor::draw()
     status_window->draw();
     console_window->draw();
 
-    if(!window_manager.current_node || !window_manager.current_node->get_current_tab_window()) {
+    if (!window_manager.current_node || !window_manager.current_node->get_current_tab_window()) {
         move(0, 0);
     }
 }

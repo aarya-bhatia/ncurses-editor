@@ -16,8 +16,11 @@ struct WMNode : public IDrawable, IFocusable
     Dimension bounds;
     WMNode* parent = nullptr;
 
-    std::list<Window*> tabs;
-    std::list<Window*>::iterator current_tab;
+    using Tabs = std::list<Window*>;
+    using Tab = Tabs::iterator;
+
+    Tabs tabs;
+    Tab current_tab;
 
     bool focused = false;
 
@@ -64,7 +67,7 @@ struct WMNode : public IDrawable, IFocusable
         return open_tab(std::prev(tabs.end()));
     }
 
-    Window* open_tab(std::list<Window*>::iterator tab);
+    Window* open_tab(Tab tab);
 
     bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }
 
