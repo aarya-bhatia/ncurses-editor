@@ -54,7 +54,8 @@ struct WMNode : public IDrawable, IFocusable
         tabs.unfocus();
     }
 
-    bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }
+    bool splitv_allowed() { return bounds.width / 2 >= 3; }
+    bool splith_allowed() { return bounds.height / 2 >= 3; }
 
     void resize(Dimension d) override;
 

@@ -38,7 +38,7 @@ struct WindowManager
 
     void splith() { 
         if(!current_node) init();
-        if(!current_node || !current_node->split_allowed()) 
+        if(!current_node || !current_node->splith_allowed()) 
         {
             log_debug("split failed");
             return; 
@@ -50,7 +50,7 @@ struct WindowManager
 
     void splitv() { 
         if(!current_node) init();
-        if(!current_node || !current_node->split_allowed()){
+        if(!current_node || !current_node->splitv_allowed()){
             log_debug("split failed");
             return; 
         }

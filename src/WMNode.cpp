@@ -17,7 +17,7 @@ void WMNode::resize(Dimension d)
 
 void WMNode::splith()
 {
-    if (!split_allowed()) { return; }
+    if (!splith_allowed()) { return; }
 
     layout = HSPLIT;
 
@@ -48,7 +48,7 @@ void WMNode::splith()
 
 void WMNode::splitv()
 {
-    if (!split_allowed()) { return; }
+    if (!splitv_allowed()) { return; }
 
     layout = VSPLIT;
 
