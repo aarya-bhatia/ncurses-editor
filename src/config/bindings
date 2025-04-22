@@ -1,0 +1,19 @@
+# Mode      Keys    HandlerName
+normal      k           handle_normal_up_key
+normal      j           handle_normal_down_key
+normal      h           handle_normal_left_key
+normal      l           handle_normal_right_key
+
+normal      0           handle_normal_move_cursor_line_start
+normal      $           handle_normal_move_cursor_line_end
+normal      gg          handle_normal_move_cursor_file_start
+normal      G           handle_normal_move_cursor_file_end
+
+normal      :           handle_normal_move_cursor_file_end
+
+insert      *           handle_insert_character
+
+command     <esc>       handle_command_mode_quit
+command     <enter>     handle_command_mode_execute
+command     <bs>        handle_command_mode_backspace
+command     *           handle_command_mode_append
