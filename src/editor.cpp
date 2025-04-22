@@ -54,7 +54,7 @@ void Editor::handle_event(unsigned c)
 Window* Editor::get_current_view()
 {
     WMNode* node = window_manager.current_node;
-    return node ? node->get_current_tab_window() : nullptr;
+    return node ? node->get_window() : nullptr;
 }
 
 
@@ -112,15 +112,19 @@ void Editor::command(const std::string& command)
     }
     else if (command == "next")
     {
-        window_manager.current_node->open_next_tab();
+        window_manager.current_node->tabs.open_next();
     }
     else if (command == "prev")
     {
-        window_manager.current_node->open_prev_tab();
+        window_manager.current_node->tabs.open_prev();
     }
     else if (command == "close")
     {
-        window_manager.current_node->close_tab();
+        window_manager.current_node->tabs.close_current_tab();
+    }
+    else if (command == "closeall")
+    {
+        window_manager.current_node->tabs.close_all();
     }
     else if (is_number(command))
     {
@@ -289,7 +293,7 @@ void Editor::draw()
     status_window->draw();
     console_window->draw();
 
-    if (!window_manager.current_node || !window_manager.current_node->get_current_tab_window()) {
+    if (!window_manager.current_node || !window_manager.current_node->get_window()) {
         move(0, 0);
     }
 }

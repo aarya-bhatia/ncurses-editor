@@ -14,6 +14,10 @@ struct IDrawable {
     virtual void draw() = 0;
     virtual void show() = 0;
     virtual void resize(Dimension d) = 0;
+};
+
+struct IPartialDrawable : public IDrawable {
+    virtual ~IPartialDrawable() = default;
     virtual void partial_draw_character(Cursor position) = 0;
     virtual void partial_draw_line(Cursor position) = 0;
     virtual void force_redraw() = 0;

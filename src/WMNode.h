@@ -9,65 +9,50 @@
 #include "File.h"
 #include "FileView.h"
 #include "ViewFactory.h"
+#include "TabWindow.h"
 
 struct WMNode : public IDrawable, IFocusable
 {
     std::vector<WMNode*> children;
     Dimension bounds;
     WMNode* parent = nullptr;
-
-    using Tabs = std::list<Window*>;
-    using Tab = Tabs::iterator;
-
-    Tabs tabs;
-    Tab current_tab;
-
     bool focused = false;
-
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
-    WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent) {
-        current_tab = tabs.end();
-    }
+    TabWindow tabs;
+
+    WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent), tabs(bounds) {}
 
     ~WMNode()
     {
-        for (Window* tab : tabs) {
-            delete tab;
-        }
-
         for (WMNode* child : children) {
             delete child;
         }
     }
 
-    Window* get_current_tab_window() {
-        if (current_tab != tabs.end()) {
-            return *current_tab;
-        }
-        return nullptr;
-    }
-
-    void open_prev_tab() {
-        if (tabs.empty()) return;
-        if (current_tab == tabs.begin()) { log_info("no prev tab"); return; }
-        open_tab(std::prev(current_tab));
-    }
-
-    void open_next_tab() {
-        if (tabs.empty()) return;
-        if (std::next(current_tab) == tabs.end()) { log_info("no next tab"); return; }
-        open_tab(std::next(current_tab));
+    Window* get_window() {
+        return tabs.current_window();
     }
 
     Window* open_tab(File* f)
     {
         Window* tab_window = ViewFactory::new_file_view(f, bounds);
-        tabs.push_back(tab_window);
-        return open_tab(std::prev(tabs.end()));
+        tabs.add_tab(tab_window);
+        tabs.open_next();
+        return tabs.current_window();
     }
 
-    Window* open_tab(Tab tab);
+    void focus() override {
+        log_debug("focus node %s", bounds.debug_string().c_str());
+        focused = true;
+        tabs.focus();
+    }
+
+    void unfocus() override {
+        log_debug("unfocus node %s", bounds.debug_string().c_str());
+        focused = false;
+        tabs.unfocus();
+    }
 
     bool split_allowed() { return bounds.width / 2 >= 1 && bounds.height / 2 >= 1; }
 
@@ -83,18 +68,14 @@ struct WMNode : public IDrawable, IFocusable
     {
         for (auto* child : children) { child->draw(); }
 
-        if (current_tab != tabs.end()) {
-            (*current_tab)->draw();
-        }
+        tabs.draw();
     }
 
     void show() override
     {
         for (auto* child : children) { child->show(); }
 
-        if (current_tab != tabs.end()) {
-            (*current_tab)->show();
-        }
+        tabs.show();
     }
 
     int count_nodes()
@@ -107,35 +88,29 @@ struct WMNode : public IDrawable, IFocusable
     WMNode* get_left_child()
     {
         if (layout == VSPLIT) return children[0];
-        // log_debug("no left child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_right_child()
     {
         if (layout == VSPLIT) return children[1];
-        // log_debug("no right child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_top_child()
     {
         if (layout == HSPLIT) return children[0];
-        // log_debug("no top child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* get_bottom_child()
     {
         if (layout == HSPLIT) return children[1];
-        // log_debug("no bottom child of layout %d", layout);
         return nullptr;
     }
 
     WMNode* find_left_content_node()
     {
-        // log_debug("finding left content node in WMNode %s", bounds.debug_string().c_str());
-
         if (layout == NORMAL) {
             return this;
         }
@@ -149,8 +124,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_right_content_node()
     {
-        // log_debug("finding right content node in WMNode %s", bounds.debug_string().c_str());
-
         if (layout == NORMAL) {
             return this;
         }
@@ -164,8 +137,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_top_content_node()
     {
-        // log_debug("finding top content node in WMNode %s", bounds.debug_string().c_str());
-
         if (layout == NORMAL) {
             return this;
         }
@@ -179,8 +150,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_bottom_content_node()
     {
-        // log_debug("finding bottom content node in WMNode %s", bounds.debug_string().c_str());
-
         if (layout == NORMAL) {
             return this;
         }
@@ -194,7 +163,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_right_adjacent_node()
     {
-        // log_debug("finding right adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -208,7 +176,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_left_adjacent_node()
     {
-        // log_debug("finding left adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -222,7 +189,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_top_adjacent_node()
     {
-        // log_debug("finding top adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -236,7 +202,6 @@ struct WMNode : public IDrawable, IFocusable
 
     WMNode* find_bottom_adjacent_node()
     {
-        // log_debug("finding bottom adjacent node of WMNode %s", bounds.debug_string().c_str());
         if (!parent) {
             return nullptr;
         }
@@ -246,39 +211,5 @@ struct WMNode : public IDrawable, IFocusable
         }
 
         return parent->find_bottom_adjacent_node();
-    }
-
-    void focus() override {
-        log_debug("got focus on WMNode %s", bounds.debug_string().c_str());
-        focused = true;
-        if (current_tab != tabs.end()) {
-            (*current_tab)->focus();
-        }
-    }
-
-    void unfocus() override {
-        log_debug("lost focus on WMNode %s", bounds.debug_string().c_str());
-        focused = false;
-        if (current_tab != tabs.end()) {
-            (*current_tab)->unfocus();
-        }
-    }
-
-    void partial_draw_character(Cursor position) override {
-        if (current_tab != tabs.end()) {
-            (*current_tab)->partial_draw_character(position);
-        }
-    }
-
-    void partial_draw_line(Cursor position) override {
-        if (current_tab != tabs.end()) {
-            (*current_tab)->partial_draw_line(position);
-        }
-    }
-
-    void force_redraw() override {
-        if (current_tab != tabs.end()) {
-            (*current_tab)->force_redraw();
-        }
     }
 };

@@ -2,7 +2,7 @@
 
 #include "Types.h"
 #include "File.h"
-struct Window : public IFocusable, IDrawable
+struct Window : public IFocusable, IPartialDrawable
 {
     virtual ~Window() = default;
     virtual File* get_file() = 0;

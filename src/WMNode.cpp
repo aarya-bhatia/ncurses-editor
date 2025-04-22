@@ -1,34 +1,6 @@
 #include "WMNode.h"
 #include <assert.h>
 
-void WMNode::close_tab()
-{
-    if (current_tab == tabs.end()) {
-        log_debug("no tab is open");
-        return;
-    }
-
-    Tab new_tab = tabs.end();
-    if (tabs.size() > 1) {
-        if (std::next(current_tab) != tabs.end()) {
-            new_tab = std::next(current_tab);
-        }
-        else {
-            new_tab = std::prev(current_tab);
-        }
-    }
-
-    log_info("tab closed");
-    (*current_tab)->unfocus();
-    (*current_tab)->clear();
-    (*current_tab)->show();
-    delete (*current_tab);
-    tabs.erase(current_tab);
-
-    current_tab = tabs.end();
-    open_tab(new_tab);
-}
-
 void WMNode::resize(Dimension d)
 {
     for (auto* child : children)
@@ -39,29 +11,8 @@ void WMNode::resize(Dimension d)
         child->resize(child_d);
     }
 
-    // note: resize other tabs when they are opened.
-    if (current_tab != tabs.end()) {
-        (*current_tab)->resize(d);
-    }
-
+    tabs.resize(d);
     bounds = d;
-}
-
-Window* WMNode::open_tab(Tab tab)
-{
-    if (current_tab != tabs.end()) {
-        (*current_tab)->unfocus();
-    }
-
-    current_tab = tab;
-    (*current_tab)->resize(bounds);
-
-    if (focused) {
-        (*current_tab)->focus();
-    }
-
-    log_info("new tab opened in WMNode %s", bounds.debug_string().c_str());
-    return *current_tab;
 }
 
 void WMNode::splith()
@@ -79,10 +30,10 @@ void WMNode::splith()
     children.push_back(child1);
     children.push_back(child2);
 
-    if (current_tab != tabs.end()) {
-        child1->open_tab((*current_tab)->get_file());
-        child2->open_tab((*current_tab)->get_file());
-        close_tab();
+    if (!tabs.empty()) {
+        child1->open_tab(tabs.get_file());
+        child2->open_tab(tabs.get_file());
+        tabs.clear();
     }
 
     log_info("horizontal split complete");
@@ -110,10 +61,10 @@ void WMNode::splitv()
     children.push_back(child1);
     children.push_back(child2);
 
-    if (current_tab != tabs.end()) {
-        child1->open_tab((*current_tab)->get_file());
-        child2->open_tab((*current_tab)->get_file());
-        close_tab();
+    if (!tabs.empty()) {
+        child1->open_tab(tabs.get_file());
+        child2->open_tab(tabs.get_file());
+        tabs.clear();
     }
 
     log_info("horizontal split complete");

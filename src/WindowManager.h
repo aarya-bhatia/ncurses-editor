@@ -32,7 +32,7 @@ struct WindowManager
         if(!current_node) {init();}
         Window *view = current_node->open_tab(file);
         file_views[file].push_back(view);
-        assert(*(current_node->current_tab) == view);
+        assert(current_node->get_window() == view);
         assert(current_node->layout == WMNode::Layout::NORMAL);
     }
 
