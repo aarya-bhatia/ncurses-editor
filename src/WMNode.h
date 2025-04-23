@@ -36,10 +36,9 @@ struct WMNode : public IDrawable, IFocusable
 
     Window* open_tab(File* f)
     {
-        Window* tab_window = ViewFactory::new_file_view(f, bounds);
-        tabs.add_tab(tab_window);
-        tabs.open_next();
-        return tabs.current_window();
+        Window* tab_window = tabs.find_or_create_tab(f);
+        tabs.open(tab_window);
+        return tab_window;
     }
 
     void focus() override {

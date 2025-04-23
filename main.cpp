@@ -25,6 +25,8 @@ void init()
     noecho();              // Don't echo typed characters
     cbreak();              // Disable line buffering (input is available immediately)
     keypad(stdscr, FALSE); // Don't handle special keys to fix escape key delay issue
+
+    log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }
 
 void init_screen()
@@ -32,6 +34,8 @@ void init_screen()
     endwin();  // Reset ncurses
     refresh(); // Refresh stdscr
     clear();   // Clear the screen
+
+    log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }
 
 void cleanup()
@@ -50,7 +54,6 @@ void handle_resize(int sig)
 int main(int argc, const char** argv)
 {
     init();
-    init_screen();
     signal(SIGWINCH, handle_resize);
 
     std::vector<std::string> filenames;

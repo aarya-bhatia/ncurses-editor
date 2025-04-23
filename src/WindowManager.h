@@ -18,6 +18,8 @@ struct WindowManager
 
     void init()
     {
+        log_debug("initialising window manager");
+
         if(!root_node) {
             root_node = new WMNode(bounds, nullptr);
             focus_on(root_node);

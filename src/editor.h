@@ -6,13 +6,13 @@
 #include <vector>
 #include <assert.h>
 #include "common.h"
-#include "FileManager.h"
 #include "FileView.h"
 #include "WindowManager.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
 #include "Command.h"
 #include "FileUpdateHandler.h"
+#include "SequenceGenerator.h"
 
 enum Mode
 {
@@ -29,14 +29,13 @@ static std::map<Mode, const char*> mode_names = {
 
 struct Editor
 {
-    std::unique_ptr<FileUpdateHandler> file_update_handler;
-    std::unique_ptr<FileManager> file_manager;
-    WindowManager window_manager;
+    LinearSequenceGenerator<int> id_gen;
+    WindowManager* window_manager;
+    FileUpdateHandler* file_update_handler;
+    StatusWindow* status_window;
+    ConsoleWindow* console_window;
 
-    std::unique_ptr<StatusWindow> status_window;
-    std::unique_ptr<ConsoleWindow> console_window;
-
-    std::list<std::unique_ptr<Command>> commands;
+    std::list<File*> files;
 
     std::string mode_line = "";
     std::string statusline = "";
@@ -45,6 +44,7 @@ struct Editor
     bool quit = false;
 
     Editor();
+    ~Editor();
 
     Window* get_current_view();
     File* get_current_file();
@@ -62,4 +62,6 @@ struct Editor
     void resize();
 
     void open(const std::vector<std::string>& filenames);
+    File* add_file(const std::string& filename);
+    File* get_file(const std::string& filename);
 };

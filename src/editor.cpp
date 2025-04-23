@@ -4,22 +4,33 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 
-Editor::Editor() : window_manager(Dimension(0, 0, COLS, LINES - 2))
+Editor::Editor() : id_gen(1)
 {
-    log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
-
-    this->status_window = std::unique_ptr<StatusWindow>(new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1)));
-    this->console_window = std::unique_ptr<ConsoleWindow>(new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1)));
-    this->file_update_handler = std::unique_ptr<FileUpdateHandler>(new FileUpdateHandler(this->window_manager));
-    this->file_manager = std::unique_ptr<FileManager>(new FileManager(*this->file_update_handler));
+    log_debug("initialising editor");
+    window_manager = new WindowManager(Dimension(0, 0, COLS, LINES - 2));
+    status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
+    console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
+    file_update_handler = new FileUpdateHandler(window_manager);
 
     refresh();
+}
+
+Editor::~Editor()
+{
+    delete window_manager;
+    delete file_update_handler;
+    delete status_window;
+    delete console_window;
+
+    for (File* file : files) {
+        delete file;
+    }
 }
 
 void Editor::resize()
 {
     log_info("resize(): lines:%d cols:%d", LINES, COLS);
-    window_manager.resize(Dimension(0, 0, COLS, LINES - 2));
+    window_manager->resize(Dimension(0, 0, COLS, LINES - 2));
     status_window->resize(Dimension(0, LINES - 2, COLS, 1));
     console_window->resize(Dimension(0, LINES - 1, COLS, 1));
     refresh();
@@ -53,7 +64,7 @@ void Editor::handle_event(unsigned c)
 
 Window* Editor::get_current_view()
 {
-    WMNode* node = window_manager.current_node;
+    WMNode* node = window_manager->current_node;
     return node ? node->get_window() : nullptr;
 }
 
@@ -88,43 +99,43 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
-        window_manager.splith();
+        window_manager->splith();
     }
     else if (command == "vs" || command == "vsplit")
     {
-        window_manager.splitv();
+        window_manager->splitv();
     }
     else if (command == "right")
     {
-        window_manager.focus_right();
+        window_manager->focus_right();
     }
     else if (command == "left")
     {
-        window_manager.focus_left();
+        window_manager->focus_left();
     }
     else if (command == "top")
     {
-        window_manager.focus_top();
+        window_manager->focus_top();
     }
     else if (command == "bottom")
     {
-        window_manager.focus_bottom();
+        window_manager->focus_bottom();
     }
     else if (command == "next")
     {
-        window_manager.current_node->tabs.open_next();
+        window_manager->current_node->tabs.open_next();
     }
     else if (command == "prev")
     {
-        window_manager.current_node->tabs.open_prev();
+        window_manager->current_node->tabs.open_prev();
     }
     else if (command == "close")
     {
-        window_manager.current_node->tabs.close_current_tab();
+        window_manager->current_node->tabs.close_current_tab();
     }
     else if (command == "closeall")
     {
-        window_manager.current_node->tabs.close_all();
+        window_manager->current_node->tabs.close_all();
     }
     else if (is_number(command))
     {
@@ -282,18 +293,18 @@ void Editor::handle_command_mode_event(unsigned c)
 
 
 void Editor::show() {
-    window_manager.show();
+    window_manager->show();
     status_window->show();
     console_window->show();
 }
 
 void Editor::draw()
 {
-    window_manager.draw();
+    window_manager->draw();
     status_window->draw();
     console_window->draw();
 
-    if (!window_manager.current_node || !window_manager.current_node->get_window()) {
+    if (!window_manager->current_node || !window_manager->current_node->get_window()) {
         move(0, 0);
     }
 }
@@ -302,7 +313,26 @@ void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
     {
-        FMNode* file_node = file_manager->add_file(filename.c_str());
-        window_manager.open(file_node->file);
+        File* file = get_file(filename);
+        if (!file) { file = add_file(filename); }
+        window_manager->open(file);
     }
+}
+
+File* Editor::add_file(const std::string& filename) {
+    File* new_file = new File(id_gen.next(), filename);
+    new_file->add_subscriber(file_update_handler);
+    new_file->load_file();
+    files.push_back(new_file);
+    return new_file;
+}
+
+File* Editor::get_file(const std::string& filename) {
+    for (File* file : files) {
+        if (file->filename == filename) {
+            return file;
+        }
+    }
+
+    return nullptr;
 }

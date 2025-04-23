@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "BorderedFileView.h"
+#include <assert.h>
 
 struct TabWindow : public Window
 {
@@ -19,7 +20,7 @@ struct TabWindow : public Window
     TabWindow(Dimension d)
     {
         bounds = d;
-        empty_file = new File(0, nullptr);
+        empty_file = new File;
         empty_window = new BorderedFileView(empty_file, d);
         current_tab = tabs.begin();
     }
@@ -34,17 +35,54 @@ struct TabWindow : public Window
         }
     }
 
-    void add_tab(Window* child_window) {
-        if (!child_window) {
-            return;
+    Tab find_tab_from_window(Window* window) {
+        for (auto it = tabs.begin(); it != tabs.end(); it++) {
+            if (*it == window) {
+                return it;
+            }
         }
 
-        tabs.push_back(child_window);
+        return tabs.end();
+    }
 
-        if (current_tab == tabs.end()) {
-            current_tab = tabs.begin();
-            focus();
+    bool has_tab(Tab tab) {
+        for (Window* window : tabs) {
+            if (window == *tab) {
+                return true;
+            }
         }
+
+        return false;
+    }
+
+    void open(Tab new_tab) {
+        assert(has_tab(new_tab));
+
+        if (new_tab != tabs.end() && new_tab != current_tab) {
+            current_window()->unfocus();
+            current_tab = new_tab;
+            (*new_tab)->focus();
+        }
+    }
+
+    void open(Window* tab) {
+        Tab new_tab = find_tab_from_window(tab);
+        if (new_tab != tabs.end() && new_tab != current_tab) {
+            current_window()->unfocus();
+            current_tab = new_tab;
+            tab->focus();
+        }
+    }
+
+    Window* find_or_create_tab(File* file) {
+        for (Window* window : tabs) {
+            if (window->get_file() == file)
+                return window;
+        }
+
+        Window* window = ViewFactory::new_file_view(file, bounds);
+        tabs.push_back(window);
+        return window;
     }
 
     size_t count_tabs() const { return tabs.size(); }

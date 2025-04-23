@@ -3,6 +3,7 @@
 #include "NcursesWindow.h"
 #include <string>
 #include <vector>
+#include "log.h"
 
 struct Editor;
 
@@ -12,7 +13,9 @@ struct StatusWindow
     Dimension bounds;
     NcursesWindow window;
 
-    StatusWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {}
+    StatusWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {
+        log_debug("initialising status window");
+    }
 
     std::string get_status();
 

@@ -5,36 +5,36 @@
 #include <string>
 #include <list>
 
-File::File(FileID id, const char* filename = nullptr)
+File::File(FileID _id, const std::string& _filename) :
+    id(_id)
 {
-    log_debug("File created with id:%d", id);
+    filename = !_filename.empty() ? _filename : "untitled-" + std::to_string(id);
+    log_debug("new file name:%s id:%d", filename.c_str(), id);
 
-    this->id = id;
-    this->filename = filename ? strdup(filename) : nullptr;
-    this->lines.push_back({});
-    this->cursor.x = 0;
-    this->cursor.y = 0;
-    this->cursor.line = this->lines.begin();
-    this->cursor.col = this->lines.front().begin();
+    lines.push_back({});
+    cursor.x = 0;
+    cursor.y = 0;
+    cursor.line = this->lines.begin();
+    cursor.col = this->lines.front().begin();
+}
+
+File::~File()
+{
+    this->subscribers.clear();
 }
 
 int File::load_file()
 {
-    if (!filename) {
-        log_warn("Cannot load untitled file.");
-        return 0;
-    }
-
-    FILE* file = fopen(filename, "r");
+    FILE* file = fopen(filename.c_str(), "r");
     if (!file)
     {
-        log_info("no lines were loaded because file %s does not exist", filename);
+        log_info("no lines were loaded because file %s does not exist", filename.c_str());
         return 0;
     }
     fclose(file);
 
-    std::list<std::string> str_lines = readlines(filename);
-    log_info("Read file %s with %zu lines", filename, str_lines.size());
+    std::list<std::string> str_lines = readlines(filename.c_str());
+    log_info("Read file %s with %zu lines", filename.c_str(), str_lines.size());
     lines.clear();
 
     for (const std::string& str_line : str_lines)
@@ -61,12 +61,7 @@ int File::load_file()
 
 int File::save_file()
 {
-    if (!filename) {
-        log_warn("Cannot load untitled file.");
-        return 1;
-    }
-
-    FILE* file = fopen(filename, "w");
+    FILE* file = fopen(filename.c_str(), "w");
     if (!file)
     {
         return 1;

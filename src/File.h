@@ -10,22 +10,16 @@ typedef unsigned int FileID;
 
 struct File
 {
-    FileID id;
-    char* filename;
+    const FileID id;
+    std::string filename = "";
     std::list<std::list<char>> lines;
     Cursor cursor;
 
     std::vector<FileSubscriber*> subscribers;
     std::string normal_mode_buffer = "";
 
-    File(FileID id, const char* filename);
-
-    ~File()
-    {
-        free(this->filename);
-        this->filename = nullptr;
-        this->subscribers.clear();
-    }
+    File(FileID _id = 0, const std::string& _filename = "");
+    ~File();
 
     FileID get_id() const { return this->id; }
 
@@ -35,22 +29,6 @@ struct File
     void add_subscriber(FileSubscriber* subscriber)
     {
         subscribers.push_back(subscriber);
-    }
-
-    void set_filename(const char* filename)
-    {
-        free(this->filename);
-        this->filename = strdup(filename);
-    }
-
-    const char* get_filename()
-    {
-        return this->filename;
-    }
-
-    bool is_named()
-    {
-        return this->filename != nullptr;
     }
 
     int load_file();
