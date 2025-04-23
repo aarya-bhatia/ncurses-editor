@@ -11,21 +11,21 @@
 #include "ViewFactory.h"
 #include "TabWindow.h"
 
-struct WMNode : public IDrawable, IFocusable
+struct WindowNode : public IDrawable, IFocusable
 {
-    std::vector<WMNode*> children;
+    std::vector<WindowNode*> children;
     Dimension bounds;
-    WMNode* parent = nullptr;
+    WindowNode* parent = nullptr;
     bool focused = false;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
     TabWindow tabs;
 
-    WMNode(Dimension bounds, WMNode* parent) : bounds(bounds), parent(parent), tabs(bounds) {}
+    WindowNode(Dimension bounds, WindowNode* parent) : bounds(bounds), parent(parent), tabs(bounds) {}
 
-    ~WMNode()
+    ~WindowNode()
     {
-        for (WMNode* child : children) {
+        for (WindowNode* child : children) {
             delete child;
         }
     }
@@ -87,31 +87,31 @@ struct WMNode : public IDrawable, IFocusable
         return ans;
     }
 
-    WMNode* get_left_child()
+    WindowNode* get_left_child()
     {
         if (layout == VSPLIT) return children[0];
         return nullptr;
     }
 
-    WMNode* get_right_child()
+    WindowNode* get_right_child()
     {
         if (layout == VSPLIT) return children[1];
         return nullptr;
     }
 
-    WMNode* get_top_child()
+    WindowNode* get_top_child()
     {
         if (layout == HSPLIT) return children[0];
         return nullptr;
     }
 
-    WMNode* get_bottom_child()
+    WindowNode* get_bottom_child()
     {
         if (layout == HSPLIT) return children[1];
         return nullptr;
     }
 
-    WMNode* find_left_content_node()
+    WindowNode* find_left_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -124,7 +124,7 @@ struct WMNode : public IDrawable, IFocusable
         return children[0]->find_left_content_node();
     }
 
-    WMNode* find_right_content_node()
+    WindowNode* find_right_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -137,7 +137,7 @@ struct WMNode : public IDrawable, IFocusable
         return children[1]->find_right_content_node();
     }
 
-    WMNode* find_top_content_node()
+    WindowNode* find_top_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -150,7 +150,7 @@ struct WMNode : public IDrawable, IFocusable
         return children[0]->find_top_content_node();
     }
 
-    WMNode* find_bottom_content_node()
+    WindowNode* find_bottom_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -163,7 +163,7 @@ struct WMNode : public IDrawable, IFocusable
         return children[1]->find_bottom_content_node();
     }
 
-    WMNode* find_right_adjacent_node()
+    WindowNode* find_right_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -176,7 +176,7 @@ struct WMNode : public IDrawable, IFocusable
         return parent->find_right_adjacent_node();
     }
 
-    WMNode* find_left_adjacent_node()
+    WindowNode* find_left_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -189,7 +189,7 @@ struct WMNode : public IDrawable, IFocusable
         return parent->find_left_adjacent_node();
     }
 
-    WMNode* find_top_adjacent_node()
+    WindowNode* find_top_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -202,7 +202,7 @@ struct WMNode : public IDrawable, IFocusable
         return parent->find_top_adjacent_node();
     }
 
-    WMNode* find_bottom_adjacent_node()
+    WindowNode* find_bottom_adjacent_node()
     {
         if (!parent) {
             return nullptr;

@@ -6,17 +6,19 @@
 
 Editor::Editor() : id_gen(1)
 {
-    window_manager = new WindowManager(Dimension(0, 0, COLS, LINES - 2));
+    bounds = Dimension(0, 0, COLS, LINES);
     status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
     console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
     file_update_handler = new FileUpdateHandler(window_manager);
+
+    root_node = new WindowNode(bounds, nullptr);
 
     refresh();
 }
 
 Editor::~Editor()
 {
-    delete window_manager;
+    delete root_node;
     delete file_update_handler;
     delete status_window;
     delete console_window;
@@ -28,8 +30,9 @@ Editor::~Editor()
 
 void Editor::resize()
 {
-    log_info("resize(): lines:%d cols:%d", LINES, COLS);
-    window_manager->resize(Dimension(0, 0, COLS, LINES - 2));
+    log_info("resizing screen to ln:%d col:%d", LINES, COLS);
+    bounds = Dimension(0, 0, COLS, LINES);
+    root_node->resize(Dimension(0, 0, COLS, LINES - 2));
     status_window->resize(Dimension(0, LINES - 2, COLS, 1));
     console_window->resize(Dimension(0, LINES - 1, COLS, 1));
     refresh();
@@ -63,7 +66,7 @@ void Editor::handle_event(unsigned c)
 
 Window* Editor::get_current_view()
 {
-    WMNode* node = window_manager->current_node;
+    WindowNode* node = window_manager->_current_node;
     return node ? node->get_window() : nullptr;
 }
 
@@ -122,19 +125,19 @@ void Editor::command(const std::string& command)
     }
     else if (command == "next")
     {
-        window_manager->current_node->tabs.open_next();
+        window_manager->_current_node->tabs.open_next();
     }
     else if (command == "prev")
     {
-        window_manager->current_node->tabs.open_prev();
+        window_manager->_current_node->tabs.open_prev();
     }
     else if (command == "close")
     {
-        window_manager->current_node->tabs.close_current_tab();
+        window_manager->_current_node->tabs.close_current_tab();
     }
     else if (command == "closeall")
     {
-        window_manager->current_node->tabs.close_all();
+        window_manager->_current_node->tabs.close_all();
     }
     else if (is_number(command))
     {
@@ -292,18 +295,16 @@ void Editor::handle_command_mode_event(unsigned c)
 
 
 void Editor::show() {
-    window_manager->show();
+    root_node->show();
     status_window->show();
     console_window->show();
 }
 
 void Editor::draw()
 {
-    window_manager->draw();
+    root_node->draw();
     status_window->draw();
     console_window->draw();
-
-    if (!window_manager->current_node) { move(0, 0); }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

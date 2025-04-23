@@ -1,6 +1,5 @@
 #pragma once
 
-#include "WindowManager.h"
 #include "Window.h"
 #include "FileSubscriber.h"
 #include "log.h"

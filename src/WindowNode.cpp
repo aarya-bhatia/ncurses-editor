@@ -1,7 +1,7 @@
 #include "WMNode.h"
 #include <assert.h>
 
-void WMNode::resize(Dimension d)
+void WindowNode::resize(Dimension d)
 {
     for (auto* child : children)
     {
@@ -18,7 +18,7 @@ void WMNode::resize(Dimension d)
     bounds = d;
 }
 
-void WMNode::splith()
+void WindowNode::splith()
 {
     if (!splith_allowed()) { return; }
 
@@ -27,8 +27,8 @@ void WMNode::splith()
     Dimension d1(bounds.x, bounds.y, bounds.width, bounds.height / 2);
     Dimension d2(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height / 2);
 
-    WMNode* child1 = new WMNode(d1, this);
-    WMNode* child2 = new WMNode(d2, this);
+    WindowNode* child1 = new WindowNode(d1, this);
+    WindowNode* child2 = new WindowNode(d2, this);
 
     children.push_back(child1);
     children.push_back(child2);
@@ -52,7 +52,7 @@ void WMNode::splith()
     assert(find_bottom_content_node() == child2);
 }
 
-void WMNode::splitv()
+void WindowNode::splitv()
 {
     if (!splitv_allowed()) { return; }
 
@@ -61,8 +61,8 @@ void WMNode::splitv()
     Dimension d1(bounds.x, bounds.y, bounds.width / 2, bounds.height);
     Dimension d2(bounds.x + bounds.width / 2, bounds.y, bounds.width / 2, bounds.height);
 
-    WMNode* child1 = new WMNode(d1, this);
-    WMNode* child2 = new WMNode(d2, this);
+    WindowNode* child1 = new WindowNode(d1, this);
+    WindowNode* child2 = new WindowNode(d2, this);
 
     children.push_back(child1);
     children.push_back(child2);
