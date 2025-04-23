@@ -13,7 +13,6 @@ struct ConsoleWindow
     NcursesWindow window;
 
     ConsoleWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {
-        log_debug("initialising status window");
     }
 
     void draw();

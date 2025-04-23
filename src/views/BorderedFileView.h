@@ -33,6 +33,7 @@ struct BorderedFileView : public Window {
 
     void draw() override
     {
+        log_info("Drawing window %s", bounds.debug_string().c_str());
         if (redraw) { frame.draw_border(); redraw = false; }
         file_view->draw();
     }
@@ -44,7 +45,7 @@ struct BorderedFileView : public Window {
     }
 
     void focus()  override {
-        log_info("got focus on window %s", bounds.debug_string().c_str());
+        log_info("focus window %s", bounds.debug_string().c_str());
         file_view->focus();
     }
 
@@ -72,6 +73,7 @@ struct BorderedFileView : public Window {
     }
 
     void clear() override {
+        log_info("Clearing window %s", bounds.debug_string().c_str());
         redraw = true;
         frame.clear();
         file_view->clear();

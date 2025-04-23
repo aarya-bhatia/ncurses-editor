@@ -18,8 +18,6 @@ struct WindowManager
 
     void init()
     {
-        log_debug("initialising window manager");
-
         if(!root_node) {
             root_node = new WMNode(bounds, nullptr);
             focus_on(root_node);
@@ -75,7 +73,6 @@ struct WindowManager
         if(current_node) {
             current_node->unfocus();
         }
-        log_info("new focused node: %s", node->bounds.debug_string().c_str());
         current_node = node;
         current_node->focus();
     }

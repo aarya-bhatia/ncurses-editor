@@ -11,7 +11,10 @@ void WMNode::resize(Dimension d)
         child->resize(child_d);
     }
 
-    tabs.resize(d);
+    if (children.empty()) {
+        tabs.resize(d);
+    }
+
     bounds = d;
 }
 
@@ -33,8 +36,11 @@ void WMNode::splith()
     if (!tabs.empty()) {
         child1->open_tab(tabs.get_file());
         child2->open_tab(tabs.get_file());
-        tabs.clear();
     }
+
+    tabs.close_all();
+    tabs.clear();
+    tabs.show();
 
     log_info("horizontal split complete");
 
@@ -64,8 +70,11 @@ void WMNode::splitv()
     if (!tabs.empty()) {
         child1->open_tab(tabs.get_file());
         child2->open_tab(tabs.get_file());
-        tabs.clear();
     }
+
+    tabs.close_all();
+    tabs.clear();
+    tabs.show();
 
     log_info("horizontal split complete");
 

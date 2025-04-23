@@ -21,6 +21,11 @@ struct TabWindow : public Window
     {
         bounds = d;
         empty_file = new File;
+        empty_file->insert_character('e');
+        empty_file->insert_character('m');
+        empty_file->insert_character('p');
+        empty_file->insert_character('t');
+        empty_file->insert_character('y');
         empty_window = new BorderedFileView(empty_file, d);
         current_tab = tabs.begin();
     }

@@ -6,7 +6,6 @@
 
 Editor::Editor() : id_gen(1)
 {
-    log_debug("initialising editor");
     window_manager = new WindowManager(Dimension(0, 0, COLS, LINES - 2));
     status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
     console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
@@ -304,9 +303,7 @@ void Editor::draw()
     status_window->draw();
     console_window->draw();
 
-    if (!window_manager->current_node || !window_manager->current_node->get_window()) {
-        move(0, 0);
-    }
+    if (!window_manager->current_node) { move(0, 0); }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

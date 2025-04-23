@@ -10,7 +10,6 @@ struct FileUpdateHandler : public FileSubscriber {
     WindowManager* wm;
 
     FileUpdateHandler(WindowManager* _wm) : wm(_wm) {
-        log_debug("initialising file update handler");
     }
 
     void on_file_reload(File& file) override {
