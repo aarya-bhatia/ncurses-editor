@@ -67,16 +67,18 @@ struct WMNode : public IDrawable, IFocusable
 
     void draw() override
     {
-        for (auto* child : children) { child->draw(); }
+        if (children.empty()) {
+            tabs.draw();
+            return;
+        }
 
-        tabs.draw();
+        for (auto* child : children) { child->draw(); }
     }
 
     void show() override
     {
+        if (children.empty()) { tabs.show(); return; }
         for (auto* child : children) { child->show(); }
-
-        tabs.show();
     }
 
     int count_nodes()
