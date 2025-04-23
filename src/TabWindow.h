@@ -67,6 +67,7 @@ struct TabWindow : public Window
 
     void open(Window* tab) {
         Tab new_tab = find_tab_from_window(tab);
+
         if (new_tab != tabs.end() && new_tab != current_tab) {
             current_window()->unfocus();
             current_tab = new_tab;
@@ -166,8 +167,9 @@ struct TabWindow : public Window
             return empty_window;
         }
 
-        if (!empty()) {
+        if (current_tab == tabs.end() && !empty()) {
             current_tab = tabs.begin();
+            return *current_tab;
         }
 
         return *current_tab;
