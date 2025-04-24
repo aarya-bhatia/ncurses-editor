@@ -7,10 +7,10 @@ struct ListNode
     ListNode<T>* next = nullptr;
     T data;
 
-    ListNode(ListNode<T>* _prev, ListNode<T>* _next, T w) {
+    ListNode(T &_data, ListNode<T>* _prev = nullptr, ListNode<T>* _next = nullptr) {
         prev = _prev;
         next = _next;
-        data = w;
+        data = _data;
 
         assert_ok();
     }
@@ -24,6 +24,13 @@ struct ListNode
 
     ~ListNode() {
     }
+
+    void list_size() const { return count_backward() + count_forward() - 1; }
+    T& get_data() { return data; }
+    void set_data(T& _data) { data = _data; }
+
+    void is_head_node() { return !prev; }
+    void is_tail_node() { return !next; }
 
     void detach() {
         if (prev) {

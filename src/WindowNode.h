@@ -19,9 +19,9 @@ struct WindowNode : public IDrawable, IFocusable
     bool focused = false;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
-    TabWindow tabs;
+    TabWindow tab_window;
 
-    WindowNode(Dimension bounds, WindowNode* parent) : bounds(bounds), parent(parent), tabs(bounds) {}
+    WindowNode(Dimension bounds, WindowNode* parent) : bounds(bounds), parent(parent), tab_window(bounds) {}
 
     ~WindowNode()
     {
@@ -30,29 +30,33 @@ struct WindowNode : public IDrawable, IFocusable
         }
     }
 
-    TabWindow &get_tabs() { return tabs; }
+    TabWindow& get_tab_window() { return tab_window; }
 
     Window* get_window() {
-        return tabs.get_focused_window();
+        return tab_window.get_focused_window();
     }
 
     Window* open_tab(File* f)
     {
-        Window* tab_window = tabs.find_or_create_tab(f);
-        tabs.open(tab_window);
-        return tab_window;
+        ListNode<Window*>* tab = tab_window.find_tab_by_file(f);
+        if (tab) {
+            return tab->data;
+        }
+        Window* file_window = ViewFactory::new_file_view(f, bounds);
+        tab_window.open(file_window);
+        return file_window;
     }
 
     void focus() override {
         log_debug("focus node %s", bounds.debug_string().c_str());
         focused = true;
-        tabs.focus();
+        tab_window.focus();
     }
 
     void unfocus() override {
         log_debug("unfocus node %s", bounds.debug_string().c_str());
         focused = false;
-        tabs.unfocus();
+        tab_window.unfocus();
     }
 
     bool splitv_allowed() { return bounds.width / 2 >= 3; }
@@ -62,14 +66,14 @@ struct WindowNode : public IDrawable, IFocusable
 
     void close_tab();
 
-    // TODO: transfer this nodes tabs to a child?
+    // TODO: transfer this nodes tab_window to a child?
     void splith();
     void splitv();
 
     void draw() override
     {
         if (children.empty()) {
-            tabs.draw();
+            tab_window.draw();
             return;
         }
 
@@ -78,7 +82,7 @@ struct WindowNode : public IDrawable, IFocusable
 
     void show() override
     {
-        if (children.empty()) { tabs.show(); return; }
+        if (children.empty()) { tab_window.show(); return; }
         for (auto* child : children) { child->show(); }
     }
 
