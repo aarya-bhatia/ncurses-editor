@@ -56,6 +56,19 @@ enum
     C_CONTROL = 0x1000
 };
 
+enum Mode
+{
+    NORMAL_MODE,
+    INSERT_MODE,
+    COMMAND_MODE
+};
+
+static std::map<Mode, const char*> mode_names = {
+    {NORMAL_MODE, "NORMAL"},
+    {COMMAND_MODE, "COMMAND"},
+    {INSERT_MODE, "INSERT"},
+};
+
 int char_type(char c);
 
 std::list<std::string> readlines(const char* filename);

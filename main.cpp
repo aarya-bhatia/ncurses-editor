@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include "WindowManager.h"
-#include "editor.h"
+#include "Editor.h"
 #include <memory>
 
 bool resized = false;

@@ -1,4 +1,4 @@
-#include "editor.h"
+#include "Editor.h"
 #include <string.h>
 #include "log.h"
 #include "FileView.h"

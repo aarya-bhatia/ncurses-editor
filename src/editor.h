@@ -14,19 +14,6 @@
 #include "FileUpdateHandler.h"
 #include "SequenceGenerator.h"
 
-enum Mode
-{
-    NORMAL_MODE,
-    INSERT_MODE,
-    COMMAND_MODE
-};
-
-static std::map<Mode, const char*> mode_names = {
-    {NORMAL_MODE, "NORMAL"},
-    {COMMAND_MODE, "COMMAND"},
-    {INSERT_MODE, "INSERT"},
-};
-
 struct Editor
 {
     LinearSequenceGenerator<int> id_gen;
@@ -40,14 +27,10 @@ struct Editor
     std::string statusline = "";
 
     WindowNode* root_node = nullptr;
-    WindowNode* focused_node = nullptr;
-    Window* focused_window = nullptr;
-    File* focused_file = nullptr;
     Dimension bounds;
 
+    WindowNode* focused_node = nullptr;
     WindowNode* prev_focused_node = nullptr;
-    Window* prev_focused_window = nullptr;
-    File* prev_focused_file = nullptr;
 
     std::unordered_map<File*, std::vector<WindowNode*>> map_file_to_window_node;
     std::unordered_map<File*, std::vector<Window*>> map_file_to_window;
@@ -58,37 +41,36 @@ struct Editor
     Editor();
     ~Editor();
 
+    WindowNode* get_focused_node() { return focused_node; }
+    WindowNode* get_prev_focused_node() { return prev_focused_node; }
+
     bool is_focused_node(WindowNode* node) const { return node == focused_node; }
     bool was_focused_node(WindowNode* node) const { return node == prev_focused_node; }
-
-    bool is_focused_window(Window* window) const { return window == focused_window; }
-    bool was_focused_window(Window* window) const { return window == prev_focused_window; }
-
-    bool is_focused_file(File* file) const { return file == focused_file; }
-    bool was_focused_file(File* file) const { return file == prev_focused_file; }
-
     bool focused_node_changed() const { return prev_focused_node != focused_node; }
+
+    Window* get_focused_window() { return focused_node ? focused_node->get_focused_window() : nullptr; }
+    Window* get_prev_focused_window() { return prev_focused_node ? prev_focused_node->get_focused_window() : nullptr; }
+
+    bool is_focused_window(Window* window) const { return get_focused_window() == window; }
+    bool was_focused_window(Window* window) const { return get_prev_focused_window() == window; }
+    bool focused_window_changed() const { return get_focused_window() != get_prev_focused_window(); }
+
+    File* get_focused_file() { return focused_node && focused_node->get_focused_window() ? focused_node->get_focused_window()->get_file() : nullptr; }
+    File* get_prev_focused_file() { return prev_focused_node && prev_focused_node->get_focused_window() ? prev_focused_node->get_focused_window()->get_file() : nullptr; }
+
+    bool is_focused_file(File* file) const { return get_focused_file() == file; }
+    bool was_focused_file(File* file) const { return get_prev_focused_file() == file; }
+    bool focused_file_changed() const { return get_focused_file() != get_prev_focused_file(); }
 
     void set_focused_node(WindowNode* node) {
         prev_focused_node = focused_node;
         focused_node = node;
     }
 
-    void set_focused_window(Window* window) {
-        prev_focused_window = focused_window;
-        focused_window = window;
-    }
-
-    void set_focused_file(File* file) {
-        prev_focused_file = focused_file;
-        focused_file = file;
-    }
-
     void refocus() {
+        if (prev_focused_node) { prev_focused_node->unfocus(); }
+        if (focused_node) { focused_node->focus(); }
     }
-
-    Window* get_current_view();
-    File* get_current_file();
 
     void command(const std::string& command);
 

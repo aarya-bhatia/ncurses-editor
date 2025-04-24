@@ -30,8 +30,10 @@ struct WindowNode : public IDrawable, IFocusable
         }
     }
 
+    TabWindow &get_tabs() { return tabs; }
+
     Window* get_window() {
-        return tabs.current_window();
+        return tabs.get_focused_window();
     }
 
     Window* open_tab(File* f)
