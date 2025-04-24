@@ -17,7 +17,7 @@
 struct Editor
 {
     LinearSequenceGenerator<int> id_gen;
-    FileUpdateHandler* file_update_handler;
+    // FileUpdateHandler* file_update_handler;
     StatusWindow* status_window;
     ConsoleWindow* console_window;
 
@@ -48,19 +48,19 @@ struct Editor
     bool was_focused_node(WindowNode* node) const { return node == prev_focused_node; }
     bool focused_node_changed() const { return prev_focused_node != focused_node; }
 
-    Window* get_focused_window() { return focused_node ? focused_node->get_focused_window() : nullptr; }
-    Window* get_prev_focused_window() { return prev_focused_node ? prev_focused_node->get_focused_window() : nullptr; }
+    // Window* get_focused_window() { return focused_node ? focused_node->get_focused_window() : nullptr; }
+    // Window* get_prev_focused_window() { return prev_focused_node ? prev_focused_node->get_focused_window() : nullptr; }
 
-    bool is_focused_window(Window* window) const { return get_focused_window() == window; }
-    bool was_focused_window(Window* window) const { return get_prev_focused_window() == window; }
-    bool focused_window_changed() const { return get_focused_window() != get_prev_focused_window(); }
+    // bool is_focused_window(Window* window) const { return get_focused_window() == window; }
+    // bool was_focused_window(Window* window) const { return get_prev_focused_window() == window; }
+    // bool focused_window_changed() const { return get_focused_window() != get_prev_focused_window(); }
 
-    File* get_focused_file() { return focused_node && focused_node->get_focused_window() ? focused_node->get_focused_window()->get_file() : nullptr; }
-    File* get_prev_focused_file() { return prev_focused_node && prev_focused_node->get_focused_window() ? prev_focused_node->get_focused_window()->get_file() : nullptr; }
+    // File* get_focused_file() { return focused_node && focused_node->get_focused_window() ? focused_node->get_focused_window()->get_file() : nullptr; }
+    // File* get_prev_focused_file() { return prev_focused_node && prev_focused_node->get_focused_window() ? prev_focused_node->get_focused_window()->get_file() : nullptr; }
 
-    bool is_focused_file(File* file) const { return get_focused_file() == file; }
-    bool was_focused_file(File* file) const { return get_prev_focused_file() == file; }
-    bool focused_file_changed() const { return get_focused_file() != get_prev_focused_file(); }
+    // bool is_focused_file(File* file) const { return get_focused_file() == file; }
+    // bool was_focused_file(File* file) const { return get_prev_focused_file() == file; }
+    // bool focused_file_changed() const { return get_focused_file() != get_prev_focused_file(); }
 
     void set_focused_node(WindowNode* node) {
         prev_focused_node = focused_node;

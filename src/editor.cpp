@@ -9,7 +9,7 @@ Editor::Editor() : id_gen(1)
     bounds = Dimension(0, 0, COLS, LINES);
     status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
     console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
-    file_update_handler = new FileUpdateHandler(window_manager);
+    // file_update_handler = nullptr; //new FileUpdateHandler(window_manager);
 
     root_node = new WindowNode(bounds, nullptr);
 
@@ -19,7 +19,7 @@ Editor::Editor() : id_gen(1)
 Editor::~Editor()
 {
     delete root_node;
-    delete file_update_handler;
+    // delete file_update_handler;
     delete status_window;
     delete console_window;
 
@@ -64,23 +64,9 @@ void Editor::handle_event(unsigned c)
     }
 }
 
-Window* Editor::get_current_view()
-{
-    WindowNode* node = window_manager->_current_node;
-    return node ? node->get_window() : nullptr;
-}
-
-
-File* Editor::get_current_file()
-{
-    Window* window = get_current_view();
-    return window ? window->get_file() : nullptr;
-}
-
-
 void Editor::command(const std::string& command)
 {
-    File* file = get_current_file();
+    auto file = focused_node->get_window()->get_file();
     log_debug("Got command: %s", command.c_str());
 
     if (command == "q" || command == "quit")
@@ -101,43 +87,43 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
-        window_manager->splith();
+        splith();
     }
     else if (command == "vs" || command == "vsplit")
     {
-        window_manager->splitv();
+        splitv();
     }
     else if (command == "right")
     {
-        window_manager->focus_right();
+        focus_right();
     }
     else if (command == "left")
     {
-        window_manager->focus_left();
+        focus_left();
     }
     else if (command == "top")
     {
-        window_manager->focus_top();
+        focus_top();
     }
     else if (command == "bottom")
     {
-        window_manager->focus_bottom();
+        focus_bottom();
     }
     else if (command == "next")
     {
-        window_manager->_current_node->tabs.open_next();
+        focused_node->tab_window.open_next();
     }
     else if (command == "prev")
     {
-        window_manager->_current_node->tabs.open_prev();
+        focused_node->tab_window.open_prev();
     }
     else if (command == "close")
     {
-        window_manager->_current_node->tabs.close_current_tab();
+        focused_node->tab_window.close_tab();
     }
     else if (command == "closeall")
     {
-        window_manager->_current_node->tabs.close_all();
+        focused_node->tab_window.close_all();
     }
     else if (is_number(command))
     {
@@ -153,7 +139,7 @@ void Editor::command(const std::string& command)
 
 void Editor::handle_insert_mode_event(unsigned c)
 {
-    auto file = get_current_file();
+    auto file = focused_node->get_window()->get_file();
 
     switch (c)
     {
@@ -174,7 +160,7 @@ void Editor::handle_insert_mode_event(unsigned c)
 
 void Editor::handle_normal_mode_two_key_seq()
 {
-    auto file = get_current_file();
+    auto file = focused_node->get_window()->get_file();
     assert(file);
     assert(file->normal_mode_buffer.size() == 2);
 
@@ -187,7 +173,7 @@ void Editor::handle_normal_mode_two_key_seq()
 
 void Editor::handle_normal_mode_event(unsigned c)
 {
-    auto file = get_current_file();
+    auto file = focused_node->get_window()->get_file();
 
     if (!file) {
         switch (c) {
@@ -313,13 +299,14 @@ void Editor::open(const std::vector<std::string>& filenames)
     {
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
-        window_manager->open(file);
+        // open(file);
+        focused_node->open_tab(file);
     }
 }
 
 File* Editor::add_file(const std::string& filename) {
     File* new_file = new File(id_gen.next(), filename);
-    new_file->add_subscriber(file_update_handler);
+    // new_file->add_subscriber(file_update_handler);
     new_file->load_file();
     files.push_back(new_file);
     return new_file;

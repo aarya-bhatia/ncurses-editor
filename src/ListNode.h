@@ -1,5 +1,6 @@
 #pragma once
 
+#include <assert.h>
 template<typename T>
 struct ListNode
 {
@@ -28,9 +29,6 @@ struct ListNode
     void list_size() const { return count_backward() + count_forward() - 1; }
     T& get_data() { return data; }
     void set_data(T& _data) { data = _data; }
-
-    void is_head_node() { return !prev; }
-    void is_tail_node() { return !next; }
 
     void detach() {
         if (prev) {

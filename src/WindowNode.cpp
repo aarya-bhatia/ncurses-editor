@@ -1,4 +1,4 @@
-#include "WMNode.h"
+#include "WindowNode.h"
 #include <assert.h>
 
 void WindowNode::resize(Dimension d)
@@ -12,7 +12,7 @@ void WindowNode::resize(Dimension d)
     }
 
     if (children.empty()) {
-        tabs.resize(d);
+        tab_window.resize(d);
     }
 
     bounds = d;
@@ -33,14 +33,14 @@ void WindowNode::splith()
     children.push_back(child1);
     children.push_back(child2);
 
-    if (!tabs.empty()) {
-        child1->open_tab(tabs.get_file());
-        child2->open_tab(tabs.get_file());
-    }
+    // if (!tab_window.focused_tab()) {
+    //     child1->open_tab(tabs.get_file());
+    //     child2->open_tab(tabs.get_file());
+    // }
 
-    tabs.close_all();
-    tabs.clear();
-    tabs.show();
+    tab_window.close_all();
+    tab_window.clear();
+    tab_window.show();
 
     log_info("horizontal split complete");
 
@@ -67,14 +67,14 @@ void WindowNode::splitv()
     children.push_back(child1);
     children.push_back(child2);
 
-    if (!tabs.empty()) {
-        child1->open_tab(tabs.get_file());
-        child2->open_tab(tabs.get_file());
-    }
+    // if (!tabs.empty()) {
+    //     child1->open_tab(tabs.get_file());
+    //     child2->open_tab(tabs.get_file());
+    // }
 
-    tabs.close_all();
-    tabs.clear();
-    tabs.show();
+    tab_window.close_all();
+    tab_window.clear();
+    tab_window.show();
 
     log_info("horizontal split complete");
 

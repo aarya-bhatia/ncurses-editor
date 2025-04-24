@@ -15,7 +15,7 @@ struct List
 
     bool empty() const { return !head && !tail; }
 
-    void is_reachable(ListNode<T>* node)
+    bool is_reachable(ListNode<T>* node)
     {
         if (!node) {
             return false;
@@ -67,13 +67,13 @@ struct List
     }
 
     void insert_front(T& data) {
-        head->insert_before(new ListNode(data));
+        head->insert_before(new ListNode<T>(data));
         head = head->prev;
         if (!head->next) { tail = head; }
     }
 
     void insert_back(T& data) {
-        tail->insert_after(new ListNode(data));
+        tail->insert_after(new ListNode<T>(data));
         tail = tail->prev;
         if (!tail->prev) { head = tail; }
     }

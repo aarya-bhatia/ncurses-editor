@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <ncurses.h>
-#include "WindowManager.h"
 #include "Editor.h"
 #include <memory>
 
