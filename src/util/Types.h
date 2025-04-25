@@ -22,3 +22,12 @@ struct IPartialDrawable : public IDrawable {
     virtual void partial_draw_line(Cursor position) = 0;
     virtual void force_redraw() = 0;
 };
+
+struct IEventHandler {
+    virtual ~IEventHandler() = default;
+    virtual void handle_event(unsigned) = 0;
+};
+
+struct IEditor : public IEventHandler, IDrawable {
+    virtual ~IEditor() = default;
+};

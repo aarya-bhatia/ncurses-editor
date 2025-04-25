@@ -3,6 +3,7 @@
 #include "List.h"
 #include "Window.h"
 #include "BorderedFileView.h"
+#include "FileFactory.h"
 #include <assert.h>
 
 template<typename T>
@@ -12,6 +13,11 @@ struct TabWindow
     ListNode<T>* focused_tab = nullptr;
     Dimension bounds;
 
+<<<<<<< Updated upstream
+=======
+    File* empty_file = nullptr;
+
+>>>>>>> Stashed changes
     TabWindow(Dimension d)
     {
         bounds = d;
@@ -23,6 +29,8 @@ struct TabWindow
             delete itr->data;
             itr->data = nullptr;
         }
+
+        delete empty_file;
     }
 
     void open(T window) {
@@ -40,6 +48,7 @@ struct TabWindow
         focused_tab->data->focus();
     }
 
+<<<<<<< Updated upstream
     // void close_all() {
     //     focused_tab = nullptr;
     //     for (ListNode<T>* itr = tabs.head; itr; itr = itr->next) {
@@ -49,6 +58,24 @@ struct TabWindow
     //     tabs.remove_all();
     //     init();
     // }
+=======
+    void init()
+    {
+        if (!empty_file) empty_file = FileFactory::new_file();
+        Window* empty_window = new BorderedFileView(empty_file, bounds);
+        open(empty_window);
+    }
+
+    void close_all() {
+        focused_tab = nullptr;
+        for (ListNode<Window*>* itr = tabs.head; itr; itr = itr->next) {
+            delete itr->data;
+            itr->data = nullptr;
+        }
+        tabs.remove_all();
+        init();
+    }
+>>>>>>> Stashed changes
 
     void open_first() {
         open(tabs.head);
@@ -89,6 +116,7 @@ struct TabWindow
     T get_focused_window()
     {
         return focused_tab ? focused_tab->data : nullptr;
+<<<<<<< Updated upstream
     }
 
     void focus() {
@@ -115,6 +143,38 @@ struct TabWindow
         bounds = d;
         for (ListNode<T>* node = tabs.head; node; node = node->next) {
             node->data->resize(d);
+=======
+    }
+
+    Dimension get_bounds() {
+        return bounds;
+    }
+
+    void focus() {
+        if (focused_tab)get_focused_window()->focus();
+    }
+
+    void unfocus() {
+        if (focused_tab)get_focused_window()->unfocus();
+    }
+
+    void draw() {
+        if (focused_tab)get_focused_window()->draw();
+    }
+
+    void show() {
+        if (focused_tab)get_focused_window()->show();
+    }
+
+    void clear() {
+        if (focused_tab)get_focused_window()->clear();
+    }
+
+    void resize(Dimension d) {
+        bounds = d;
+        for (ListNode<Window*>* node = tabs.head; node; node = node->next) {
+            if (node->data)node->data->resize(d);
+>>>>>>> Stashed changes
         }
     }
 };

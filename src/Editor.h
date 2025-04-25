@@ -10,20 +10,14 @@
 #include "WindowNode.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
-#include "Command.h"
 #include "FileUpdateHandler.h"
-#include "SequenceGenerator.h"
 #include "WindowManager.h"
-#include "TabWindow.h"
-#include "EmptyView.h"
 
 struct Editor
 {
     Dimension bounds;
-    LinearSequenceGenerator<int> id_gen;
 
-    using Tabs = TabWindow<EmptyView>;
-    WindowManager<Tabs> wm;
+    WindowManager<FileView*> window_manager;
 
     // FileUpdateHandler* file_update_handler;
     StatusWindow* status_window;
@@ -40,15 +34,20 @@ struct Editor
     Mode mode = NORMAL_MODE;
     bool quit = false;
 
-    Editor();
+    Editor(Dimension d);
     ~Editor();
 
     File* get_focused_file() {
-        return nullptr;
+        FileView* view = window_manager.get_focused_content();
+        return view->file;
     }
 
-    void open(const std::vector<std::string>& filenames);
+    Window* get_focused_window() {
+        return window_manager.get_focused_content();
+    }
+
     void command(const std::string& command);
+
     void handle_event(unsigned c);
     void handle_command_mode_event(unsigned c);
     void handle_insert_mode_event(unsigned c);
@@ -57,10 +56,10 @@ struct Editor
 
     void draw();
     void show();
-    void resize();
+    void resize(Dimension d);
+
+    void open(const std::vector<std::string>& filenames);
 
     File* add_file(const std::string& filename);
     File* get_file(const std::string& filename);
-
-    ListNode<Tabs*>* find_tab_by_file(Tabs& tabs, File* file);
 };

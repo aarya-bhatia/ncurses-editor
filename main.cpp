@@ -61,31 +61,32 @@ int main(int argc, const char** argv)
         filenames.push_back(std::string(*arg));
     }
 
-    Editor editor;
+    Editor editor(Dimension(0, 0, COLS, LINES));
     editor.open(filenames);
-
-    // refresh();
 
     while (!editor.quit)
     {
         if (resized)
         {
-            resized = false;
             log_info("window resize detected!");
+            resized = false;
             init_screen();
-            editor.resize();
+            editor.resize(Dimension(0, 0, COLS, LINES));
             continue;
         }
 
+        log_debug("drawing editor");
         editor.draw();
         editor.show();
 
+        log_debug("getch");
         int ch = getch();
 
         if (ch == CTRL_C) {
             break;
         }
 
+        log_debug("handling event");
         editor.handle_event(ch);
     }
 

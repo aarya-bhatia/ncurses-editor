@@ -3,14 +3,30 @@
 #include "log.h"
 #include "FileView.h"
 #include "FileSubscriber.h"
+#include "FileFactory.h"
 
-Editor::Editor() :
-    bounds(Dimension(0, 0, COLS, LINES)),
-    id_gen(1),
-    wm(bounds)
+void init(Editor& editor, Dimension d)
 {
-    status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
-    console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
+    log_debug("init editor");
+    editor.bounds = d;
+
+    if (!editor.status_window || editor.status_window->bounds != d) {
+        delete editor.status_window;
+        editor.status_window = new StatusWindow(editor, Dimension(d.x, d.y + d.height - 2, d.width, 1));
+    }
+
+    if (!editor.console_window || editor.console_window->bounds != d) {
+        delete editor.console_window;
+        editor.console_window = new ConsoleWindow(editor, Dimension(d.x, d.y + d.height - 1, d.width, 1));
+    }
+
+    editor.window_manager.resize(d);
+    editor.window_manager.init();
+}
+
+Editor::Editor(Dimension d) : bounds(d), window_manager(bounds)
+{
+    init(*this, d);
     // file_update_handler = nullptr;
 }
 
@@ -25,14 +41,10 @@ Editor::~Editor()
     }
 }
 
-void Editor::resize()
+void Editor::resize(Dimension d)
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
-    bounds = Dimension(0, 0, COLS, LINES);
-    wm.resize(Dimension(0, 0, COLS, LINES - 2));
-    status_window->resize(Dimension(0, LINES - 2, COLS, 1));
-    console_window->resize(Dimension(0, LINES - 1, COLS, 1));
-    refresh();
+    init(*this, d);
 }
 
 void Editor::handle_event(unsigned c)
@@ -278,20 +290,38 @@ void Editor::handle_command_mode_event(unsigned c)
 
 
 void Editor::show() {
-    wm.show();
+    window_manager.show();
     status_window->show();
     console_window->show();
 }
 
 void Editor::draw()
 {
-    wm.draw();
+    window_manager.draw();
     status_window->draw();
     console_window->draw();
 }
 
-ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {
-    for (ListNode<EmptyView*>* itr = tabs.head; itr; itr = itr->next) {
+// ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {
+//     for (ListNode<EmptyView*>* itr = tabs.head; itr; itr = itr->next) {
+//     }
+
+//     return nullptr;
+// }
+
+WindowNode<FileView*>* find_existing_file_window(WindowManager<FileView*>& window_manager, File* file) {
+    std::list<WindowNode<FileView*>*> q;
+    q.push_back(window_manager.root_node);
+    while (!q.empty()) {
+        WindowNode<FileView*>* node = q.front();
+        q.pop_front();
+        if (!node) { continue; }
+        if (node->content->file == file) {
+            return node;
+        }
+        for (WindowNode<FileView*>* child : node->children) {
+            q.push_back(child);
+        }
     }
 
     return nullptr;
@@ -299,20 +329,25 @@ ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {
 
 void Editor::open(const std::vector<std::string>& filenames)
 {
-    wm.init();
+    window_manager.init();
+
     for (const std::string& filename : filenames)
     {
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
-        Tabs* tabs = wm.focused_node.content;
-        ListNode<EmptyView*>* tab_node = find_tab_by_file(tabs, file);
-        if (tab_node) { tabs->open(tab_node); }
-        else { tabs->open(new EmptyView(filename)); }
+
+        WindowNode<FileView *> *window_node = find_existing_file_window(window_manager, file);
+        if(!window_node) {
+            FileView *view = new FileView(file, window_manager.focused_node->bounds);
+            window_manager.set_focused_content(view);
+            window_node = window_manager.focused_node;
+        }
+
     }
 }
 
 File* Editor::add_file(const std::string& filename) {
-    File* new_file = new File(id_gen.next(), filename);
+    File* new_file = FileFactory::new_file(filename);
     // new_file->add_subscriber(file_update_handler);
     new_file->load_file();
     files.push_back(new_file);

@@ -33,7 +33,7 @@ struct BorderedFileView : public Window {
 
     void draw()
     {
-        log_info("Drawing window %s", bounds.debug_string().c_str());
+        // log_info("Drawing window %s", bounds.debug_string().c_str());
         if (redraw) { frame.draw_border(); redraw = false; }
         file_view->draw();
     }

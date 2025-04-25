@@ -13,6 +13,9 @@ struct WindowManager {
 
     void set_focused_content(T& content) {
         focused_node->content = content;
+        if (content->bounds != focused_node->bounds) {
+            focused_node->resize(focused_node->bounds);
+        }
     }
 
     T& get_focused_content() {
@@ -28,6 +31,7 @@ struct WindowManager {
     }
 
     void resize(Dimension d) {
+        if(bounds == d) { return; }
         bounds = d;
         root_node->resize(d);
     }
@@ -39,7 +43,7 @@ struct WindowManager {
 
     void init() {
         if (focused_node) { return; }
-
+        log_debug("init window manager");
         root_node = new WindowNode<T>(bounds, nullptr);
         root_node->bounds = bounds;
         focused_node = root_node;

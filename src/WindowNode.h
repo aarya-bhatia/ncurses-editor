@@ -13,9 +13,11 @@ struct WindowNode
     WindowNode<T>* parent = nullptr;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
-    T content;
+    T content = nullptr;
 
-    WindowNode(Dimension bounds, WindowNode<T>* parent = nullptr) : bounds(bounds), parent(parent) {}
+    WindowNode(Dimension bounds, WindowNode<T>* parent = nullptr) : bounds(bounds), parent(parent) {
+        log_debug("init window node %s", bounds.debug_string().c_str());
+    }
 
     ~WindowNode()
     {
@@ -37,8 +39,8 @@ struct WindowNode
             child->resize(child_d);
         }
 
-        if (children.empty()) {
-            content.resize(d);
+        if (children.empty() && content != nullptr) {
+            content->resize(d);
         }
 
         bounds = d;
@@ -53,7 +55,7 @@ struct WindowNode
     void draw()
     {
         if (content) {
-            content.draw();
+            content->draw();
         }
 
         for (auto* child : children) { child->draw(); }
@@ -62,7 +64,7 @@ struct WindowNode
     void show()
     {
         if (content) {
-            content.show();
+            content->show();
         }
 
         for (auto* child : children) { child->show(); }
