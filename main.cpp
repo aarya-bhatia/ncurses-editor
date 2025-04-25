@@ -9,7 +9,7 @@ bool resized = false;
 
 void setup_logger()
 {
-    log_set_level(LOG_DEBUG);
+    log_set_level(LOG_INFO);
     int logfile = open("stderr.log", O_CREAT | O_TRUNC | O_WRONLY, 0640);
     dup2(logfile, 2);
     close(logfile);

@@ -93,30 +93,30 @@ void Editor::command(const std::string& command)
             file->save_file();
         }
     }
-    // else if (command == "sp" || command == "split")
-    // {
-    //     splith();
-    // }
-    // else if (command == "vs" || command == "vsplit")
-    // {
-    //     splitv();
-    // }
-    // else if (command == "right")
-    // {
-    //     focus_right();
-    // }
-    // else if (command == "left")
-    // {
-    //     focus_left();
-    // }
-    // else if (command == "top")
-    // {
-    //     focus_top();
-    // }
-    // else if (command == "bottom")
-    // {
-    //     focus_bottom();
-    // }
+    else if (command == "sp" || command == "split")
+    {
+        window_manager.splith();
+    }
+    else if (command == "vs" || command == "vsplit")
+    {
+        window_manager.splitv();
+    }
+    else if (command == "right")
+    {
+        window_manager.focus_right();
+    }
+    else if (command == "left")
+    {
+        window_manager.focus_left();
+    }
+    else if (command == "top")
+    {
+        window_manager.focus_top();
+    }
+    else if (command == "bottom")
+    {
+        window_manager.focus_bottom();
+    }
     // else if (command == "next")
     // {
     //     focused_node->tab_window.open_next();

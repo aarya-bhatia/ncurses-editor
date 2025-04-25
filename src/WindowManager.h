@@ -62,7 +62,8 @@ struct WindowManager {
         if (!focused_node->splith_allowed()) { return false; }
         focused_node->splith();
         assert(focused_node->layout == WindowNode<T>::Layout::HSPLIT);
-        set_current_node(focused_node->get_top_child());
+        focused_node->resize(bounds);
+        set_focused_node(focused_node->get_top_child());
         return true;
     }
 
@@ -70,7 +71,8 @@ struct WindowManager {
         if (!focused_node->splitv_allowed()) { return false; }
         focused_node->splitv();
         assert(focused_node->layout == WindowNode<T>::Layout::VSPLIT);
-        set_current_node(focused_node->get_left_child());
+        focused_node->resize(bounds);
+        set_focused_node(focused_node->get_left_child());
         return true;
     }
 
@@ -80,7 +82,7 @@ struct WindowManager {
             return false;
         }
         assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
-        set_current_node(new_node);
+        set_focused_node(new_node);
         return true;
     }
 
@@ -90,7 +92,7 @@ struct WindowManager {
             return false;
         }
         assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
-        set_current_node(new_node);
+        set_focused_node(new_node);
         return true;
     }
 
@@ -100,7 +102,7 @@ struct WindowManager {
             return false;
         }
         assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
-        set_current_node(new_node);
+        set_focused_node(new_node);
         return true;
     }
 
@@ -110,7 +112,7 @@ struct WindowManager {
             return false;
         }
         assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
-        set_current_node(new_node);
+        set_focused_node(new_node);
         return true;
     }
 };

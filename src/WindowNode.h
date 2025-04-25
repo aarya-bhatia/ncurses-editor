@@ -21,7 +21,7 @@ struct WindowNode
 
     ~WindowNode()
     {
-        for (WindowNode* child : children) {
+        for (WindowNode<T>* child : children) {
             delete child;
         }
     }
@@ -34,9 +34,10 @@ struct WindowNode
 
     void resize(Dimension d)
     {
-        for (auto* child : children)
+        log_info("resize node %s", d.debug_string().c_str());
+        for (WindowNode<T>* child : children)
         {
-            Dimension child_d = d;
+            Dimension child_d = child->bounds;
             child_d.width *= d.width / bounds.width;
             child_d.height *= d.height / bounds.height;
             child->resize(child_d);
@@ -51,9 +52,77 @@ struct WindowNode
 
     void close_tab();
 
-    // TODO: transfer this nodes tab_window to a child?
-    void splith();
-    void splitv();
+    void splith()
+    {
+        if (!splith_allowed()) { return; }
+
+        layout = HSPLIT;
+
+        Dimension d1(bounds.x, bounds.y, bounds.width, bounds.height / 2);
+        Dimension d2(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height / 2);
+
+        log_info("Split node %s to nodes %s and %s",
+            bounds.debug_string().c_str(),
+            d1.debug_string().c_str(),
+            d2.debug_string().c_str());
+
+        WindowNode<T>* child1 = new WindowNode<T>(d1, this);
+        WindowNode<T>* child2 = new WindowNode<T>(d2, this);
+
+        children.push_back(child1);
+        children.push_back(child2);
+
+        this->content->clear();
+        this->content->show();
+
+        child1->content = this->content;
+        this->content = nullptr;
+
+        log_info("horizontal split complete");
+
+        assert(child1 == get_top_child());
+        assert(child2 == get_bottom_child());
+        assert(child1->find_bottom_adjacent_node() == child2);
+        assert(child2->find_top_adjacent_node() == child1);
+        assert(find_top_content_node() == child1);
+        assert(find_bottom_content_node() == child2);
+    }
+
+    void splitv()
+    {
+        if (!splitv_allowed()) { return; }
+
+        layout = VSPLIT;
+
+        Dimension d1(bounds.x, bounds.y, bounds.width / 2, bounds.height);
+        Dimension d2(bounds.x + bounds.width / 2, bounds.y, bounds.width / 2, bounds.height);
+
+        log_info("Split node %s to nodes %s and %s",
+            bounds.debug_string().c_str(),
+            d1.debug_string().c_str(),
+            d2.debug_string().c_str());
+
+        WindowNode<T>* child1 = new WindowNode<T>(d1, this);
+        WindowNode<T>* child2 = new WindowNode<T>(d2, this);
+
+        children.push_back(child1);
+        children.push_back(child2);
+
+        this->content->clear();
+        this->content->show();
+
+        child1->content = this->content;
+        this->content = nullptr;
+
+        log_info("horizontal split complete");
+
+        assert(child1 == get_left_child());
+        assert(child2 == get_right_child());
+        assert(child1->find_right_adjacent_node() == child2);
+        assert(child2->find_left_adjacent_node() == child1);
+        assert(find_left_content_node() == child1);
+        assert(find_right_content_node() == child2);
+    }
 
     void draw()
     {
@@ -61,7 +130,7 @@ struct WindowNode
             content->draw();
         }
 
-        for (auto* child : children) { child->draw(); }
+        for (WindowNode<T>* child : children) { child->draw(); }
     }
 
     void show()
@@ -70,41 +139,41 @@ struct WindowNode
             content->show();
         }
 
-        for (auto* child : children) { child->show(); }
+        for (WindowNode<T>* child : children) { child->show(); }
     }
 
     int count_nodes()
     {
         int ans = 1;
-        for (auto* child : children) { ans += child->count_nodes(); }
+        for (WindowNode<T>* child : children) { ans += child->count_nodes(); }
         return ans;
     }
 
-    WindowNode* get_left_child()
+    WindowNode<T>* get_left_child()
     {
         if (layout == VSPLIT) return children[0];
         return nullptr;
     }
 
-    WindowNode* get_right_child()
+    WindowNode<T>* get_right_child()
     {
         if (layout == VSPLIT) return children[1];
         return nullptr;
     }
 
-    WindowNode* get_top_child()
+    WindowNode<T>* get_top_child()
     {
         if (layout == HSPLIT) return children[0];
         return nullptr;
     }
 
-    WindowNode* get_bottom_child()
+    WindowNode<T>* get_bottom_child()
     {
         if (layout == HSPLIT) return children[1];
         return nullptr;
     }
 
-    WindowNode* find_left_content_node()
+    WindowNode<T>* find_left_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -117,7 +186,7 @@ struct WindowNode
         return children[0]->find_left_content_node();
     }
 
-    WindowNode* find_right_content_node()
+    WindowNode<T>* find_right_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -130,7 +199,7 @@ struct WindowNode
         return children[1]->find_right_content_node();
     }
 
-    WindowNode* find_top_content_node()
+    WindowNode<T>* find_top_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -143,7 +212,7 @@ struct WindowNode
         return children[0]->find_top_content_node();
     }
 
-    WindowNode* find_bottom_content_node()
+    WindowNode<T>* find_bottom_content_node()
     {
         if (layout == NORMAL) {
             return this;
@@ -156,7 +225,7 @@ struct WindowNode
         return children[1]->find_bottom_content_node();
     }
 
-    WindowNode* find_right_adjacent_node()
+    WindowNode<T>* find_right_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -169,7 +238,7 @@ struct WindowNode
         return parent->find_right_adjacent_node();
     }
 
-    WindowNode* find_left_adjacent_node()
+    WindowNode<T>* find_left_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -182,7 +251,7 @@ struct WindowNode
         return parent->find_left_adjacent_node();
     }
 
-    WindowNode* find_top_adjacent_node()
+    WindowNode<T>* find_top_adjacent_node()
     {
         if (!parent) {
             return nullptr;
@@ -195,7 +264,7 @@ struct WindowNode
         return parent->find_top_adjacent_node();
     }
 
-    WindowNode* find_bottom_adjacent_node()
+    WindowNode<T>* find_bottom_adjacent_node()
     {
         if (!parent) {
             return nullptr;
