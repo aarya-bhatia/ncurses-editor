@@ -26,16 +26,16 @@ struct FileView : public Window
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
 
-    void partial_draw_character(Cursor position) override;
-    void partial_draw_line(Cursor position) override;
+    void partial_draw_character(Cursor position);
+    void partial_draw_line(Cursor position);
 
-    void draw() override;
+    void draw();
 
-    void show() override {
+    void show() {
         window.show();
     }
 
-    void resize(Dimension bounds) override;
+    void resize(Dimension bounds);
 
     int get_absolute_y(int rely) const
     {
@@ -72,26 +72,26 @@ struct FileView : public Window
     void draw_cursor();
     void draw_content();
 
-    void focus() override {
+    void focus() {
         focused = true;
     }
 
-    void unfocus() override {
+    void unfocus() {
         focused = false;
     }
 
-    Window* copy(Dimension d) override {
+    Window* copy(Dimension d) {
         return new FileView(file, d);
     }
 
-    File* get_file() override { return file; }
+    File* get_file() { return file; }
 
-    void force_redraw() override { redraw = true; }
+    void force_redraw() { redraw = true; }
 
-    void clear() override {
+    void clear() {
         redraw = true;
         window.clear();
     }
 
-    Dimension get_bounds() override { return bounds; }
+    Dimension get_bounds() { return bounds; }
 };

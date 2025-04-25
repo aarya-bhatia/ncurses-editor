@@ -4,21 +4,18 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 
-Editor::Editor() : id_gen(1)
+Editor::Editor() :
+    bounds(Dimension(0, 0, COLS, LINES)),
+    id_gen(1),
+    wm(bounds)
 {
-    bounds = Dimension(0, 0, COLS, LINES);
     status_window = new StatusWindow(*this, Dimension(0, LINES - 2, COLS, 1));
     console_window = new ConsoleWindow(*this, Dimension(0, LINES - 1, COLS, 1));
-    // file_update_handler = nullptr; //new FileUpdateHandler(window_manager);
-
-    root_node = new WindowNode(bounds, nullptr);
-
-    refresh();
+    // file_update_handler = nullptr;
 }
 
 Editor::~Editor()
 {
-    delete root_node;
     // delete file_update_handler;
     delete status_window;
     delete console_window;
@@ -32,7 +29,7 @@ void Editor::resize()
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
     bounds = Dimension(0, 0, COLS, LINES);
-    root_node->resize(Dimension(0, 0, COLS, LINES - 2));
+    wm.resize(Dimension(0, 0, COLS, LINES - 2));
     status_window->resize(Dimension(0, LINES - 2, COLS, 1));
     console_window->resize(Dimension(0, LINES - 1, COLS, 1));
     refresh();
@@ -44,8 +41,7 @@ void Editor::handle_event(unsigned c)
         log_info("event skipped as quit flag is on.");
         return;
     }
-
-    if (c == CTRL_C)
+    else if (c == CTRL_C)
     {
         quit = true;
         return;
@@ -66,7 +62,7 @@ void Editor::handle_event(unsigned c)
 
 void Editor::command(const std::string& command)
 {
-    auto file = focused_node->get_window()->get_file();
+    auto file = get_focused_file();
     log_debug("Got command: %s", command.c_str());
 
     if (command == "q" || command == "quit")
@@ -85,46 +81,46 @@ void Editor::command(const std::string& command)
             file->save_file();
         }
     }
-    else if (command == "sp" || command == "split")
-    {
-        splith();
-    }
-    else if (command == "vs" || command == "vsplit")
-    {
-        splitv();
-    }
-    else if (command == "right")
-    {
-        focus_right();
-    }
-    else if (command == "left")
-    {
-        focus_left();
-    }
-    else if (command == "top")
-    {
-        focus_top();
-    }
-    else if (command == "bottom")
-    {
-        focus_bottom();
-    }
-    else if (command == "next")
-    {
-        focused_node->tab_window.open_next();
-    }
-    else if (command == "prev")
-    {
-        focused_node->tab_window.open_prev();
-    }
-    else if (command == "close")
-    {
-        focused_node->tab_window.close_tab();
-    }
-    else if (command == "closeall")
-    {
-        focused_node->tab_window.close_all();
-    }
+    // else if (command == "sp" || command == "split")
+    // {
+    //     splith();
+    // }
+    // else if (command == "vs" || command == "vsplit")
+    // {
+    //     splitv();
+    // }
+    // else if (command == "right")
+    // {
+    //     focus_right();
+    // }
+    // else if (command == "left")
+    // {
+    //     focus_left();
+    // }
+    // else if (command == "top")
+    // {
+    //     focus_top();
+    // }
+    // else if (command == "bottom")
+    // {
+    //     focus_bottom();
+    // }
+    // else if (command == "next")
+    // {
+    //     focused_node->tab_window.open_next();
+    // }
+    // else if (command == "prev")
+    // {
+    //     focused_node->tab_window.open_prev();
+    // }
+    // else if (command == "close")
+    // {
+    //     focused_node->tab_window.close_tab();
+    // }
+    // else if (command == "closeall")
+    // {
+    //     focused_node->tab_window.close_all();
+    // }
     else if (is_number(command))
     {
         if (file) {
@@ -139,7 +135,7 @@ void Editor::command(const std::string& command)
 
 void Editor::handle_insert_mode_event(unsigned c)
 {
-    auto file = focused_node->get_window()->get_file();
+    auto file = get_focused_file();
 
     switch (c)
     {
@@ -160,7 +156,7 @@ void Editor::handle_insert_mode_event(unsigned c)
 
 void Editor::handle_normal_mode_two_key_seq()
 {
-    auto file = focused_node->get_window()->get_file();
+    auto file = get_focused_file();
     assert(file);
     assert(file->normal_mode_buffer.size() == 2);
 
@@ -173,7 +169,7 @@ void Editor::handle_normal_mode_two_key_seq()
 
 void Editor::handle_normal_mode_event(unsigned c)
 {
-    auto file = focused_node->get_window()->get_file();
+    auto file = get_focused_file();
 
     if (!file) {
         switch (c) {
@@ -250,6 +246,7 @@ void Editor::handle_normal_mode_event(unsigned c)
 
 void Editor::handle_command_mode_event(unsigned c)
 {
+    // auto file = get_focused_file();
     switch (c)
     {
     case CTRL_ENTER:
@@ -281,26 +278,36 @@ void Editor::handle_command_mode_event(unsigned c)
 
 
 void Editor::show() {
-    root_node->show();
+    wm.show();
     status_window->show();
     console_window->show();
 }
 
 void Editor::draw()
 {
-    root_node->draw();
+    wm.draw();
     status_window->draw();
     console_window->draw();
 }
 
+ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {
+    for (ListNode<EmptyView*>* itr = tabs.head; itr; itr = itr->next) {
+    }
+
+    return nullptr;
+}
+
 void Editor::open(const std::vector<std::string>& filenames)
 {
+    wm.init();
     for (const std::string& filename : filenames)
     {
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
-        // open(file);
-        focused_node->open_tab(file);
+        Tabs* tabs = wm.focused_node.content;
+        ListNode<EmptyView*>* tab_node = find_tab_by_file(tabs, file);
+        if (tab_node) { tabs->open(tab_node); }
+        else { tabs->open(new EmptyView(filename)); }
     }
 }
 

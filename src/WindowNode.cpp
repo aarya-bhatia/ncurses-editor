@@ -1,24 +1,8 @@
 #include "WindowNode.h"
 #include <assert.h>
 
-void WindowNode::resize(Dimension d)
-{
-    for (auto* child : children)
-    {
-        Dimension child_d = d;
-        child_d.width *= d.width / bounds.width;
-        child_d.height *= d.height / bounds.height;
-        child->resize(child_d);
-    }
-
-    if (children.empty()) {
-        tab_window.resize(d);
-    }
-
-    bounds = d;
-}
-
-void WindowNode::splith()
+template<typename T>
+void WindowNode<T>::splith()
 {
     if (!splith_allowed()) { return; }
 
@@ -33,14 +17,9 @@ void WindowNode::splith()
     children.push_back(child1);
     children.push_back(child2);
 
-    // if (!tab_window.focused_tab()) {
-    //     child1->open_tab(tabs.get_file());
-    //     child2->open_tab(tabs.get_file());
-    // }
-
-    tab_window.close_all();
-    tab_window.clear();
-    tab_window.show();
+    child1->content = this->content;
+    child1->resize(child1->bounds);
+    this->content = nullptr;
 
     log_info("horizontal split complete");
 
@@ -52,7 +31,8 @@ void WindowNode::splith()
     assert(find_bottom_content_node() == child2);
 }
 
-void WindowNode::splitv()
+template<typename T>
+void WindowNode<T>::splitv()
 {
     if (!splitv_allowed()) { return; }
 
@@ -67,14 +47,9 @@ void WindowNode::splitv()
     children.push_back(child1);
     children.push_back(child2);
 
-    // if (!tabs.empty()) {
-    //     child1->open_tab(tabs.get_file());
-    //     child2->open_tab(tabs.get_file());
-    // }
-
-    tab_window.close_all();
-    tab_window.clear();
-    tab_window.show();
+    child1->content = this->content;
+    child1->resize(child1->bounds);
+    this->content = nullptr;
 
     log_info("horizontal split complete");
 

@@ -26,58 +26,58 @@ struct BorderedFileView : public Window {
         redraw = true;
     }
 
-    void resize(Dimension d) override
+    void resize(Dimension d)
     {
         init(file_view->file, d);
     }
 
-    void draw() override
+    void draw()
     {
         log_info("Drawing window %s", bounds.debug_string().c_str());
         if (redraw) { frame.draw_border(); redraw = false; }
         file_view->draw();
     }
 
-    void show() override
+    void show()
     {
         frame.show();
         file_view->show();
     }
 
-    void focus()  override {
+    void focus() {
         log_info("focus window %s", bounds.debug_string().c_str());
         file_view->focus();
     }
 
-    void unfocus()  override {
+    void unfocus() {
         file_view->unfocus();
     }
 
-    Window* copy(Dimension d)  override {
+    Window* copy(Dimension d) {
         return new BorderedFileView(file_view->file, d);
     }
 
-    File* get_file() override { return file_view->file; }
+    File* get_file() { return file_view->file; }
 
-    void partial_draw_character(Cursor position)override {
+    void partial_draw_character(Cursor position) {
         file_view->partial_draw_character(position);
     }
 
-    void partial_draw_line(Cursor position) override {
+    void partial_draw_line(Cursor position) {
         file_view->partial_draw_line(position);
     }
 
-    void force_redraw() override {
+    void force_redraw() {
         redraw = true;
         file_view->force_redraw();
     }
 
-    void clear() override {
+    void clear() {
         log_info("Clearing window %s", bounds.debug_string().c_str());
         redraw = true;
         frame.clear();
         file_view->clear();
     }
 
-    Dimension get_bounds() override { return bounds; }
+    Dimension get_bounds() { return bounds; }
 };

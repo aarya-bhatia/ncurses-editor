@@ -24,6 +24,7 @@ void init()
     noecho();              // Don't echo typed characters
     cbreak();              // Disable line buffering (input is available immediately)
     keypad(stdscr, FALSE); // Don't handle special keys to fix escape key delay issue
+    refresh();
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }
@@ -62,6 +63,8 @@ int main(int argc, const char** argv)
 
     Editor editor;
     editor.open(filenames);
+
+    // refresh();
 
     while (!editor.quit)
     {

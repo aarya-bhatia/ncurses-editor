@@ -1,27 +1,21 @@
 #pragma once
 
-#include "Types.h"
 #include <vector>
 #include <list>
 #include "Dimension.h"
-#include "Window.h"
 #include "log.h"
-#include "File.h"
-#include "FileView.h"
-#include "ViewFactory.h"
-#include "TabWindow.h"
 
-struct WindowNode : public IDrawable, IFocusable
+template<typename T>
+struct WindowNode
 {
-    std::vector<WindowNode*> children;
     Dimension bounds;
-    WindowNode* parent = nullptr;
-    bool focused = false;
+    std::vector<WindowNode<T>*> children;
+    WindowNode<T>* parent = nullptr;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
-    TabWindow tab_window;
+    T content;
 
-    WindowNode(Dimension bounds, WindowNode* parent) : bounds(bounds), parent(parent), tab_window(bounds) {}
+    WindowNode(Dimension bounds, WindowNode<T>* parent = nullptr) : bounds(bounds), parent(parent) {}
 
     ~WindowNode()
     {
@@ -30,39 +24,25 @@ struct WindowNode : public IDrawable, IFocusable
         }
     }
 
-    TabWindow& get_tab_window() { return tab_window; }
-
-    Window* get_window() {
-        return tab_window.get_focused_window();
-    }
-
-    Window* open_tab(File* f)
-    {
-        ListNode<Window*>* tab = tab_window.find_tab_by_file(f);
-        if (tab) {
-            return tab->data;
-        }
-        Window* file_window = ViewFactory::new_file_view(f, bounds);
-        tab_window.open(file_window);
-        return file_window;
-    }
-
-    void focus() override {
-        log_debug("focus node %s", bounds.debug_string().c_str());
-        focused = true;
-        tab_window.focus();
-    }
-
-    void unfocus() override {
-        log_debug("unfocus node %s", bounds.debug_string().c_str());
-        focused = false;
-        tab_window.unfocus();
-    }
-
     bool splitv_allowed() { return bounds.width / 2 >= 3; }
     bool splith_allowed() { return bounds.height / 2 >= 3; }
 
-    void resize(Dimension d) override;
+    void resize(Dimension d)
+    {
+        for (auto* child : children)
+        {
+            Dimension child_d = d;
+            child_d.width *= d.width / bounds.width;
+            child_d.height *= d.height / bounds.height;
+            child->resize(child_d);
+        }
+
+        if (children.empty()) {
+            content.resize(d);
+        }
+
+        bounds = d;
+    }
 
     void close_tab();
 
@@ -70,19 +50,21 @@ struct WindowNode : public IDrawable, IFocusable
     void splith();
     void splitv();
 
-    void draw() override
+    void draw()
     {
-        if (children.empty()) {
-            tab_window.draw();
-            return;
+        if (content) {
+            content.draw();
         }
 
         for (auto* child : children) { child->draw(); }
     }
 
-    void show() override
+    void show()
     {
-        if (children.empty()) { tab_window.show(); return; }
+        if (content) {
+            content.show();
+        }
+
         for (auto* child : children) { child->show(); }
     }
 
