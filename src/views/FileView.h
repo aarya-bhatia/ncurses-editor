@@ -73,10 +73,12 @@ struct FileView : public Window
     void draw_content();
 
     void focus() {
+        log_debug("FileView::focus() %s", bounds.debug_string().c_str());
         focused = true;
     }
 
     void unfocus() {
+        log_debug("FileView::unfocus() %s", bounds.debug_string().c_str());
         focused = false;
     }
 

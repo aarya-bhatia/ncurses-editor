@@ -26,6 +26,9 @@ struct WindowNode
         }
     }
 
+    void focus() { if (content)content->focus(); }
+    void unfocus() { if (content)content->unfocus(); }
+
     bool splitv_allowed() { return bounds.width / 2 >= 3; }
     bool splith_allowed() { return bounds.height / 2 >= 3; }
 

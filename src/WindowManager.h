@@ -11,14 +11,23 @@ struct WindowManager {
     WindowManager(Dimension d) : bounds(d) { init(); }
     ~WindowManager() { destroy(); }
 
-    void set_focused_content(T& content) {
+    void set_focused_node_content(T& content) {
+        if (focused_node->content == content) { return; }
+        if (focused_node->content) { focused_node->content->unfocus(); }
         focused_node->content = content;
         if (content->bounds != focused_node->bounds) {
             focused_node->resize(focused_node->bounds);
         }
+        focused_node->content->focus();
     }
 
-    T& get_focused_content() {
+    void set_focused_node(WindowNode<T>* node) {
+        focused_node->unfocus();
+        focused_node = node;
+        focused_node->focus();
+    }
+
+    T& get_focused_node_content() {
         return focused_node->content;
     }
 
@@ -31,7 +40,7 @@ struct WindowManager {
     }
 
     void resize(Dimension d) {
-        if(bounds == d) { return; }
+        if (bounds == d) { return; }
         bounds = d;
         root_node->resize(d);
     }
@@ -63,12 +72,6 @@ struct WindowManager {
         assert(focused_node->layout == WindowNode<T>::Layout::VSPLIT);
         set_current_node(focused_node->get_left_child());
         return true;
-    }
-
-    void set_current_node(WindowNode<T>* node) {
-        focused_node->unfocus();
-        focused_node = node;
-        focused_node->focus();
     }
 
     bool focus_right() {

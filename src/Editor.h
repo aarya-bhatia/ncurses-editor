@@ -15,35 +15,31 @@
 
 struct Editor
 {
+    Mode mode = NORMAL_MODE;
+    bool quit = false;
+
     Dimension bounds;
-
     WindowManager<FileView*> window_manager;
-
-    // FileUpdateHandler* file_update_handler;
-    StatusWindow* status_window;
-    ConsoleWindow* console_window;
-
+    StatusWindow* status_window = nullptr;
+    ConsoleWindow* console_window = nullptr;
     std::list<File*> files;
-
     std::string mode_line = "";
     std::string statusline = "";
 
+    // FileUpdateHandler* file_update_handler;
     // std::unordered_map<File*, std::vector<WindowNode*>> map_file_to_window_node;
     // std::unordered_map<File*, std::vector<Window*>> map_file_to_window;
-
-    Mode mode = NORMAL_MODE;
-    bool quit = false;
 
     Editor(Dimension d);
     ~Editor();
 
     File* get_focused_file() {
-        FileView* view = window_manager.get_focused_content();
-        return view->file;
+        FileView* view = window_manager.get_focused_node_content();
+        return view ? view->file : nullptr;
     }
 
     Window* get_focused_window() {
-        return window_manager.get_focused_content();
+        return window_manager.get_focused_node_content();
     }
 
     void command(const std::string& command);

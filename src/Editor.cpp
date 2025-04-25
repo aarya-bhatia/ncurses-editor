@@ -20,11 +20,11 @@ void init(Editor& editor, Dimension d)
         editor.console_window = new ConsoleWindow(editor, Dimension(d.x, d.y + d.height - 1, d.width, 1));
     }
 
-    editor.window_manager.resize(d);
+    editor.window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
     editor.window_manager.init();
 }
 
-Editor::Editor(Dimension d) : bounds(d), window_manager(bounds)
+Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
     init(*this, d);
     // file_update_handler = nullptr;
@@ -329,18 +329,19 @@ WindowNode<FileView*>* find_existing_file_window(WindowManager<FileView*>& windo
 
 void Editor::open(const std::vector<std::string>& filenames)
 {
-    window_manager.init();
-
     for (const std::string& filename : filenames)
     {
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
 
-        WindowNode<FileView *> *window_node = find_existing_file_window(window_manager, file);
-        if(!window_node) {
-            FileView *view = new FileView(file, window_manager.focused_node->bounds);
-            window_manager.set_focused_content(view);
+        WindowNode<FileView*>* window_node = nullptr; //find_existing_file_window(window_manager, file);
+        if (!window_node) {
+            FileView* view = new FileView(file, window_manager.focused_node->bounds);
+            window_manager.set_focused_node_content(view);
             window_node = window_manager.focused_node;
+        }
+        else {
+            window_manager.set_focused_node(window_node);
         }
 
     }
