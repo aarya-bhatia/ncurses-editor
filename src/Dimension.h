@@ -1,6 +1,20 @@
 #pragma once
 #include <string>
 
+struct Point
+{
+    unsigned x = 0;
+    unsigned y = 0;
+
+    Point(unsigned _x, unsigned _y) : x(_x), y(_y) {}
+
+    float distance_squared(Point& other) const {
+        float dy = other.y - y;
+        float dx = other.x - x;
+        return dy * dy - dx * dx;
+    }
+};
+
 struct Dimension
 {
     unsigned int x;
@@ -43,5 +57,9 @@ struct Dimension
             std::to_string(y) + "x" +
             std::to_string(width) + "x" +
             std::to_string(height);
+    }
+
+    Point center() const {
+        return Point(x + (width - x) / 2, y + (height - y) / 2);
     }
 };
