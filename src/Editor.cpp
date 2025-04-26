@@ -300,6 +300,13 @@ void Editor::draw()
     window_manager.draw();
     status_window->draw();
     console_window->draw();
+
+    if (!window_manager.get_focused_node_content()) {
+        auto node = window_manager.focused_node;
+        int y = node->bounds.y;
+        int x = node->bounds.x;
+        move(y, x);
+    }
 }
 
 // ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {

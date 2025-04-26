@@ -79,8 +79,9 @@ void FileView::draw() {
     if (focused && scroll_to_ensure_cursor_visible()) {
         log_debug("scrolling to ensure cursor is visible");
         redraw = true;
-    } else {
-        log_debug("not scrolling as cursor is visible");
+    }
+    else {
+        // log_debug("not scrolling as cursor is visible");
     }
 
     draw_content();

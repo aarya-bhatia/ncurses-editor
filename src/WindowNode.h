@@ -145,7 +145,7 @@ struct WindowNode
         }
 
 
-        log_info("horizontal split complete");
+        log_info("vertical split complete");
 
         assert(child1 == get_left_child());
         assert(child2 == get_right_child());
@@ -219,28 +219,24 @@ struct WindowNode
 
     WindowNode<T>* find_right_content_node()
     {
-        if (layout == NORMAL) {
-            return this;
+        switch (layout)
+        {
+        case NORMAL: return this;
+        case HSPLIT: get_right_child()->find_right_content_node();
+        case VSPLIT: find_nearest_child(orig_content_node)
+        default: return nullptr;
         }
-
-        if (layout != VSPLIT) {
-            return children[0]->find_right_content_node();
-        }
-
-        return children[1]->find_right_content_node();
     }
 
-    WindowNode<T>* find_top_content_node()
+    WindowNode<T>* find_top_content_node(WindowNode<T>* orig_content_node = nullptr)
     {
-        if (layout == NORMAL) {
-            return this;
+        switch (layout)
+        {
+        case NORMAL: return this;
+        case HSPLIT: find_nearest_child(orig_content_node)->find_top_content_node(orig_content_node);
+        case VSPLIT: get_top_child()->find_top_content_node();
+        default: return nullptr;
         }
-
-        if (layout != HSPLIT) {
-            return children[0]->find_top_content_node();
-        }
-
-        return children[0]->find_top_content_node();
     }
 
     WindowNode<T>* find_bottom_content_node()
