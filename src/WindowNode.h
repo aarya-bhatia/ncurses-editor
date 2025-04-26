@@ -29,8 +29,33 @@ struct WindowNode
     void focus() { if (content)content->focus(); }
     void unfocus() { if (content)content->unfocus(); }
 
-    bool splitv_allowed() { return bounds.width / 2 >= 3; }
-    bool splith_allowed() { return bounds.height / 2 >= 3; }
+    bool splitv_allowed(int min_width = 3) {
+        if (bounds.width / 2 < min_width) {
+            return false;
+        }
+
+        for (WindowNode<T>* child : children) {
+            if (!child->splitv_allowed()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool splith_allowed(int min_height = 3) {
+        if (bounds.height / 2 < min_height) {
+            return false;
+        }
+
+        for (WindowNode<T>* child : children) {
+            if (!child->splith_allowed()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     void resize(Dimension d)
     {
