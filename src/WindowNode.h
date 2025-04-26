@@ -72,11 +72,14 @@ struct WindowNode
         children.push_back(child1);
         children.push_back(child2);
 
-        this->content->clear();
-        this->content->show();
+        if (this->content) {
+            this->content->clear();
+            this->content->show();
 
-        child1->content = this->content;
-        this->content = nullptr;
+            child1->content = this->content;
+            this->content = nullptr;
+        }
+
 
         log_info("horizontal split complete");
 
@@ -108,11 +111,14 @@ struct WindowNode
         children.push_back(child1);
         children.push_back(child2);
 
-        this->content->clear();
-        this->content->show();
+        if (this->content) {
+            this->content->clear();
+            this->content->show();
 
-        child1->content = this->content;
-        this->content = nullptr;
+            child1->content = this->content;
+            this->content = nullptr;
+        }
+
 
         log_info("horizontal split complete");
 
