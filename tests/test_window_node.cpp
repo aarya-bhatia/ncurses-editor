@@ -160,14 +160,3 @@ TEST_CASE("multiple splits", MY_TEST_SUITE) {
     REQUIRE(bottom_right->find_bottom_adjacent_node() == nullptr);
     REQUIRE(bottom_right->find_top_adjacent_node() == top_right);
 }
-
-TEST_CASE("check focus is applied properly", MY_TEST_SUITE) {
-}
-
-TEST_CASE("check resize works properly", MY_TEST_SUITE) {
-
-}
-
-TEST_CASE("check navigation in node tree works", MY_TEST_SUITE) {
-
-}

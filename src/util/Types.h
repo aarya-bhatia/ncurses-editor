@@ -3,12 +3,6 @@
 #include "Dimension.h"
 #include "Cursor.h"
 
-struct IFocusable {
-    virtual ~IFocusable() = default;
-    virtual void focus() = 0;
-    virtual void unfocus() = 0;
-};
-
 struct IDrawable {
     virtual ~IDrawable() = default;
     virtual void draw() = 0;
