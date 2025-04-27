@@ -100,7 +100,7 @@ void Editor::command(const std::string& command)
         window_manager.splith();
         WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
-        refresh();
+        // refresh();
     }
     else if (command == "vs" || command == "vsplit")
     {
@@ -108,7 +108,7 @@ void Editor::command(const std::string& command)
         window_manager.splitv();
         WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
-        refresh();
+        // refresh();
     }
     else if (command == "right")
     {

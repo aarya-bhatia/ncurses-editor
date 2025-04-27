@@ -116,7 +116,7 @@ struct WindowNode
         children.push_back(child2);
 
         child1->content = this->content;
-        child2->content = nullptr;
+        // child2->content = this->content;
         this->content = nullptr;
 
         resize(bounds);
@@ -143,7 +143,7 @@ struct WindowNode
         children.push_back(child2);
 
         child1->content = this->content;
-        child2->content = nullptr;
+        // child2->content = this->content;
         this->content = nullptr;
 
         resize(bounds);
@@ -165,6 +165,15 @@ struct WindowNode
         }
 
         for (WindowNode<T>* child : children) { child->show(); }
+    }
+
+    void redraw()
+    {
+        if (content) {
+            content->redraw();
+        }
+
+        for (WindowNode<T>* child : children) { child->redraw(); }
     }
 
     int count_nodes()

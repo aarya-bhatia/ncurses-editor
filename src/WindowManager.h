@@ -28,12 +28,16 @@ struct WindowManager {
         return focused_node->content;
     }
 
+    void redraw() {
+        root_node->redraw();
+    }
+
     void draw() {
-        focused_node->draw();
+        root_node->draw();
     }
 
     void show() {
-        focused_node->show();
+        root_node->show();
     }
 
     void resize(Dimension d) {

@@ -1,22 +1,13 @@
 #pragma once
 #include "Window.h"
 
-struct ITestWindow
-{
-    virtual ~ITestWindow() = default;
-    virtual void resize(Dimension d) {}
-    virtual void draw() {}
-    virtual void show() {}
-    virtual void clear() {}
-    virtual void focus() {}
-    virtual void unfocus() {}
-};
-
-struct TestWindow : public ITestWindow
+struct TestWindow
 {
     int id;
+    Dimension bounds;
 
-    void resize(Dimension d) {}
+    Dimension get_bounds() { return bounds; }
+    void resize(Dimension d) { bounds = d; }
     void draw() {}
     void show() {}
     void clear() {}
