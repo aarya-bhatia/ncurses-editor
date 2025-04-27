@@ -62,7 +62,6 @@ struct WindowManager {
         if (!focused_node->splith_allowed()) { return false; }
         focused_node->splith();
         assert(focused_node->layout == WindowNode<T>::Layout::HSPLIT);
-        focused_node->resize(bounds);
         set_focused_node(focused_node->get_top_child());
         return true;
     }
@@ -71,7 +70,6 @@ struct WindowManager {
         if (!focused_node->splitv_allowed()) { return false; }
         focused_node->splitv();
         assert(focused_node->layout == WindowNode<T>::Layout::VSPLIT);
-        focused_node->resize(bounds);
         set_focused_node(focused_node->get_left_child());
         return true;
     }

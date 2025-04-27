@@ -17,7 +17,7 @@ MAIN_OBJ=$(OBJDIR)/$(MAIN_FILE).o
 TEST_SRC_FILES=$(shell find tests -type f -name "*.cpp")
 TEST_OBJS=$(TEST_SRC_FILES:%=$(OBJDIR)/%.o)
 
-all: main
+all: main test
 
 main: $(BINDIR)/main
 test: $(BINDIR)/test

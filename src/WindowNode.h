@@ -99,13 +99,11 @@ struct WindowNode
 
         if (this->content) {
             this->content->clear();
-            this->content->show();
-
-            child1->content = this->content;
-            this->content = nullptr;
+            this->content->resize(d1);
         }
 
-        log_info("horizontal split complete");
+        child1->content = this->content;
+        this->content = nullptr;
     }
 
     void splitv()
@@ -130,14 +128,11 @@ struct WindowNode
 
         if (this->content) {
             this->content->clear();
-            this->content->show();
-
-            child1->content = this->content;
-            this->content = nullptr;
+            this->content->resize(d1);
         }
 
-
-        log_info("vertical split complete");
+        child1->content = this->content;
+        this->content = nullptr;
     }
 
     void draw()

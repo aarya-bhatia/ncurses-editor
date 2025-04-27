@@ -57,15 +57,13 @@ TEST_CASE("check vertical split", MY_TEST_SUITE) {
 
 
 TEST_CASE("check content is transferred to first child when split", MY_TEST_SUITE) {
-    WindowNode<TestWindow*>* node = new WindowNode<TestWindow*>(Dimension(0, 0, 100, 100));
+    WindowNode<TestWindow*> node(Dimension(0, 0, 100, 100));
     TestWindow* content = new TestWindow();
-    node->content = content;
-    node->splith();
-    REQUIRE(node->children[0]->content == content);
-    REQUIRE(node->children[1]->content == nullptr);
-    REQUIRE(node->content == nullptr);
-
-    delete node;
+    node.content = content;
+    node.splith();
+    REQUIRE(node.children[0]->content == content);
+    REQUIRE(node.children[1]->content == nullptr);
+    REQUIRE(node.content == nullptr);
 }
 
 TEST_CASE("check split allowed works", MY_TEST_SUITE) {
