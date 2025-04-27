@@ -15,7 +15,7 @@ struct WindowManager {
         if (focused_node->content == content) { return; }
         if (focused_node->content) { focused_node->content->unfocus(); }
         focused_node->content = content;
-        if (content->bounds != focused_node->bounds) {
+        if (content->get_bounds() != focused_node->bounds) {
             focused_node->resize(focused_node->bounds);
         }
         focused_node->content->focus();

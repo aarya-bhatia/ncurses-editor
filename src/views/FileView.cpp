@@ -51,7 +51,7 @@ void FileView::draw_content() {
         return;
     }
 
-    if (!redraw) { return; }
+    // TODO: uncomment this if (!redraw) { return; }
     redraw_count += 1;
 
     window.clear();

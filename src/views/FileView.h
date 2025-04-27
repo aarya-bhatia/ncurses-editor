@@ -22,6 +22,8 @@ struct FileView : public Window
 
     FileView(File* file, Dimension bounds);
 
+    Dimension get_bounds() { return bounds; }
+
     bool is_visible(int y, int x) const {
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
@@ -70,6 +72,7 @@ struct FileView : public Window
     bool scroll_to_ensure_cursor_visible();
 
     void draw_cursor();
+
     void draw_content();
 
     void focus() {
@@ -94,6 +97,4 @@ struct FileView : public Window
         redraw = true;
         window.clear();
     }
-
-    Dimension get_bounds() { return bounds; }
 };

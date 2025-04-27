@@ -4,6 +4,7 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 #include "FileFactory.h"
+#include "ViewFactory.h"
 
 void init(Editor& editor, Dimension d)
 {
@@ -341,9 +342,10 @@ void Editor::open(const std::vector<std::string>& filenames)
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
 
-        WindowNode<FileView*>* window_node = nullptr; //find_existing_file_window(window_manager, file);
+        WindowNode<Window*>* window_node = nullptr; //find_existing_file_window(window_manager, file);
         if (!window_node) {
-            FileView* view = new FileView(file, window_manager.focused_node->bounds);
+            // Window* view = new FileView(file, window_manager.focused_node->bounds);
+            Window* view = ViewFactory::new_file_view(file, window_manager.focused_node->bounds);
             window_manager.set_focused_node_content(view);
             window_node = window_manager.focused_node;
         }

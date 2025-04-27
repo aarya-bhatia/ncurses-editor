@@ -19,7 +19,7 @@ struct Editor
     bool quit = false;
 
     Dimension bounds;
-    WindowManager<FileView*> window_manager;
+    WindowManager<Window*> window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
     std::list<File*> files;
@@ -34,8 +34,8 @@ struct Editor
     ~Editor();
 
     File* get_focused_file() {
-        FileView* view = window_manager.get_focused_node_content();
-        return view ? view->file : nullptr;
+        Window* view = window_manager.get_focused_node_content();
+        return view ? view->get_file() : nullptr;
     }
 
     Window* get_focused_window() {
