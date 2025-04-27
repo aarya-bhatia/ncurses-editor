@@ -86,7 +86,7 @@ TEST_CASE("check split allowed works", MY_TEST_SUITE) {
     REQUIRE(!node.splitv_allowed());
 }
 
-TEST_CASE("check focus nodes when multiple splits", MY_TEST_SUITE) {
+TEST_CASE("multiple splits", MY_TEST_SUITE) {
     WindowNode<TestWindow*> root(Dimension(0, 0, 100, 100));
     root.splith();
     auto top_node = root.children[0];
@@ -113,6 +113,32 @@ TEST_CASE("check focus nodes when multiple splits", MY_TEST_SUITE) {
     REQUIRE(top_right->bounds == Dimension(50, 0, 50, 50));
     REQUIRE(bottom_left->bounds == Dimension(0, 50, 50, 50));
     REQUIRE(bottom_right->bounds == Dimension(50, 50, 50, 50));
+
+    REQUIRE(root.bounds.center() == Point(50, 50));
+    REQUIRE(top_left->bounds.center() == Point(25, 25));
+    REQUIRE(top_right->bounds.center() == Point(75, 25));
+    REQUIRE(bottom_left->bounds.center() == Point(25, 75));
+    REQUIRE(bottom_right->bounds.center() == Point(75, 75));
+
+    REQUIRE(top_node->find_nearest_child(top_left) == top_left);
+    REQUIRE(top_node->find_nearest_child(top_right) == top_right);
+    REQUIRE(top_node->find_nearest_child(bottom_left) == top_left);
+    REQUIRE(top_node->find_nearest_child(bottom_right) == top_right);
+
+    REQUIRE(bottom_node->find_nearest_child(top_left) == bottom_left);
+    REQUIRE(bottom_node->find_nearest_child(top_right) == bottom_right);
+    REQUIRE(bottom_node->find_nearest_child(bottom_left) == bottom_left);
+    REQUIRE(bottom_node->find_nearest_child(bottom_right) == bottom_right);
+
+    REQUIRE(top_node->find_bottom_content_node(bottom_left) == top_left);
+    REQUIRE(top_node->find_bottom_content_node(bottom_right) == top_right);
+    REQUIRE(bottom_node->find_top_content_node(top_left) == bottom_left);
+    REQUIRE(bottom_node->find_top_content_node(top_right) == bottom_right);
+
+    REQUIRE(top_node->find_left_content_node(nullptr) == top_left);
+    REQUIRE(top_node->find_right_content_node(nullptr) == top_right);
+    REQUIRE(bottom_node->find_left_content_node(nullptr) == bottom_left);
+    REQUIRE(bottom_node->find_right_content_node(nullptr) == bottom_right);
 
     REQUIRE(top_left->find_right_adjacent_node() == top_right);
     REQUIRE(top_left->find_left_adjacent_node() == nullptr);
