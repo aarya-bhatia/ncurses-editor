@@ -8,7 +8,7 @@ FileView::FileView(File* file, Dimension bounds) : bounds(bounds), file(file)
     this->scroll.dy = 0;
 
     window = NcursesWindow(bounds);
-    redraw = true;
+    should_redraw = true;
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
@@ -72,13 +72,13 @@ void FileView::draw_content() {
         }
     }
 
-    redraw = false;
+    should_redraw = false;
 }
 
 void FileView::draw() {
     if (focused && scroll_to_ensure_cursor_visible()) {
         log_debug("scrolling to ensure cursor is visible");
-        redraw = true;
+        should_redraw = true;
     }
     else {
         // log_debug("not scrolling as cursor is visible");
@@ -153,5 +153,5 @@ void FileView::draw_cursor()
 
 void FileView::resize(Dimension bounds) {
     window = NcursesWindow(bounds);
-    redraw = true;
+    should_redraw = true;
 }

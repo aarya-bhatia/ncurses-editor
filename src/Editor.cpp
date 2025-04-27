@@ -96,11 +96,19 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
+        clear(); refresh();
         window_manager.splith();
+        WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
+        sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
+        refresh();
     }
     else if (command == "vs" || command == "vsplit")
     {
+        clear(); refresh();
         window_manager.splitv();
+        WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
+        sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
+        refresh();
     }
     else if (command == "right")
     {
@@ -343,14 +351,14 @@ void Editor::open(const std::vector<std::string>& filenames)
         if (!file) { file = add_file(filename); }
 
         WindowNode<Window*>* window_node = nullptr; //find_existing_file_window(window_manager, file);
-        if (!window_node) {
-            // Window* view = new FileView(file, window_manager.focused_node->bounds);
-            Window* view = ViewFactory::new_file_view(file, window_manager.focused_node->bounds);
-            window_manager.set_focused_node_content(view);
-            window_node = window_manager.focused_node;
+        if (window_node) {
+            // switch to existing node
+            window_manager.set_focused_node(window_node);
         }
         else {
-            window_manager.set_focused_node(window_node);
+            // update content in current node
+            Window* view = ViewFactory::new_file_view(file, window_manager.focused_node->bounds);
+            window_manager.set_focused_node_content(view);
         }
 
     }

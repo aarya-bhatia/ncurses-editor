@@ -26,6 +26,24 @@ struct WindowNode
         }
     }
 
+    WindowNode<T>* sibling() const {
+        if (!parent) {
+            return nullptr;
+        }
+
+        if (parent->children[0] == this) return parent->children[1];
+        if (parent->children[1] == this) return parent->children[0];
+
+        return nullptr;
+    }
+
+    void set_content(T _content) {
+        content = _content;
+        if (_content->get_bounds() != bounds) {
+            _content->resize(bounds);
+        }
+    }
+
     void focus() { if (content)content->focus(); }
     void unfocus() { if (content)content->unfocus(); }
 
@@ -97,13 +115,11 @@ struct WindowNode
         children.push_back(child1);
         children.push_back(child2);
 
-        if (this->content) {
-            this->content->clear();
-            this->content->resize(d1);
-        }
-
         child1->content = this->content;
+        child2->content = nullptr;
         this->content = nullptr;
+
+        resize(bounds);
     }
 
     void splitv()
@@ -126,13 +142,11 @@ struct WindowNode
         children.push_back(child1);
         children.push_back(child2);
 
-        if (this->content) {
-            this->content->clear();
-            this->content->resize(d1);
-        }
-
         child1->content = this->content;
+        child2->content = nullptr;
         this->content = nullptr;
+
+        resize(bounds);
     }
 
     void draw()

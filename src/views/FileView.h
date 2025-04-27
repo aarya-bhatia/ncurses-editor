@@ -12,7 +12,7 @@ struct FileView : public Window
     File* file = nullptr;
     NcursesWindow window;
     Scroll scroll;
-    bool redraw = true;
+    bool should_redraw = true;
     bool focused = false;
 
     int save_cursor_y = 0;
@@ -27,6 +27,8 @@ struct FileView : public Window
     bool is_visible(int y, int x) const {
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
+
+    void redraw() { should_redraw = true; }
 
     void partial_draw_character(Cursor position);
     void partial_draw_line(Cursor position);
@@ -91,10 +93,10 @@ struct FileView : public Window
 
     File* get_file() { return file; }
 
-    void force_redraw() { redraw = true; }
+    void force_redraw() { should_redraw = true; }
 
     void clear() {
-        redraw = true;
+        should_redraw = true;
         window.clear();
     }
 };

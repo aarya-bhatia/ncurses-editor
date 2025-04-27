@@ -15,7 +15,7 @@ struct Window
 
     virtual void draw() = 0;
     virtual void show() = 0;
-    virtual void clear() = 0;
+    virtual void redraw() = 0;
     virtual void resize(Dimension d) = 0;
 };
 
