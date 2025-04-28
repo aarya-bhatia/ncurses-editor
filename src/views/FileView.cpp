@@ -121,12 +121,10 @@ void FileView::partial_draw_line(Cursor position)
 
 void FileView::draw_cursor()
 {
-    int cy = get_display_y(file->cursor.y);
-    int cx = get_display_x(file->cursor.x);
-    assert(cy >= 0 && cy < height());
-    assert(cx >= 0 && cx < width());
+    int cy = bounds.y + file->cursor.y - scroll.dy;
+    int cx = bounds.x + file->cursor.x - scroll.dx;
     // log_debug("drawing cursor at Ln %d Col %d", cy, cx);
-    move(get_absolute_y(cy), get_absolute_x(cx));
+    move(cy, cx);
 }
 
 // void FileView::on_focus()
@@ -151,7 +149,8 @@ void FileView::draw_cursor()
 //     save_cursor_y = file->cursor.y;
 // }
 
-void FileView::resize(Dimension bounds) {
-    window = NcursesWindow(bounds);
+void FileView::resize(Dimension d) {
+    bounds = d;
+    window = NcursesWindow(d);
     should_redraw = true;
 }
