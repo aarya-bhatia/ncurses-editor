@@ -100,7 +100,7 @@ void Editor::command(const std::string& command)
         clear(); refresh();
         window_manager.splith();
         WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
-        sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
+        sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
         // refresh();
     }
@@ -109,7 +109,7 @@ void Editor::command(const std::string& command)
         clear(); refresh();
         window_manager.splitv();
         WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
-        sibling->set_content(ViewFactory::new_file_view(nullptr, sibling->bounds));
+        sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
         // refresh();
     }
