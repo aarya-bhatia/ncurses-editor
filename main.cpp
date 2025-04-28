@@ -34,6 +34,7 @@ void init_screen()
     endwin();  // Reset ncurses
     refresh(); // Refresh stdscr
     clear();   // Clear the screen
+    refresh(); // Refresh stdscr
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }

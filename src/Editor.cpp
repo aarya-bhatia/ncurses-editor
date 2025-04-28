@@ -46,6 +46,7 @@ void Editor::resize(Dimension d)
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
     init(*this, d);
+    window_manager.redraw();
 }
 
 void Editor::handle_event(unsigned c)
