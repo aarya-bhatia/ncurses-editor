@@ -2,8 +2,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <ncurses.h>
-#include "WindowManager.h"
-#include "editor.h"
+#include "Editor.h"
 #include <memory>
 
 bool resized = false;
@@ -25,6 +24,7 @@ void init()
     noecho();              // Don't echo typed characters
     cbreak();              // Disable line buffering (input is available immediately)
     keypad(stdscr, FALSE); // Don't handle special keys to fix escape key delay issue
+    refresh();
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }
@@ -34,6 +34,7 @@ void init_screen()
     endwin();  // Reset ncurses
     refresh(); // Refresh stdscr
     clear();   // Clear the screen
+    refresh(); // Refresh stdscr
 
     log_info("screen size: %dx%d", getmaxx(stdscr), getmaxy(stdscr));
 }
@@ -61,29 +62,32 @@ int main(int argc, const char** argv)
         filenames.push_back(std::string(*arg));
     }
 
-    Editor editor;
+    Editor editor(Dimension(0, 0, COLS, LINES));
     editor.open(filenames);
 
     while (!editor.quit)
     {
         if (resized)
         {
-            resized = false;
             log_info("window resize detected!");
+            resized = false;
             init_screen();
-            editor.resize();
+            editor.resize(Dimension(0, 0, COLS, LINES));
             continue;
         }
 
+        // log_debug("drawing editor");
         editor.draw();
         editor.show();
 
+        // log_debug("getch");
         int ch = getch();
 
         if (ch == CTRL_C) {
             break;
         }
 
+        // log_debug("handling event");
         editor.handle_event(ch);
     }
 

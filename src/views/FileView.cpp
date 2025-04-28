@@ -8,7 +8,7 @@ FileView::FileView(File* file, Dimension bounds) : bounds(bounds), file(file)
     this->scroll.dy = 0;
 
     window = NcursesWindow(bounds);
-    redraw = true;
+    should_redraw = true;
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
@@ -51,7 +51,7 @@ void FileView::draw_content() {
         return;
     }
 
-    if (!redraw) { return; }
+    // TODO: uncomment this if (!redraw) { return; }
     redraw_count += 1;
 
     window.clear();
@@ -72,12 +72,16 @@ void FileView::draw_content() {
         }
     }
 
-    redraw = false;
+    should_redraw = false;
 }
 
 void FileView::draw() {
     if (focused && scroll_to_ensure_cursor_visible()) {
-        redraw = true;
+        log_debug("scrolling to ensure cursor is visible");
+        should_redraw = true;
+    }
+    else {
+        // log_debug("not scrolling as cursor is visible");
     }
 
     draw_content();
@@ -117,37 +121,38 @@ void FileView::partial_draw_line(Cursor position)
 
 void FileView::draw_cursor()
 {
-    int cy = get_display_y(file->cursor.y);
-    int cx = get_display_x(file->cursor.x);
-    assert(cy >= 0 && cy < height());
-    assert(cx >= 0 && cx < width());
+    int cy = bounds.y + file->cursor.y - scroll.dy;
+    int cx = bounds.x + file->cursor.x - scroll.dx;
     // log_debug("drawing cursor at Ln %d Col %d", cy, cx);
-    move(get_absolute_y(cy), get_absolute_x(cx));
+    move(cy, cx);
 }
 
-// void FileView::on_focus()
-// {
-//     ContentWindow::on_focus();
+void FileView::focus()
+{
+    log_debug("FileView::focus() %s", bounds.debug_string().c_str());
+    focused = true;
 
-//     if (save_cursor_y < file->count_lines())
-//     {
-//         file->goto_line(save_cursor_y);
-//     }
+    if (save_cursor_y < file->count_lines())
+    {
+        file->goto_line(save_cursor_y);
+    }
 
-//     if (save_cursor_x < file->cursor.line->size()) {
-//         file->goto_column(save_cursor_x);
-//     }
-// }
+    if (save_cursor_x < file->cursor.line->size()) {
+        file->goto_column(save_cursor_x);
+    }
+}
 
-// void FileView::on_unfocus()
-// {
-//     ContentWindow::on_unfocus();
+void FileView::unfocus()
+{
+    log_debug("FileView::unfocus() %s", bounds.debug_string().c_str());
+    focused = false;
 
-//     save_cursor_x = file->cursor.x;
-//     save_cursor_y = file->cursor.y;
-// }
+    save_cursor_x = file->cursor.x;
+    save_cursor_y = file->cursor.y;
+}
 
-void FileView::resize(Dimension bounds) {
-    window = NcursesWindow(bounds);
-    redraw = true;
+void FileView::resize(Dimension d) {
+    bounds = d;
+    window = NcursesWindow(d);
+    should_redraw = true;
 }

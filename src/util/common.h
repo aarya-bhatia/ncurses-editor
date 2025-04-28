@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <list>
 #include <string>
+#include <map>
 
 #define CTRL_A 1
 #define CTRL_B 2
@@ -54,6 +55,19 @@ enum
     C_ALPHANUM = 0x400,
     C_SPECIAL = 0x800,
     C_CONTROL = 0x1000
+};
+
+enum Mode
+{
+    NORMAL_MODE,
+    INSERT_MODE,
+    COMMAND_MODE
+};
+
+static std::map<Mode, const char*> mode_names = {
+    {NORMAL_MODE, "NORMAL"},
+    {COMMAND_MODE, "COMMAND"},
+    {INSERT_MODE, "INSERT"},
 };
 
 int char_type(char c);

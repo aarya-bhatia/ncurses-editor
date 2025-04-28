@@ -14,7 +14,7 @@
             "name": "Debug Tests",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/test_window_manager",
+            "program": "${workspaceFolder}/bin/test",
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build Tests",
             "MIMode": "lldb"

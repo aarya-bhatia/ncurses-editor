@@ -37,25 +37,25 @@ struct NcursesWindow : public Painter {
 
     void show()
     {
-        if(window) {
+        if (window) {
             wrefresh(window.get());
         }
     }
 
-    void draw_line(int y, const std::string& content) override;
-    void draw_till_eol(int y, int x, const std::string& content) override;
-    void draw_character(int y, int x, char c) override;
-    void clear() override;
-    void clear_line(int y) override;
-    void clear_till_eol(int y, int x) override;
-    void move(int y, int x) override;
+    void draw_line(int y, const std::string& content);
+    void draw_till_eol(int y, int x, const std::string& content);
+    void draw_character(int y, int x, char c);
+    void clear();
+    void clear_line(int y);
+    void clear_till_eol(int y, int x);
+    void move(int y, int x);
 
-    void move_cursor(int y, int x) override {
+    void move_cursor(int y, int x) {
         move(y, x);
     }
 
     void draw_border() {
-        if(window) {
+        if (window) {
             box(window.get(), '|', '-');
         }
     }

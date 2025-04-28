@@ -1,119 +1,117 @@
 #pragma once
 
-#include "Types.h"
-#include "WMNode.h"
+#include "WindowNode.h"
 #include "Window.h"
-#include <assert.h>
 
-struct WindowManager
-{
-    WMNode *root_node = nullptr;
-    WMNode *current_node = nullptr;
+struct WindowManager {
+    WindowNode* root_node = nullptr;
+    WindowNode* focused_node = nullptr;
     Dimension bounds;
 
-    std::unordered_map<File*, std::vector<Window *>> file_views;
+    WindowManager(Dimension d) : bounds(d) { init(); }
+    ~WindowManager() { destroy(); }
 
-    WindowManager(Dimension d): bounds(d){ init(); }
-    ~WindowManager() { if(root_node) delete root_node;}
+    void set_focused_node_content(Window* content) {
+        if (focused_node->content == content) { return; }
+        if (focused_node->content) { focused_node->content->unfocus(); }
+        focused_node->set_content(content);
+        focused_node->content->focus();
+    }
 
-    void init()
-    {
-        if(!root_node) {
-            root_node = new WMNode(bounds, nullptr);
-            focus_on(root_node);
+    void set_focused_node(WindowNode* node) {
+        focused_node->unfocus();
+        focused_node = node;
+        focused_node->focus();
+    }
+
+    Window* get_focused_node_content() {
+        return focused_node->content;
+    }
+
+    void redraw() {
+        root_node->redraw();
+    }
+
+    void draw() {
+        root_node->draw();
+    }
+
+    void show() {
+        root_node->show();
+    }
+
+    void resize(Dimension d) {
+        if (bounds == d) { return; }
+        bounds = d;
+        root_node->resize(d);
+    }
+
+    void destroy() {
+        delete root_node;
+        focused_node = root_node = nullptr;
+    }
+
+    void init() {
+        if (focused_node) { return; }
+        log_debug("init window manager");
+        root_node = new WindowNode(bounds, nullptr);
+        root_node->bounds = bounds;
+        focused_node = root_node;
+    }
+
+    bool splith() {
+        if (!focused_node->splith_allowed()) { return false; }
+        focused_node->splith();
+        assert(focused_node->layout == WindowNode::Layout::HSPLIT);
+        set_focused_node(focused_node->get_top_child());
+        return true;
+    }
+
+    bool splitv() {
+        if (!focused_node->splitv_allowed()) { return false; }
+        focused_node->splitv();
+        assert(focused_node->layout == WindowNode::Layout::VSPLIT);
+        set_focused_node(focused_node->get_left_child());
+        return true;
+    }
+
+    bool focus_right() {
+        WindowNode* new_node = focused_node->find_right_adjacent_node();
+        if (!new_node) {
+            return false;
         }
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
+        set_focused_node(new_node);
+        return true;
     }
 
-    std::vector<Window *> &get_file_views(File *file) {
-        return file_views[file];
-    }
-
-    void open(File *file){
-        if(!current_node) {init();}
-        Window *view = current_node->open_tab(file);
-        file_views[file].push_back(view);
-        assert(current_node->get_window() == view);
-        assert(current_node->layout == WMNode::Layout::NORMAL);
-    }
-
-    void splith() { 
-        if(!current_node) init();
-        if(!current_node || !current_node->splith_allowed()) 
-        {
-            log_debug("split failed");
-            return; 
+    bool focus_left() {
+        WindowNode* new_node = focused_node->find_left_adjacent_node();
+        if (!new_node) {
+            return false;
         }
-        current_node->splith(); 
-        assert(current_node->layout == WMNode::Layout::HSPLIT);
-        focus_on(current_node->get_top_child());
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
+        set_focused_node(new_node);
+        return true;
     }
 
-    void splitv() { 
-        if(!current_node) init();
-        if(!current_node || !current_node->splitv_allowed()){
-            log_debug("split failed");
-            return; 
+    bool focus_top() {
+        WindowNode* new_node = focused_node->find_top_adjacent_node();
+        if (!new_node) {
+            return false;
         }
-        current_node->splitv(); 
-        assert(current_node->layout == WMNode::Layout::VSPLIT);
-        focus_on(current_node->get_left_child());
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
+        set_focused_node(new_node);
+        return true;
     }
 
-    void draw() { if(root_node) root_node->draw();  }
-    void show() { if(root_node) root_node->show(); }
-
-    void resize(Dimension d) { 
-        bounds = d; 
-        if(!root_node) init(); 
-        else root_node->resize(d); 
-    }
-
-    void focus_on(WMNode *node) { 
-        assert(node);
-        if(current_node) {
-            current_node->unfocus();
+    bool focus_bottom() {
+        WindowNode* new_node = focused_node->find_bottom_adjacent_node();
+        if (!new_node) {
+            return false;
         }
-        current_node = node;
-        current_node->focus();
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
+        set_focused_node(new_node);
+        return true;
     }
-
-    void focus_right() {
-        if(!current_node) init();
-        WMNode *new_node = current_node->find_right_adjacent_node();
-        if(new_node) {
-            if(new_node->layout != WMNode::Layout::NORMAL){log_warn("illegal focus node");return;}
-            focus_on(new_node);
-        }
-        else{log_warn("did not find any focusable nodes");}
-    }
-
-    void focus_left() {
-        if(!current_node) init();
-        WMNode *new_node = current_node->find_left_adjacent_node();
-        if(new_node) {
-            if(new_node->layout != WMNode::Layout::NORMAL){log_warn("illegal focus node");return;}
-            focus_on(new_node);
-        }
-        else{log_warn("did not find any focusable nodes");}
-    }
-
-    void focus_top() {
-        if(!current_node) init();
-        WMNode *new_node = current_node->find_top_adjacent_node();
-        if(new_node) {
-            if(new_node->layout != WMNode::Layout::NORMAL){log_warn("illegal focus node");return;}
-            focus_on(new_node);
-        }
-        else{log_warn("did not find any focusable nodes");}
-    }
-
-    void focus_bottom() {
-        if(!current_node) init();
-        WMNode *new_node = current_node->find_bottom_adjacent_node();
-        if(new_node) {
-            if(new_node->layout != WMNode::Layout::NORMAL){log_warn("illegal focus node");return;}
-            focus_on(new_node);
-        }
-        else{log_warn("did not find any focusable nodes");}
-    }
-}; 
+};

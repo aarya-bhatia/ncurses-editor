@@ -12,7 +12,7 @@ struct FileView : public Window
     File* file = nullptr;
     NcursesWindow window;
     Scroll scroll;
-    bool redraw = true;
+    bool should_redraw = true;
     bool focused = false;
 
     int save_cursor_y = 0;
@@ -22,20 +22,24 @@ struct FileView : public Window
 
     FileView(File* file, Dimension bounds);
 
+    Dimension get_bounds() { return bounds; }
+
     bool is_visible(int y, int x) const {
         return y >= 0 && x >= 0 && y < height() && x < width();
     }
 
-    void partial_draw_character(Cursor position) override;
-    void partial_draw_line(Cursor position) override;
+    void redraw() { should_redraw = true; }
 
-    void draw() override;
+    void partial_draw_character(Cursor position);
+    void partial_draw_line(Cursor position);
 
-    void show() override {
+    void draw();
+
+    void show() {
         window.show();
     }
 
-    void resize(Dimension bounds) override;
+    void resize(Dimension bounds);
 
     int get_absolute_y(int rely) const
     {
@@ -68,30 +72,16 @@ struct FileView : public Window
     }
 
     bool scroll_to_ensure_cursor_visible();
-
     void draw_cursor();
     void draw_content();
+    void focus();
+    void unfocus();
 
-    void focus() override {
-        focused = true;
-    }
+    File* get_file() { return file; }
+    void force_redraw() { should_redraw = true; }
 
-    void unfocus() override {
-        focused = false;
-    }
-
-    Window* copy(Dimension d) override {
-        return new FileView(file, d);
-    }
-
-    File* get_file() override { return file; }
-
-    void force_redraw() override { redraw = true; }
-
-    void clear() override {
-        redraw = true;
+    void clear() {
+        should_redraw = true;
         window.clear();
     }
-
-    Dimension get_bounds() override { return bounds; }
 };

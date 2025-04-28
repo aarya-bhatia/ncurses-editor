@@ -1,195 +1,105 @@
 #pragma once
 
+#include "List.h"
 #include "Window.h"
-#include "BorderedFileView.h"
+#include "FileFactory.h"
 #include <assert.h>
 
-struct TabWindow : public Window
+template<typename T>
+struct TabWindow
 {
-    using Tabs = std::list<Window*>;
-    using Tab = Tabs::iterator;
-
-    Tabs tabs;
-    Tab current_tab;
-
-    File* empty_file;
-    Window* empty_window;
-
+    List<T> tabs;
+    ListNode<T>* focused_tab = nullptr;
     Dimension bounds;
+
+    File* empty_file = nullptr;
 
     TabWindow(Dimension d)
     {
         bounds = d;
-        empty_file = new File;
-        empty_file->insert_character('e');
-        empty_file->insert_character('m');
-        empty_file->insert_character('p');
-        empty_file->insert_character('t');
-        empty_file->insert_character('y');
-        empty_window = new BorderedFileView(empty_file, d);
-        current_tab = tabs.begin();
     }
 
     ~TabWindow()
     {
-        delete empty_window;
+        for (ListNode<T>* itr = tabs.head; itr; itr = itr->next) {
+            delete itr->data;
+            itr->data = nullptr;
+        }
+
         delete empty_file;
-
-        for (Window* window : tabs) {
-            delete window;
-        }
     }
 
-    Tab find_tab_from_window(Window* window) {
-        for (auto it = tabs.begin(); it != tabs.end(); it++) {
-            if (*it == window) {
-                return it;
-            }
-        }
-
-        return tabs.end();
+    void open(T window) {
+        tabs.insert_back(window);
+        assert(tabs.tail);
+        assert(tabs.tail->data == window);
+        open(tabs.tail);
     }
 
-    bool has_tab(Tab tab) {
-        for (Window* window : tabs) {
-            if (window == *tab) {
-                return true;
-            }
-        }
-
-        return false;
+    void open(ListNode<T>* tab) {
+        if (!tab) return;
+        if (focused_tab == tab) return;
+        if (focused_tab) focused_tab->data->unfocus();
+        focused_tab = tab;
+        focused_tab->data->focus();
     }
 
-    void open(Tab new_tab) {
-        assert(has_tab(new_tab));
-
-        if (new_tab != tabs.end() && new_tab != current_tab) {
-            current_window()->unfocus();
-            current_tab = new_tab;
-            (*new_tab)->focus();
-        }
-    }
-
-    void open(Window* tab) {
-        Tab new_tab = find_tab_from_window(tab);
-
-        if (new_tab != tabs.end() && new_tab != current_tab) {
-            current_window()->unfocus();
-            current_tab = new_tab;
-            tab->focus();
-        }
-    }
-
-    Window* find_or_create_tab(File* file) {
-        for (Window* window : tabs) {
-            if (window->get_file() == file)
-                return window;
-        }
-
-        Window* window = ViewFactory::new_file_view(file, bounds);
-        tabs.push_back(window);
-        return window;
-    }
-
-    size_t count_tabs() const { return tabs.size(); }
-
-    bool has_next_tab() {
-        return !empty() && std::next(current_tab) != tabs.end();
-    }
-
-    bool has_prev_tab() {
-        return !empty() && current_tab != tabs.begin();
-    }
-
-    bool has_other_tabs() {
-        return tabs.size() > 1;
-    }
-
-    bool empty() {
-        return tabs.empty();
+    void init()
+    {
+        if (!empty_file) empty_file = FileFactory::new_file();
+        Window* empty_window = new BorderedFileView(empty_file, bounds);
+        open(empty_window);
     }
 
     void close_all() {
-        unfocus();
-        tabs.clear();
-        current_tab = tabs.begin();
-        focus();
+        focused_tab = nullptr;
+        for (ListNode<Window*>* itr = tabs.head; itr; itr = itr->next) {
+            delete itr->data;
+            itr->data = nullptr;
+        }
+        tabs.remove_all();
+        init();
     }
 
     void open_first() {
-        if (empty()) { return; }
-        unfocus();
-        current_tab = tabs.begin();
-        focus();
+        open(tabs.head);
     }
 
     void open_last() {
-        if (empty()) { return; }
-        unfocus();
-        current_tab = std::prev(tabs.end());
-        focus();
+        open(tabs.tail);
     }
 
     void open_next() {
-        if (!has_next_tab()) { return; }
-
-        unfocus();
-        current_tab = std::next(current_tab);
-        focus();
+        if (focused_tab) open(focused_tab->next);
     }
 
     void open_prev() {
-        if (!has_prev_tab()) { return; }
-        unfocus();
-        current_tab = std::prev(current_tab);
-        focus();
+        if (focused_tab) open(focused_tab->prev);
     }
 
-    void close_current_tab() {
-        unfocus();
+    // void close_tab() {
+    //     if (!focused_tab) {
+    //         return;
+    //     }
 
-        if (!has_other_tabs()) {
-            tabs.erase(current_tab);
-            current_tab = tabs.begin();
-        }
-        else if (std::next(current_tab) == tabs.end()) {
-            Tab new_tab = std::prev(current_tab);
-            tabs.erase(current_tab);
-            current_tab = new_tab;
-        }
-        else {
-            Tab new_tab = std::next(current_tab);
-            tabs.erase(current_tab);
-            current_tab = new_tab;
-        }
+    //     ListNode<T>* new_tab = focused_tab->next;
+    //     if (!new_tab) {
+    //         new_tab = focused_tab->prev;
+    //     }
 
-        focus();
-    }
+    //     delete focused_tab->data;
+    //     tabs.remove(focused_tab);
 
-    Window* current_window()
+    //     focused_tab = new_tab;
+
+    //     if (!new_tab) {
+    //         init();
+    //     }
+    // }
+
+    T get_focused_window()
     {
-        if (current_tab == tabs.end() || *current_tab == nullptr) {
-            return empty_window;
-        }
-
-        if (current_tab == tabs.end() && !empty()) {
-            current_tab = tabs.begin();
-            return *current_tab;
-        }
-
-        return *current_tab;
-    }
-
-    File* get_file() {
-        return current_window()->get_file();
-    }
-
-    Window* copy(Dimension d) {
-        return new TabWindow(bounds);
-    }
-
-    void clear() {
-        current_window()->clear();
+        return focused_tab ? focused_tab->data : nullptr;
     }
 
     Dimension get_bounds() {
@@ -197,46 +107,29 @@ struct TabWindow : public Window
     }
 
     void focus() {
-        if (current_window()->get_bounds() != bounds) {
-            current_window()->resize(bounds);
-        }
-        current_window()->focus();
+        if (focused_tab)get_focused_window()->focus();
     }
 
     void unfocus() {
-        current_window()->unfocus();
+        if (focused_tab)get_focused_window()->unfocus();
     }
 
     void draw() {
-        current_window()->draw();
+        if (focused_tab)get_focused_window()->draw();
     }
 
     void show() {
-        current_window()->show();
+        if (focused_tab)get_focused_window()->show();
+    }
+
+    void clear() {
+        if (focused_tab)get_focused_window()->clear();
     }
 
     void resize(Dimension d) {
-        current_window()->resize(d);
         bounds = d;
-    }
-
-    void partial_draw_character(Cursor position) {
-        if (current_window() == empty_window) {
-            return;
+        for (ListNode<Window*>* node = tabs.head; node; node = node->next) {
+            if (node->data)node->data->resize(d);
         }
-
-        current_window()->partial_draw_character(position);
-    }
-
-    void partial_draw_line(Cursor position) {
-        if (current_window() == empty_window) {
-            return;
-        }
-
-        current_window()->partial_draw_line(position);
-    }
-
-    void force_redraw() {
-        current_window()->force_redraw();
     }
 };
