@@ -34,12 +34,16 @@ struct Editor
     ~Editor();
 
     File* get_focused_file() {
-        Window* view = window_manager.get_focused_node_content();
+        WindowTab *tab = window_manager.get_current_tab();
+        assert(tab);
+        Window* view = tab->get_focused_node_content();
         return view ? view->get_file() : nullptr;
     }
 
     Window* get_focused_window() {
-        return window_manager.get_focused_node_content();
+        WindowTab *tab = window_manager.get_current_tab();
+        assert(tab);
+        return tab->get_focused_node_content();
     }
 
     void command(const std::string& command);
