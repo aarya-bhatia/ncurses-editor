@@ -9,7 +9,7 @@
 
 TEST_CASE("check horizontal split", MY_TEST_SUITE) {
     Dimension orig_bounds = Dimension(50, 50, 200, 200);
-    WindowNode<Window*>* node = new WindowNode<Window*>(orig_bounds);
+    WindowNode* node = new WindowNode(orig_bounds);
 
     assert(node->splith_allowed());
     node->splith();
@@ -33,7 +33,7 @@ TEST_CASE("check horizontal split", MY_TEST_SUITE) {
 
 TEST_CASE("check vertical split", MY_TEST_SUITE) {
     Dimension orig_bounds = Dimension(50, 50, 200, 200);
-    WindowNode<Window*>* node = new WindowNode<Window*>(orig_bounds);
+    WindowNode* node = new WindowNode(orig_bounds);
 
     assert(node->splitv_allowed());
     node->splitv();
@@ -57,7 +57,7 @@ TEST_CASE("check vertical split", MY_TEST_SUITE) {
 
 
 TEST_CASE("check content is transferred to first child when split", MY_TEST_SUITE) {
-    WindowNode<TestWindow*> node(Dimension(0, 0, 100, 100));
+    WindowNode node(Dimension(0, 0, 100, 100));
     TestWindow* content = new TestWindow();
     node.content = content;
     node.splith();
@@ -67,25 +67,25 @@ TEST_CASE("check content is transferred to first child when split", MY_TEST_SUIT
 }
 
 TEST_CASE("check split allowed works", MY_TEST_SUITE) {
-    WindowNode<TestWindow*> node(Dimension(0, 0, 6, 6));
+    WindowNode node(Dimension(0, 0, 6, 6));
     REQUIRE(node.splith_allowed());
     REQUIRE(node.splitv_allowed());
 
-    node = WindowNode<TestWindow*>(Dimension(0, 0, 3, 3));
+    node = WindowNode(Dimension(0, 0, 3, 3));
     REQUIRE(!node.splith_allowed());
     REQUIRE(!node.splitv_allowed());
 
-    node = WindowNode<TestWindow*>(Dimension(0, 0, 6, 3));
+    node = WindowNode(Dimension(0, 0, 6, 3));
     REQUIRE(!node.splith_allowed());
     REQUIRE(node.splitv_allowed());
 
-    node = WindowNode<TestWindow*>(Dimension(0, 0, 3, 6));
+    node = WindowNode(Dimension(0, 0, 3, 6));
     REQUIRE(node.splith_allowed());
     REQUIRE(!node.splitv_allowed());
 }
 
 TEST_CASE("multiple splits", MY_TEST_SUITE) {
-    WindowNode<TestWindow*> root(Dimension(0, 0, 100, 100));
+    WindowNode root(Dimension(0, 0, 100, 100));
     root.splith();
     auto top_node = root.children[0];
     auto bottom_node = root.children[1];

@@ -12,6 +12,7 @@
 #include "ConsoleWindow.h"
 #include "FileUpdateHandler.h"
 #include "WindowManager.h"
+#include "WindowNode.h"
 
 struct Editor
 {
@@ -19,7 +20,7 @@ struct Editor
     bool quit = false;
 
     Dimension bounds;
-    WindowManager<Window*> window_manager;
+    WindowManager window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
     std::list<File*> files;
@@ -27,8 +28,7 @@ struct Editor
     std::string statusline = "";
 
     // FileUpdateHandler* file_update_handler;
-    // std::unordered_map<File*, std::vector<WindowNode*>> map_file_to_window_node;
-    // std::unordered_map<File*, std::vector<Window*>> map_file_to_window;
+    std::unordered_map<File*, std::vector<WindowNode*>> file_nodes_map;
 
     Editor(Dimension d);
     ~Editor();

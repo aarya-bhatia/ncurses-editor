@@ -99,7 +99,7 @@ void Editor::command(const std::string& command)
     {
         clear(); refresh();
         window_manager.splith();
-        WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
+        WindowNode* sibling = window_manager.focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
         // refresh();
@@ -108,7 +108,7 @@ void Editor::command(const std::string& command)
     {
         clear(); refresh();
         window_manager.splitv();
-        WindowNode<Window*>* sibling = window_manager.focused_node->sibling();
+        WindowNode* sibling = window_manager.focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
         // refresh();
@@ -328,17 +328,17 @@ void Editor::draw()
 //     return nullptr;
 // }
 
-WindowNode<FileView*>* find_existing_file_window(WindowManager<FileView*>& window_manager, File* file) {
-    std::list<WindowNode<FileView*>*> q;
+WindowNode* find_existing_file_window(WindowManager& window_manager, File* file) {
+    std::list<WindowNode*> q;
     q.push_back(window_manager.root_node);
     while (!q.empty()) {
-        WindowNode<FileView*>* node = q.front();
+        WindowNode* node = q.front();
         q.pop_front();
         if (!node) { continue; }
-        if (node->content->file == file) {
+        if (node->content->get_file() == file) {
             return node;
         }
-        for (WindowNode<FileView*>* child : node->children) {
+        for (WindowNode* child : node->children) {
             q.push_back(child);
         }
     }
@@ -353,7 +353,7 @@ void Editor::open(const std::vector<std::string>& filenames)
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
 
-        WindowNode<Window*>* window_node = nullptr; //find_existing_file_window(window_manager, file);
+        WindowNode* window_node = nullptr; //find_existing_file_window(window_manager, file);
         if (window_node) {
             // switch to existing node
             window_manager.set_focused_node(window_node);

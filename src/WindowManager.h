@@ -1,30 +1,30 @@
 #pragma once
 
 #include "WindowNode.h"
+#include "Window.h"
 
-template<typename T>
 struct WindowManager {
-    WindowNode<T>* root_node = nullptr;
-    WindowNode<T>* focused_node = nullptr;
+    WindowNode* root_node = nullptr;
+    WindowNode* focused_node = nullptr;
     Dimension bounds;
 
     WindowManager(Dimension d) : bounds(d) { init(); }
     ~WindowManager() { destroy(); }
 
-    void set_focused_node_content(T& content) {
+    void set_focused_node_content(Window* content) {
         if (focused_node->content == content) { return; }
         if (focused_node->content) { focused_node->content->unfocus(); }
         focused_node->set_content(content);
         focused_node->content->focus();
     }
 
-    void set_focused_node(WindowNode<T>* node) {
+    void set_focused_node(WindowNode* node) {
         focused_node->unfocus();
         focused_node = node;
         focused_node->focus();
     }
 
-    T& get_focused_node_content() {
+    Window* get_focused_node_content() {
         return focused_node->content;
     }
 
@@ -54,7 +54,7 @@ struct WindowManager {
     void init() {
         if (focused_node) { return; }
         log_debug("init window manager");
-        root_node = new WindowNode<T>(bounds, nullptr);
+        root_node = new WindowNode(bounds, nullptr);
         root_node->bounds = bounds;
         focused_node = root_node;
     }
@@ -62,7 +62,7 @@ struct WindowManager {
     bool splith() {
         if (!focused_node->splith_allowed()) { return false; }
         focused_node->splith();
-        assert(focused_node->layout == WindowNode<T>::Layout::HSPLIT);
+        assert(focused_node->layout == WindowNode::Layout::HSPLIT);
         set_focused_node(focused_node->get_top_child());
         return true;
     }
@@ -70,47 +70,47 @@ struct WindowManager {
     bool splitv() {
         if (!focused_node->splitv_allowed()) { return false; }
         focused_node->splitv();
-        assert(focused_node->layout == WindowNode<T>::Layout::VSPLIT);
+        assert(focused_node->layout == WindowNode::Layout::VSPLIT);
         set_focused_node(focused_node->get_left_child());
         return true;
     }
 
     bool focus_right() {
-        WindowNode<T>* new_node = focused_node->find_right_adjacent_node();
+        WindowNode* new_node = focused_node->find_right_adjacent_node();
         if (!new_node) {
             return false;
         }
-        assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
         set_focused_node(new_node);
         return true;
     }
 
     bool focus_left() {
-        WindowNode<T>* new_node = focused_node->find_left_adjacent_node();
+        WindowNode* new_node = focused_node->find_left_adjacent_node();
         if (!new_node) {
             return false;
         }
-        assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
         set_focused_node(new_node);
         return true;
     }
 
     bool focus_top() {
-        WindowNode<T>* new_node = focused_node->find_top_adjacent_node();
+        WindowNode* new_node = focused_node->find_top_adjacent_node();
         if (!new_node) {
             return false;
         }
-        assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
         set_focused_node(new_node);
         return true;
     }
 
     bool focus_bottom() {
-        WindowNode<T>* new_node = focused_node->find_bottom_adjacent_node();
+        WindowNode* new_node = focused_node->find_bottom_adjacent_node();
         if (!new_node) {
             return false;
         }
-        assert(new_node->layout == WindowNode<T>::Layout::NORMAL);
+        assert(new_node->layout == WindowNode::Layout::NORMAL);
         set_focused_node(new_node);
         return true;
     }

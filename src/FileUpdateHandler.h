@@ -4,11 +4,13 @@
 #include "FileSubscriber.h"
 #include "log.h"
 
+struct Editor;
+
 // struct FileUpdateHandler : public FileSubscriber {
 
-//     WindowManager* wm;
+//    Editor &editor;
 
-//     FileUpdateHandler(WindowManager* _wm) : wm(_wm) {
+//     FileUpdateHandler(Editor &e) : editor(e) {
 //     }
 
 //     void on_file_reload(File& file) override {
