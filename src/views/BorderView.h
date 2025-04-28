@@ -23,11 +23,11 @@ struct BorderView : public Window {
 
     void draw()
     {
-        log_debug("drawing border window %s", bounds.debug_string().c_str());
         if (should_redraw) {
+            log_debug("drawing border window %s", bounds.debug_string().c_str());
             frame.draw_border();
             // TODO
-            // should_redraw = false;
+            should_redraw = false;
         }
     }
 
