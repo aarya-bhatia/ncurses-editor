@@ -127,27 +127,29 @@ void FileView::draw_cursor()
     move(cy, cx);
 }
 
-// void FileView::on_focus()
-// {
-//     ContentWindow::on_focus();
+void FileView::focus()
+{
+    log_debug("FileView::focus() %s", bounds.debug_string().c_str());
+    focused = true;
 
-//     if (save_cursor_y < file->count_lines())
-//     {
-//         file->goto_line(save_cursor_y);
-//     }
+    if (save_cursor_y < file->count_lines())
+    {
+        file->goto_line(save_cursor_y);
+    }
 
-//     if (save_cursor_x < file->cursor.line->size()) {
-//         file->goto_column(save_cursor_x);
-//     }
-// }
+    if (save_cursor_x < file->cursor.line->size()) {
+        file->goto_column(save_cursor_x);
+    }
+}
 
-// void FileView::on_unfocus()
-// {
-//     ContentWindow::on_unfocus();
+void FileView::unfocus()
+{
+    log_debug("FileView::unfocus() %s", bounds.debug_string().c_str());
+    focused = false;
 
-//     save_cursor_x = file->cursor.x;
-//     save_cursor_y = file->cursor.y;
-// }
+    save_cursor_x = file->cursor.x;
+    save_cursor_y = file->cursor.y;
+}
 
 void FileView::resize(Dimension d) {
     bounds = d;

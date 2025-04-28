@@ -72,27 +72,12 @@ struct FileView : public Window
     }
 
     bool scroll_to_ensure_cursor_visible();
-
     void draw_cursor();
-
     void draw_content();
-
-    void focus() {
-        log_debug("FileView::focus() %s", bounds.debug_string().c_str());
-        focused = true;
-    }
-
-    void unfocus() {
-        log_debug("FileView::unfocus() %s", bounds.debug_string().c_str());
-        focused = false;
-    }
-
-    Window* copy(Dimension d) {
-        return new FileView(file, d);
-    }
+    void focus();
+    void unfocus();
 
     File* get_file() { return file; }
-
     void force_redraw() { should_redraw = true; }
 
     void clear() {
