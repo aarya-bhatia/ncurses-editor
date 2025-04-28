@@ -27,17 +27,17 @@ std::string StatusWindow::get_status()
 
     auto mode_name = mode_names.find(editor.mode);
     if (mode_name != mode_names.end()) {
-        left_oss << "-- " << mode_name->second << " --";
+        left_oss << mode_name->second;
     }
     if (file)
     {
-        right_oss << file->filename << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
+        left_oss << " | " << file->filename << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
 
-        if (file->count_lines() > 0) {
-            float percent_read = 100.0 * (1 + file->cursor.y) / file->count_lines();
-            int rounded = std::round(percent_read * 10.0f) / 10.0f;
-            right_oss << " | " << rounded << "%%";
-        }
+        // if (file->count_lines() > 0) {
+        //     float percent_read = 100.0 * (1 + file->cursor.y) / file->count_lines();
+        //     int rounded = std::round(percent_read * 10.0f) / 10.0f;
+        //     right_oss << " | " << rounded << "%%";
+        // }
 
         if (!file->normal_mode_buffer.empty()) {
             right_oss << " | " << file->normal_mode_buffer;
