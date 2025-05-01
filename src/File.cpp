@@ -199,3 +199,11 @@ void File::insert_character(int c)
         subsciber->on_insert_character(*this, insert_position, c);
     }
 }
+
+void File::insert_line() {
+
+}
+
+void File::remove_line() {
+
+}

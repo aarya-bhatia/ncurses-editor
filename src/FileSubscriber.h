@@ -11,4 +11,7 @@ struct FileSubscriber
     virtual void on_insert_character(File& file, Cursor position, char c) = 0;
     virtual void on_erase_character(File& file, Cursor position) = 0;
     virtual void on_replace_character(File& file, Cursor position) = 0;
+
+    virtual void on_insert_line(File& file, Cursor position) = 0;
+    virtual void on_remove_line(File& file, int line_no) = 0;
 };

@@ -53,4 +53,7 @@ struct File
     void move_begin();
 
     void insert_character(int c);
+
+    void insert_line();
+    void remove_line();
 };
