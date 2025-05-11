@@ -55,6 +55,7 @@ struct Editor
     void handle_normal_mode_two_key_seq();
 
     void draw();
+    void draw_cursor();
     void show();
     void resize(Dimension d);
 

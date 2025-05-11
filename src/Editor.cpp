@@ -7,7 +7,7 @@
 #include "ViewFactory.h"
 
 void clear_screen() {
-    clear(); 
+    clear();
     refresh();
 }
 
@@ -107,7 +107,6 @@ void Editor::command(const std::string& command)
         WindowNode* sibling = window_manager.get_current_tab()->focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
-        // refresh();
     }
     else if (command == "vs" || command == "vsplit")
     {
@@ -116,7 +115,6 @@ void Editor::command(const std::string& command)
         WindowNode* sibling = window_manager.get_current_tab()->focused_node->sibling();
         sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
         window_manager.redraw();
-        // refresh();
     }
     else if (command == "right")
     {
@@ -325,26 +323,23 @@ void Editor::show() {
     console_window->show();
 }
 
-void Editor::draw()
-{
-    window_manager.draw();
-    status_window->draw();
-    console_window->draw();
-
+void Editor::draw_cursor() {
     if (!window_manager.get_current_tab()->get_focused_node_content()) {
-        auto node = window_manager.get_current_tab()->focused_node;
+        WindowNode* node = window_manager.get_current_tab()->focused_node;
         int y = node->bounds.y;
         int x = node->bounds.x;
         move(y, x);
     }
 }
 
-// ListNode<EmptyView*>* Editor::find_tab_by_file(Tabs* tabs, File* file) {
-//     for (ListNode<EmptyView*>* itr = tabs.head; itr; itr = itr->next) {
-//     }
+void Editor::draw()
+{
+    window_manager.draw();
+    status_window->draw();
+    console_window->draw();
 
-//     return nullptr;
-// }
+    draw_cursor();
+}
 
 WindowNode* find_existing_file_window(WindowManager& window_manager, File* file) {
     std::list<WindowNode*> q;
@@ -371,17 +366,8 @@ void Editor::open(const std::vector<std::string>& filenames)
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
 
-        WindowNode* window_node = nullptr; //find_existing_file_window(window_manager, file);
-        if (window_node) {
-            // switch to existing node
-            window_manager.get_current_tab()->set_focused_node(window_node);
-        }
-        else {
-            // update content in current node
-            Window* view = ViewFactory::new_file_view(file, window_manager.get_current_tab()->focused_node->bounds);
-            window_manager.get_current_tab()->set_focused_node_content(view);
-        }
-
+        Window* view = ViewFactory::new_file_view(file, window_manager.get_current_tab()->focused_node->bounds);
+        window_manager.get_current_tab()->set_focused_node_content(view);
     }
 }
 
