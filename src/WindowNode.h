@@ -38,10 +38,14 @@ struct WindowNode
     }
 
     void set_content(Window* _content) {
+        assert(_content);
+        if (content == _content) { return; }
+        if (content) { content->unfocus(); }
         content = _content;
         if (_content->get_bounds() != bounds) {
             _content->resize(bounds);
         }
+        content->focus();
     }
 
     void focus() { if (content)content->focus(); }
@@ -116,7 +120,6 @@ struct WindowNode
         children.push_back(child2);
 
         child1->content = this->content;
-        // child2->content = this->content;
         this->content = nullptr;
 
         resize(bounds);
@@ -143,7 +146,6 @@ struct WindowNode
         children.push_back(child2);
 
         child1->content = this->content;
-        // child2->content = this->content;
         this->content = nullptr;
 
         resize(bounds);

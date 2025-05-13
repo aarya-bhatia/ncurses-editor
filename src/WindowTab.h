@@ -5,19 +5,12 @@
 
 struct WindowTab
 {
-    WindowNode *root_node = NULL;
-    WindowNode *focused_node = NULL;    
+    WindowNode* root_node = NULL;
+    WindowNode* focused_node = NULL;
     Dimension bounds;
 
     WindowTab(Dimension d) : bounds(d) { init(); }
     ~WindowTab() { _destroy(); }
-
-    void set_focused_node_content(Window* content) {
-        if (focused_node->content == content) { return; }
-        if (focused_node->content) { focused_node->content->unfocus(); }
-        focused_node->set_content(content);
-        focused_node->content->focus();
-    }
 
     void set_focused_node(WindowNode* node) {
         focused_node->unfocus();
@@ -27,6 +20,10 @@ struct WindowTab
 
     Window* get_focused_node_content() {
         return focused_node->content;
+    }
+
+    void set_focused_node_content(Window* content) {
+        focused_node->set_content(content);
     }
 
     void redraw() {

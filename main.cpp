@@ -76,18 +76,15 @@ int main(int argc, const char** argv)
             continue;
         }
 
-        // log_debug("drawing editor");
         editor.draw();
         editor.show();
 
-        // log_debug("getch");
         int ch = getch();
 
         if (ch == CTRL_C) {
             break;
         }
 
-        // log_debug("handling event");
         editor.handle_event(ch);
     }
 

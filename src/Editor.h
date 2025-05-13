@@ -10,9 +10,10 @@
 #include "WindowNode.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
-#include "FileUpdateHandler.h"
 #include "WindowManager.h"
 #include "WindowNode.h"
+
+struct FileUpdateHandler;
 
 struct Editor
 {
@@ -27,21 +28,21 @@ struct Editor
     std::string mode_line = "";
     std::string statusline = "";
 
-    // FileUpdateHandler* file_update_handler;
-    std::unordered_map<File*, std::vector<WindowNode*>> file_nodes_map;
+    FileUpdateHandler* file_update_handler;
+    std::unordered_map<File*, std::vector<Window*>> file_views_map;
 
     Editor(Dimension d);
     ~Editor();
 
     File* get_focused_file() {
-        WindowTab *tab = window_manager.get_current_tab();
+        WindowTab* tab = window_manager.get_current_tab();
         assert(tab);
         Window* view = tab->get_focused_node_content();
         return view ? view->get_file() : nullptr;
     }
 
     Window* get_focused_window() {
-        WindowTab *tab = window_manager.get_current_tab();
+        WindowTab* tab = window_manager.get_current_tab();
         assert(tab);
         return tab->get_focused_node_content();
     }

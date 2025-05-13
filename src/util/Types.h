@@ -10,13 +10,6 @@ struct IDrawable {
     virtual void resize(Dimension d) = 0;
 };
 
-struct IPartialDrawable : public IDrawable {
-    virtual ~IPartialDrawable() = default;
-    virtual void partial_draw_character(Cursor position) = 0;
-    virtual void partial_draw_line(Cursor position) = 0;
-    virtual void force_redraw() = 0;
-};
-
 struct IEventHandler {
     virtual ~IEventHandler() = default;
     virtual void handle_event(unsigned) = 0;

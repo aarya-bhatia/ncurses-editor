@@ -5,6 +5,7 @@
 #include "FileSubscriber.h"
 #include "FileFactory.h"
 #include "ViewFactory.h"
+#include "FileUpdateHandler.h"
 
 void clear_screen() {
     clear();
@@ -33,12 +34,12 @@ void init(Editor& editor, Dimension d)
 Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
     init(*this, d);
-    // file_update_handler = nullptr;
+    file_update_handler = new FileUpdateHandler(*this);
 }
 
 Editor::~Editor()
 {
-    // delete file_update_handler;
+    delete file_update_handler;
     delete status_window;
     delete console_window;
 
@@ -286,7 +287,6 @@ void Editor::handle_normal_mode_event(unsigned c)
 
 void Editor::handle_command_mode_event(unsigned c)
 {
-    // auto file = get_focused_file();
     switch (c)
     {
     case CTRL_ENTER:
@@ -365,15 +365,33 @@ void Editor::open(const std::vector<std::string>& filenames)
     {
         File* file = get_file(filename);
         if (!file) { file = add_file(filename); }
-
-        Window* view = ViewFactory::new_file_view(file, window_manager.get_current_tab()->focused_node->bounds);
-        window_manager.get_current_tab()->set_focused_node_content(view);
     }
+
+    File* display_file = get_file(filenames.back());
+
+    WindowTab* current_tab = window_manager.get_current_tab();
+    WindowNode* current_node = current_tab->focused_node;
+
+    if (current_node->content) {
+        Window* current_content = current_node->content;
+
+        if (current_content->get_file() == display_file) {
+            return;
+        }
+
+        if (current_content->switch_file(display_file)) {
+            return;
+        }
+    }
+
+    Window* view = ViewFactory::new_file_view(display_file, current_node->bounds);
+    current_node->set_content(view);
+    file_views_map[file].push_back(view);
 }
 
 File* Editor::add_file(const std::string& filename) {
     File* new_file = FileFactory::new_file(filename);
-    // new_file->add_subscriber(file_update_handler);
+    new_file->add_subscriber(file_update_handler);
     new_file->load_file();
     files.push_back(new_file);
     return new_file;

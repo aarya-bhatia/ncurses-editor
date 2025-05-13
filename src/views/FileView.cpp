@@ -94,6 +94,8 @@ void FileView::draw() {
 
 void FileView::partial_draw_character(Cursor position)
 {
+    log_debug("partial redraw at Ln:%d Col:%d", position.y, position.x);
+
     int dpy = get_display_y(position.y);
     int dpx = get_display_x(position.x);
     if (!is_visible(dpy, dpx)) {
