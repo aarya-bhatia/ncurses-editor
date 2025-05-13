@@ -41,6 +41,7 @@ struct WindowNode
         assert(_content);
         if (content == _content) { return; }
         if (content) { content->unfocus(); }
+        delete content;
         content = _content;
         if (_content->get_bounds() != bounds) {
             _content->resize(bounds);

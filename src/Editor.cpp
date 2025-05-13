@@ -4,8 +4,14 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 #include "FileFactory.h"
-#include "ViewFactory.h"
 #include "FileUpdateHandler.h"
+#include "ViewContainer.h"
+
+Window* new_content(File* file, Dimension d) {
+    Window* w = new ViewContainer(d);
+    w->set_file_view(new FileView(file, d));
+    return w;
+}
 
 void clear_screen() {
     clear();
@@ -104,17 +110,19 @@ void Editor::command(const std::string& command)
     else if (command == "sp" || command == "split")
     {
         clear_screen();
-        window_manager.get_current_tab()->splith();
-        WindowNode* sibling = window_manager.get_current_tab()->focused_node->sibling();
-        sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
+        WindowTab* current_tab = window_manager.get_current_tab();
+        current_tab->splith();
+        WindowNode* sibling = current_tab->focused_node->sibling();
+        sibling->set_content(new_content(file, sibling->bounds));
         window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
     {
         clear_screen();
-        window_manager.get_current_tab()->splitv();
-        WindowNode* sibling = window_manager.get_current_tab()->focused_node->sibling();
-        sibling->set_content(ViewFactory::new_file_view(file, sibling->bounds));
+        WindowTab* current_tab = window_manager.get_current_tab();
+        current_tab->splitv();
+        WindowNode* sibling = current_tab->focused_node->sibling();
+        sibling->set_content(new_content(file, sibling->bounds));
         window_manager.redraw();
     }
     else if (command == "right")
@@ -146,14 +154,6 @@ void Editor::command(const std::string& command)
     {
         window_manager.tab_next();
     }
-    // else if (command == "next")
-    // {
-    //     focused_node->tab_window.open_next();
-    // }
-    // else if (command == "prev")
-    // {
-    //     focused_node->tab_window.open_prev();
-    // }
     // else if (command == "close")
     // {
     //     focused_node->tab_window.close_tab();
@@ -341,22 +341,12 @@ void Editor::draw()
     draw_cursor();
 }
 
-WindowNode* find_existing_file_window(WindowManager& window_manager, File* file) {
-    std::list<WindowNode*> q;
-    q.push_back(window_manager.get_current_tab()->root_node);
-    while (!q.empty()) {
-        WindowNode* node = q.front();
-        q.pop_front();
-        if (!node) { continue; }
-        if (node->content->get_file() == file) {
-            return node;
-        }
-        for (WindowNode* child : node->children) {
-            q.push_back(child);
-        }
-    }
-
-    return nullptr;
+FileView* Editor::open_file_view(File* file)
+{
+    WindowTab* current_tab = window_manager.get_current_tab();
+    WindowNode* current_node = current_tab->focused_node;
+    current_node->set_content(new_content(file, current_node->bounds));
+    return current_node->content->get_file_view();
 }
 
 void Editor::open(const std::vector<std::string>& filenames)
@@ -367,26 +357,7 @@ void Editor::open(const std::vector<std::string>& filenames)
         if (!file) { file = add_file(filename); }
     }
 
-    File* display_file = get_file(filenames.back());
-
-    WindowTab* current_tab = window_manager.get_current_tab();
-    WindowNode* current_node = current_tab->focused_node;
-
-    if (current_node->content) {
-        Window* current_content = current_node->content;
-
-        if (current_content->get_file() == display_file) {
-            return;
-        }
-
-        if (current_content->switch_file(display_file)) {
-            return;
-        }
-    }
-
-    Window* view = ViewFactory::new_file_view(display_file, current_node->bounds);
-    current_node->set_content(view);
-    file_views_map[file].push_back(view);
+    open_file_view(get_file(filenames.back()));
 }
 
 File* Editor::add_file(const std::string& filename) {

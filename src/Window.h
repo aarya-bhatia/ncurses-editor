@@ -3,11 +3,12 @@
 #include "Types.h"
 #include "File.h"
 
+struct FileView;
+
 struct Window
 {
     virtual ~Window() = default;
 
-    virtual File* get_file() = 0;
     virtual Dimension get_bounds() = 0;
 
     virtual void focus() = 0;
@@ -18,8 +19,9 @@ struct Window
     virtual void redraw() = 0;
     virtual void resize(Dimension d) = 0;
 
+    virtual FileView* get_file_view() { return nullptr; }
+    virtual void set_file_view(FileView*) {}
     virtual bool is_composite() { return false; }
-    virtual bool switch_file(File* file) { return false; }
 
     virtual void partial_draw_character(Cursor position) {}
     virtual void partial_draw_line(Cursor position) {}

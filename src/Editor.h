@@ -24,27 +24,27 @@ struct Editor
     WindowManager window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
-    std::list<File*> files;
     std::string mode_line = "";
     std::string statusline = "";
 
     FileUpdateHandler* file_update_handler;
-    std::unordered_map<File*, std::vector<Window*>> file_views_map;
+
+    std::list<File*> files;
 
     Editor(Dimension d);
     ~Editor();
 
-    File* get_focused_file() {
+    FileView* get_focused_file_view() {
         WindowTab* tab = window_manager.get_current_tab();
         assert(tab);
         Window* view = tab->get_focused_node_content();
-        return view ? view->get_file() : nullptr;
+        FileView* file_view = view->get_file_view();
+        return file_view;
     }
 
-    Window* get_focused_window() {
-        WindowTab* tab = window_manager.get_current_tab();
-        assert(tab);
-        return tab->get_focused_node_content();
+    File* get_focused_file() {
+        FileView* file_view = get_focused_file_view();
+        return file_view ? file_view->get_file() : nullptr;
     }
 
     void command(const std::string& command);
@@ -61,6 +61,7 @@ struct Editor
     void resize(Dimension d);
 
     void open(const std::vector<std::string>& filenames);
+    FileView* open_file_view(File*);
 
     File* add_file(const std::string& filename);
     File* get_file(const std::string& filename);

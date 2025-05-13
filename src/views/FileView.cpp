@@ -154,6 +154,7 @@ void FileView::unfocus()
 }
 
 void FileView::resize(Dimension d) {
+    if (bounds == d) { return; }
     bounds = d;
     window = NcursesWindow(d);
     should_redraw = true;

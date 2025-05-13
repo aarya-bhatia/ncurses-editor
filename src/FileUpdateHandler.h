@@ -9,56 +9,81 @@ struct FileUpdateHandler : public FileSubscriber {
 
     Editor& editor;
 
+    struct Notification {
+        virtual ~Notification() = default;
+        virtual void operator()(Window* content_window) = 0;
+    };
+
+    struct FileReloadNotification : public Notification {
+        void operator()(Window* content_window) {
+            content_window->redraw();
+        }
+    };
+
+    struct InsertCharacterNotification : public Notification {
+        Cursor insert_at;
+        InsertCharacterNotification(Cursor p) : insert_at(p) {}
+        void operator()(Window* content_window) {
+            content_window->partial_draw_line(insert_at);
+        }
+    };
+
+    struct EraseCharacterNotification : public Notification {
+        Cursor erase_at;
+        EraseCharacterNotification(Cursor p) : erase_at(p) {}
+        void operator()(Window* content_window) {
+            content_window->partial_draw_line(erase_at);
+        }
+    };
+
+    struct ReplaceCharacterNotification : public Notification {
+        Cursor replace_at;
+        ReplaceCharacterNotification(Cursor p) : replace_at(p) {}
+        void operator()(Window* content_window) {
+            content_window->partial_draw_character(replace_at);
+        }
+    };
+
+
     FileUpdateHandler(Editor& e) : editor(e) {
     }
 
-    void on_file_reload(File& file) override {
-        auto result = editor.file_nodes_map.find(&file);
-        if (result == editor.file_nodes_map.end()) {
+    void notify_all_file_views(File* file, Notification* notification) {
+        assert(notification);
+        WindowTab* current_tab = editor.window_manager.get_current_tab();
+        _notify_all_file_views(current_tab->root_node, file, notification);
+        delete notification;
+    }
+
+    void _notify_all_file_views(WindowNode* node, File* file, Notification* notification) {
+        if (!node) {
             return;
         }
-        for (WindowNode* node : result->second) {
-            if (node && node->content && node->content->get_file() == &file) {
-                node->redraw();
-            }
+
+        for (WindowNode* child : node->children) {
+            _notify_all_file_views(child, file, notification);
+        }
+
+        if (node->content) {
+            (*notification)(node->content);
         }
     }
 
-    void on_insert_character(File& file, Cursor position, char c) override
+    void on_file_reload(File* file) override {
+        notify_all_file_views(file, new FileReloadNotification());
+    }
+
+    void on_insert_character(File* file, Cursor position) override
     {
-        auto result = editor.file_nodes_map.find(&file);
-        if (result == editor.file_nodes_map.end()) {
-            return;
-        }
-        for (WindowNode* node : result->second) {
-            if (node && node->content && node->content->get_file() == &file) {
-                node->content->partial_draw_line(position);
-            }
-        }
+        notify_all_file_views(file, new InsertCharacterNotification(position));
     }
 
-    void on_erase_character(File& file, Cursor position) override {
-        auto result = editor.file_nodes_map.find(&file);
-        if (result == editor.file_nodes_map.end()) {
-            return;
-        }
-        for (WindowNode* node : result->second) {
-            if (node && node->content && node->content->get_file() == &file) {
-                node->content->partial_draw_line(position);
-            }
-        }
+    void on_erase_character(File* file, Cursor position) override {
+        notify_all_file_views(file, new EraseCharacterNotification(position));
     }
 
-    void on_replace_character(File& file, Cursor position) override {
-        auto result = editor.file_nodes_map.find(&file);
-        if (result == editor.file_nodes_map.end()) {
-            return;
-        }
-        for (WindowNode* node : result->second) {
-            if (node && node->content && node->content->get_file() == &file) {
-                node->content->partial_draw_character(position);
-            }
-        }
+    void on_replace_character(File* file, Cursor position) override {
+        notify_all_file_views(file, new ReplaceCharacterNotification(position));
     }
 
 };

@@ -6,9 +6,7 @@
 struct ViewContainer : public Window
 {
     BorderView* boundary = nullptr;
-    std::vector<FileView*> file_views;
-    int current_view = -1;
-
+    FileView* file_view = nullptr;
     bool focused = false;
 
     ViewContainer(Dimension d) {
@@ -17,49 +15,19 @@ struct ViewContainer : public Window
 
     bool is_composite() override { return true; }
 
-    bool switch_file(File* file) override {
-        for (int i = 0; i < file_views.size(); i++) {
-            if (file_views[i]->get_file() == file) {
-                set_view(i);
-                return true;
-            }
+    void set_file_view(FileView* _file_view) override {
+        if (file_view == _file_view) { return; }
+        if (file_view) {
+            file_view->unfocus();
         }
-
-        return false;
-    }
-
-    void set_view(int index) {
-        if (index == current_view || index < 0 || index >= file_views.size()) { return; }
-        if (current_view != -1) {
-            file_views[current_view]->unfocus();
+        file_view = _file_view;
+        resize(boundary->bounds);
+        if (file_view) {
+            _file_view->focus();
         }
-        current_view = index;
-        file_views[current_view]->focus();
     }
 
-    void open_view(FileView* file_view) {
-        assert(file_view);
-        Dimension d = get_bounds();
-        file_view->resize(Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2));
-        for (int i = 0; i < file_views.size(); i++)
-        {
-            if (file_views[i] == file_view) {
-                set_view(i);
-                return;
-            }
-        }
-
-        file_views.push_back(file_view);
-        set_view(file_views.size() - 1);
-    }
-
-    File* get_file() override {
-        return boundary->file;
-    }
-
-    void set_file(File* _file) {
-        boundary->file = _file;
-    }
+    FileView* get_file_view() override { return file_view; }
 
     Dimension get_bounds()override {
         return boundary->bounds;
@@ -67,77 +35,55 @@ struct ViewContainer : public Window
 
     ~ViewContainer() {
         delete boundary;
-        for (FileView* view : file_views) {
-            delete view;
-        }
+        delete file_view;
     }
 
     void draw() override {
         boundary->draw();
-
-        if (current_view != -1) {
-            file_views[current_view]->draw();
-        }
+        if (file_view) file_view->draw();
 
         if (focused) {
-            if (current_view == -1) {
-                move(boundary->bounds.y + 1, boundary->bounds.x + 1);
+            if (file_view) {
+                file_view->draw_cursor();
             }
             else {
-                file_views[current_view]->draw_cursor();
+                move(boundary->bounds.y + 1, boundary->bounds.x + 1);
             }
         }
     }
 
     void show()override {
         boundary->show();
-
-        if (current_view != -1) {
-            file_views[current_view]->show();
-        }
+        if (file_view) file_view->show();
     }
 
     void resize(Dimension d)override {
         boundary->resize(d);
-
-        for (FileView* view : file_views) {
-            view->resize(Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2));
-        }
+        if (file_view) file_view->resize(Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2));
     }
 
     void redraw() override {
         boundary->redraw();
-
-        if (current_view != -1) {
-            file_views[current_view]->redraw();
-        }
+        if (file_view) file_view->redraw();
     }
 
     void focus() override {
         focused = true;
-        if (current_view != -1) {
-            file_views[current_view]->focus();
-        }
+        if (file_view) file_view->focus();
     }
 
     void unfocus() override {
         focused = false;
-        if (current_view != -1) {
-            file_views[current_view]->unfocus();
-        }
+        if (file_view) file_view->unfocus();
     }
 
     void partial_draw_line(Cursor position) override
     {
-        if (current_view != -1) {
-            file_views[current_view]->partial_draw_line(position);
-        }
+        if (file_view) file_view->partial_draw_line(position);
     }
 
     void partial_draw_character(Cursor position) override
     {
-        if (current_view != -1) {
-            file_views[current_view]->partial_draw_character(position);
-        }
+        if (file_view) file_view->partial_draw_character(position);
     }
 };
