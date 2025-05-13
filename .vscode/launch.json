@@ -18,6 +18,19 @@
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build Tests",
             "MIMode": "lldb"
+        },
+        {
+            "name": "Debug ncurses app",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/main",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": true,
+            "MIMode": "lldb",
+            "preLaunchTask": "Build Project",
         }
-    ]
+    ],
 }
