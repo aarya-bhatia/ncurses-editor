@@ -3,79 +3,79 @@
 #include "WindowNode.h"
 #include <assert.h>
 
-struct WindowTab
+class WindowTab
 {
-    WindowNode* root_node = NULL;
-    WindowNode* focused_node = NULL;
-    Dimension bounds;
+public:
+    struct Visitor {
+        virtual ~Visitor() = default;
+        virtual void operator()(Window* content) = 0;
+    };
 
-    WindowTab(Dimension d) : bounds(d) { init(); }
+    WindowTab(Dimension d) : _bounds(d) { _init(); }
+
     ~WindowTab() { _destroy(); }
 
-    void set_focused_node(WindowNode* node) {
-        focused_node->unfocus();
-        focused_node = node;
-        focused_node->focus();
+    void accept(Visitor* v) {
+        if (v) _accept(_root_node, v);
+    }
+
+    Dimension get_bounds() const { return _bounds; }
+
+    Dimension get_focused_node_bounds() const { return _focused_node->bounds; }
+
+    bool set_split_adj_content(Window* content) {
+        if (_focused_node->sibling()) {
+            _focused_node->sibling()->set_content(content);
+            return true;
+        }
+
+        return false;
     }
 
     Window* get_focused_node_content() {
-        return focused_node->content;
+        return _focused_node->content;
     }
 
     void set_focused_node_content(Window* content) {
-        focused_node->set_content(content);
+        _focused_node->set_content(content);
     }
 
     void redraw() {
-        root_node->redraw();
+        _root_node->redraw();
     }
 
     void draw() {
-        root_node->draw();
+        _root_node->draw();
     }
 
     void show() {
-        root_node->show();
+        _root_node->show();
     }
 
     void resize(Dimension d) {
-        if (bounds == d) { return; }
-        bounds = d;
-        root_node->resize(d);
-    }
-
-    void _destroy() {
-        log_debug("destroying window tab %p", this);
-        delete root_node;
-        focused_node = root_node = nullptr;
-    }
-
-    void init() {
-        if (focused_node) { return; }
-        log_debug("init window tab %p", this);
-        root_node = new WindowNode(bounds, nullptr);
-        root_node->bounds = bounds;
-        focused_node = root_node;
+        if (_bounds == d) { return; }
+        _bounds = d;
+        _root_node->resize(d);
     }
 
     bool splith() {
-        if (!focused_node->splith_allowed()) { return false; }
-        focused_node->splith();
-        assert(focused_node->layout == WindowNode::Layout::HSPLIT);
-        set_focused_node(focused_node->get_top_child());
+        if (!_focused_node->splith_allowed()) { return false; }
+        _focused_node->splith();
+        assert(_focused_node->layout == WindowNode::Layout::HSPLIT);
+        set_focused_node(_focused_node->get_top_child());
         return true;
     }
 
     bool splitv() {
-        if (!focused_node->splitv_allowed()) { return false; }
-        focused_node->splitv();
-        assert(focused_node->layout == WindowNode::Layout::VSPLIT);
-        set_focused_node(focused_node->get_left_child());
+        if (!_focused_node->splitv_allowed()) { return false; }
+        _focused_node->splitv();
+        assert(_focused_node->layout == WindowNode::Layout::VSPLIT);
+        set_focused_node(_focused_node->get_left_child());
         return true;
     }
 
     bool focus_right() {
-        WindowNode* new_node = focused_node->find_right_adjacent_node();
+        WindowNode* new_node = _focused_node->find_right_adjacent_node();
         if (!new_node) {
             return false;
         }
@@ -85,7 +85,7 @@ struct WindowTab
     }
 
     bool focus_left() {
-        WindowNode* new_node = focused_node->find_left_adjacent_node();
+        WindowNode* new_node = _focused_node->find_left_adjacent_node();
         if (!new_node) {
             return false;
         }
@@ -95,7 +95,7 @@ struct WindowTab
     }
 
     bool focus_top() {
-        WindowNode* new_node = focused_node->find_top_adjacent_node();
+        WindowNode* new_node = _focused_node->find_top_adjacent_node();
         if (!new_node) {
             return false;
         }
@@ -105,7 +105,7 @@ struct WindowTab
     }
 
     bool focus_bottom() {
-        WindowNode* new_node = focused_node->find_bottom_adjacent_node();
+        WindowNode* new_node = _focused_node->find_bottom_adjacent_node();
         if (!new_node) {
             return false;
         }
@@ -113,4 +113,44 @@ struct WindowTab
         set_focused_node(new_node);
         return true;
     }
+
+private:
+
+    void set_focused_node(WindowNode* node) {
+        assert(_focused_node);
+        assert(node);
+        _focused_node->unfocus();
+        _focused_node = node;
+        _focused_node->focus();
+    }
+
+    void _destroy() {
+        log_debug("destroying window tab %p", this);
+        delete _root_node;
+        _focused_node = _root_node = nullptr;
+    }
+
+    void _init() {
+        if (_focused_node) { return; }
+        log_debug("init window tab %p", this);
+        _root_node = new WindowNode(_bounds, nullptr);
+        _root_node->bounds = _bounds;
+        _focused_node = _root_node;
+    }
+
+    void _accept(WindowNode* root, Visitor* v) {
+        if (!root) {
+            return;
+        }
+
+        for (WindowNode* child : root->children) {
+            _accept(child, v);
+        }
+
+        if (root->content) (*v)(root->content);
+    }
+
+    WindowNode* _root_node = NULL;
+    WindowNode* _focused_node = NULL;
+    Dimension _bounds;
 };

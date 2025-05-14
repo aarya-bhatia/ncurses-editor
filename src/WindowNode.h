@@ -91,7 +91,7 @@ struct WindowNode
             child->resize(child_d);
         }
 
-        if (children.empty() && content != nullptr) {
+        if (content != nullptr) {
             content->resize(d);
         }
 

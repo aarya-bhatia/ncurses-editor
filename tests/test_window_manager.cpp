@@ -10,5 +10,5 @@ TEST_CASE("draws all nodes", MY_TEST_SUITE) {
     TestWindow* w = new TestWindow();
     wm.get_current_tab()->set_focused_node_content(w);
     wm.get_current_tab()->splith();
-    REQUIRE(wm.get_current_tab()->focused_node->content == w);
+    REQUIRE(wm.get_current_tab()->get_focused_node_content() == w);
 }

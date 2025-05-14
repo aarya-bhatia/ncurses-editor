@@ -9,10 +9,7 @@ struct FileUpdateHandler : public FileSubscriber {
 
     Editor& editor;
 
-    struct Notification {
-        virtual ~Notification() = default;
-        virtual void operator()(Window* content_window) = 0;
-    };
+    using Notification = WindowTab::Visitor;
 
     struct FileReloadNotification : public Notification {
         void operator()(Window* content_window) {
@@ -51,22 +48,11 @@ struct FileUpdateHandler : public FileSubscriber {
     void notify_all_file_views(File* file, Notification* notification) {
         assert(notification);
         WindowTab* current_tab = editor.window_manager.get_current_tab();
-        _notify_all_file_views(current_tab->root_node, file, notification);
+        current_tab->accept(notification);
         delete notification;
     }
 
     void _notify_all_file_views(WindowNode* node, File* file, Notification* notification) {
-        if (!node) {
-            return;
-        }
-
-        for (WindowNode* child : node->children) {
-            _notify_all_file_views(child, file, notification);
-        }
-
-        if (node->content) {
-            (*notification)(node->content);
-        }
     }
 
     void on_file_reload(File* file) override {

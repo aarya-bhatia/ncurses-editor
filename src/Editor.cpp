@@ -112,8 +112,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
-        WindowNode* sibling = current_tab->focused_node->sibling();
-        sibling->set_content(new_content(file, sibling->bounds));
+        current_tab->set_split_adj_content(new_content(file, Dimension()));
         window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
@@ -121,8 +120,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
-        WindowNode* sibling = current_tab->focused_node->sibling();
-        sibling->set_content(new_content(file, sibling->bounds));
+        current_tab->set_split_adj_content(new_content(file, Dimension()));
         window_manager.redraw();
     }
     else if (command == "right")
@@ -325,10 +323,8 @@ void Editor::show() {
 
 void Editor::draw_cursor() {
     if (!window_manager.get_current_tab()->get_focused_node_content()) {
-        WindowNode* node = window_manager.get_current_tab()->focused_node;
-        int y = node->bounds.y;
-        int x = node->bounds.x;
-        move(y, x);
+        Dimension d = window_manager.get_current_tab()->get_focused_node_bounds();
+        move(d.y, d.x);
     }
 }
 
@@ -344,9 +340,8 @@ void Editor::draw()
 FileView* Editor::open_file_view(File* file)
 {
     WindowTab* current_tab = window_manager.get_current_tab();
-    WindowNode* current_node = current_tab->focused_node;
-    current_node->set_content(new_content(file, current_node->bounds));
-    return current_node->content->get_file_view();
+    current_tab->set_focused_node_content(new_content(file, current_tab->get_focused_node_bounds()));
+    return current_tab->get_focused_node_content()->get_file_view();
 }
 
 void Editor::open(const std::vector<std::string>& filenames)
