@@ -14,6 +14,7 @@ struct WindowNode
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
 
     Window* content = nullptr;
+    bool focused = false;
 
     WindowNode(Dimension bounds, WindowNode* parent = nullptr) : bounds(bounds), parent(parent) {
         log_debug("init window node %s", bounds.debug_string().c_str());
@@ -40,17 +41,17 @@ struct WindowNode
     void set_content(Window* _content) {
         assert(_content);
         if (content == _content) { return; }
-        if (content) { content->unfocus(); }
+        if (focused && content) { content->unfocus(); }
         delete content;
         content = _content;
         if (_content->get_bounds() != bounds) {
             _content->resize(bounds);
         }
-        content->focus();
+        if (focused) { content->focus(); }
     }
 
-    void focus() { if (content)content->focus(); }
-    void unfocus() { if (content)content->unfocus(); }
+    void focus() { focused = true; if (content)content->focus(); }
+    void unfocus() { focused = false; if (content)content->unfocus(); }
 
     bool splitv_allowed(int min_width = 3) {
         if (bounds.width / 2 < min_width) {

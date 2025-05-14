@@ -59,7 +59,14 @@ struct ViewContainer : public Window
 
     void resize(Dimension d)override {
         boundary->resize(d);
-        if (file_view) file_view->resize(Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2));
+        if (file_view) {
+            if (d.width >= 2 && d.height >= 2) {
+                file_view->resize(Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2));
+            }
+            else {
+                file_view->resize(Dimension(d.x + 1, d.y + 1, 0, 0));
+            }
+        }
     }
 
     void redraw() override {

@@ -75,7 +75,7 @@ public:
     }
 
     bool focus_right() {
-        WindowNode* new_node = _focused_node->find_right_adjacent_node();
+        WindowNode* new_node = _focused_node->find_right_adjacent_node(_focused_node);
         if (!new_node) {
             return false;
         }
@@ -85,7 +85,7 @@ public:
     }
 
     bool focus_left() {
-        WindowNode* new_node = _focused_node->find_left_adjacent_node();
+        WindowNode* new_node = _focused_node->find_left_adjacent_node(_focused_node);
         if (!new_node) {
             return false;
         }
@@ -95,7 +95,7 @@ public:
     }
 
     bool focus_top() {
-        WindowNode* new_node = _focused_node->find_top_adjacent_node();
+        WindowNode* new_node = _focused_node->find_top_adjacent_node(_focused_node);
         if (!new_node) {
             return false;
         }
@@ -105,7 +105,7 @@ public:
     }
 
     bool focus_bottom() {
-        WindowNode* new_node = _focused_node->find_bottom_adjacent_node();
+        WindowNode* new_node = _focused_node->find_bottom_adjacent_node(_focused_node);
         if (!new_node) {
             return false;
         }
