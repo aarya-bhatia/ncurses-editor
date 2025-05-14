@@ -38,8 +38,7 @@ struct Editor
         WindowTab* tab = window_manager.get_current_tab();
         assert(tab);
         Window* view = tab->get_focused_node_content();
-        FileView* file_view = view->get_file_view();
-        return file_view;
+        return view ? view->get_file_view() : nullptr;
     }
 
     File* get_focused_file() {

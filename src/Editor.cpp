@@ -352,7 +352,12 @@ void Editor::open(const std::vector<std::string>& filenames)
         if (!file) { file = add_file(filename); }
     }
 
-    open_file_view(get_file(filenames.back()));
+    if (!filenames.empty()) {
+        File* file = get_file(filenames.back());
+        if (file) {
+            open_file_view(file);
+        }
+    }
 }
 
 File* Editor::add_file(const std::string& filename) {
