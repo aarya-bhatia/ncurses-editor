@@ -5,10 +5,12 @@
 
 struct ViewContainer : public Window
 {
+private:
     BorderView* boundary = nullptr;
     FileView* file_view = nullptr;
     bool focused = false;
 
+public:
     ViewContainer(Dimension d) {
         boundary = new BorderView(d);
     }

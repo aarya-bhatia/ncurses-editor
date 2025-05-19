@@ -41,7 +41,6 @@ struct WindowNode
     void set_content(Window* _content) {
         assert(_content);
         if (content == _content) { return; }
-        if (focused && content) { content->unfocus(); }
         delete content;
         content = _content;
         if (_content->get_bounds() != bounds) {

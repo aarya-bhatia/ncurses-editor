@@ -5,6 +5,11 @@
 
 class WindowTab
 {
+private:
+    WindowNode* _root_node = NULL;
+    WindowNode* _focused_node = NULL;
+    Dimension _bounds;
+
 public:
     struct Visitor {
         virtual ~Visitor() = default;
@@ -149,8 +154,4 @@ private:
 
         if (root->content) (*v)(root->content);
     }
-
-    WindowNode* _root_node = NULL;
-    WindowNode* _focused_node = NULL;
-    Dimension _bounds;
 };
