@@ -20,6 +20,8 @@ struct Editor
     Mode mode = NORMAL_MODE;
     bool quit = false;
 
+    Cursor prev_cursor;
+
     Dimension bounds;
     WindowManager window_manager;
     StatusWindow* status_window = nullptr;

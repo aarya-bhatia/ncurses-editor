@@ -321,20 +321,11 @@ void Editor::show() {
     console_window->show();
 }
 
-void Editor::draw_cursor() {
-    if (!window_manager.get_current_tab()->get_focused_node_content()) {
-        Dimension d = window_manager.get_current_tab()->get_focused_node_bounds();
-        move(d.y, d.x);
-    }
-}
-
 void Editor::draw()
 {
     window_manager.draw();
     status_window->draw();
     console_window->draw();
-
-    draw_cursor();
 }
 
 FileView* Editor::open_file_view(File* file)

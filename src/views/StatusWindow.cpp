@@ -23,21 +23,21 @@ std::string StatusWindow::get_status()
 {
     std::ostringstream left_oss;
     std::ostringstream right_oss;
+
     File* file = editor.get_focused_file();
 
     auto mode_name = mode_names.find(editor.mode);
     if (mode_name != mode_names.end()) {
         left_oss << mode_name->second;
     }
+
+    int tabno = editor.window_manager.get_tab_index() + 1;
+    int ntabs = editor.window_manager.count_tabs();
+    left_oss << " | tab " << tabno << " of " << ntabs;
+
     if (file)
     {
         left_oss << " | " << file->filename << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
-
-        // if (file->count_lines() > 0) {
-        //     float percent_read = 100.0 * (1 + file->cursor.y) / file->count_lines();
-        //     int rounded = std::round(percent_read * 10.0f) / 10.0f;
-        //     right_oss << " | " << rounded << "%%";
-        // }
 
         if (!file->normal_mode_buffer.empty()) {
             right_oss << " | " << file->normal_mode_buffer;

@@ -4,17 +4,21 @@
 #include "WindowTab.h"
 #include "Window.h"
 
-struct WindowManager {
+class WindowManager {
+private:
     std::vector<WindowTab*> tabs;
     int current_tab = -1;
-
     Dimension bounds;
 
+public:
     WindowManager(Dimension d) : bounds(d) { init(); }
     ~WindowManager() { _destroy(); }
 
+    int count_tabs() const { return tabs.size(); }
+    int get_tab_index() const { return current_tab; }
+
     void init() {
-        if(current_tab != -1) {return;}
+        if (current_tab != -1) { return; }
         log_debug("init window manager");
         WindowTab* tab = new WindowTab(bounds);
         tabs.push_back(tab);
