@@ -62,7 +62,7 @@ public:
         if (!_focused_node->splith_allowed()) { return false; }
         _focused_node->splith();
         assert(_focused_node->layout == WindowNode::Layout::HSPLIT);
-        set_focused_node(_focused_node->get_top_child());
+        _set_focused_node(_focused_node->get_top_child());
         return true;
     }
 
@@ -70,7 +70,7 @@ public:
         if (!_focused_node->splitv_allowed()) { return false; }
         _focused_node->splitv();
         assert(_focused_node->layout == WindowNode::Layout::VSPLIT);
-        set_focused_node(_focused_node->get_left_child());
+        _set_focused_node(_focused_node->get_left_child());
         return true;
     }
 
@@ -80,7 +80,7 @@ public:
             return false;
         }
         assert(new_node->layout == WindowNode::Layout::NORMAL);
-        set_focused_node(new_node);
+        _set_focused_node(new_node);
         return true;
     }
 
@@ -90,7 +90,7 @@ public:
             return false;
         }
         assert(new_node->layout == WindowNode::Layout::NORMAL);
-        set_focused_node(new_node);
+        _set_focused_node(new_node);
         return true;
     }
 
@@ -100,7 +100,7 @@ public:
             return false;
         }
         assert(new_node->layout == WindowNode::Layout::NORMAL);
-        set_focused_node(new_node);
+        _set_focused_node(new_node);
         return true;
     }
 
@@ -110,13 +110,13 @@ public:
             return false;
         }
         assert(new_node->layout == WindowNode::Layout::NORMAL);
-        set_focused_node(new_node);
+        _set_focused_node(new_node);
         return true;
     }
 
 private:
 
-    void set_focused_node(WindowNode* node) {
+    void _set_focused_node(WindowNode* node) {
         assert(_focused_node);
         assert(node);
         _focused_node->unfocus();
