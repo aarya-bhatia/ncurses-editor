@@ -76,8 +76,10 @@ void FileView::draw_content() {
 }
 
 void FileView::draw() {
+    // log_debug("drawing file view %s", bounds.debug_string().c_str());
+
     if (focused && scroll_to_ensure_cursor_visible()) {
-        log_debug("scrolling to ensure cursor is visible");
+        // log_debug("scrolling to ensure cursor is visible");
         should_redraw = true;
     }
     else {

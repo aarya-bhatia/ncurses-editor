@@ -30,7 +30,13 @@ struct WindowNode
         delete content;
     }
 
-    void set_content(Window* c) { delete content; content = c; }
+    void set_content(Window* c) {
+        delete content;
+        content = c;
+        content->resize(bounds);
+        if (focused) content->focus();
+    }
+
     Window* get_content() { return content; }
 
     WindowNode* sibling() const {

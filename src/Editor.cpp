@@ -126,6 +126,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
+        current_tab->get_focused_node()->sibling()->set_content(new ViewContainer(Dimension()));
         window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
@@ -133,6 +134,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
+        current_tab->get_focused_node()->sibling()->set_content(new ViewContainer(Dimension()));
         window_manager.redraw();
     }
     else if (command == "right")
@@ -143,11 +145,11 @@ void Editor::command(const std::string& command)
     {
         window_manager.get_current_tab()->focus_left();
     }
-    else if (command == "top")
+    else if (command == "top" || command == "up")
     {
         window_manager.get_current_tab()->focus_top();
     }
-    else if (command == "bottom")
+    else if (command == "bottom" || command == "down")
     {
         window_manager.get_current_tab()->focus_bottom();
     }

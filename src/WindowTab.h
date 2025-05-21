@@ -125,6 +125,7 @@ private:
         _root_node = new WindowNode(_bounds, nullptr);
         _root_node->bounds = _bounds;
         _focused_node = _root_node;
+        _focused_node->focus();
     }
 
     void _accept(WindowNode* root, Visitor* v) {
