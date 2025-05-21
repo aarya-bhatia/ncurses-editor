@@ -37,7 +37,7 @@ std::string StatusWindow::get_status()
         left_oss << " | " << file->filename << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
 
         if (!file->normal_mode_buffer.empty()) {
-            right_oss << " | " << file->normal_mode_buffer;
+            right_oss << file->normal_mode_buffer;
         }
     }
     else
