@@ -157,6 +157,7 @@ void Editor::command(const std::string& command)
     {
         clear_screen();
         window_manager.tab_new();
+        window_manager.get_current_tab()->get_focused_node()->set_content(new ViewContainer(Dimension()));
     }
     else if (command == "tabprev")
     {
@@ -340,6 +341,11 @@ void Editor::draw()
     window_manager.draw();
     status_window->draw();
     console_window->draw();
+
+    // this should not happen ideally
+    if (window_manager.get_current_tab()->get_focused_node()->get_content() == nullptr) {
+        move(0, 0);
+    }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)
