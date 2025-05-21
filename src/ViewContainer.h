@@ -2,6 +2,7 @@
 
 #include "Window.h"
 #include "BorderView.h"
+#include "FileView.h"
 
 struct ViewContainer : public Window
 {
@@ -15,6 +16,11 @@ public:
         frame = new BorderView(d);
     }
 
+    ViewContainer(Dimension d, File* file) {
+        frame = new BorderView(d);
+        view = new FileView(file, get_view_bounds());
+    }
+
     ~ViewContainer() {
         delete frame;
         delete view;
@@ -22,7 +28,12 @@ public:
 
     Dimension get_view_bounds() {
         Dimension d = frame->bounds;
-        return Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2);
+        if (d.width >= 2 && d.height >= 2) {
+            return Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2);
+        }
+        else {
+            return Dimension();
+        }
     }
 
     void set_view(Window* _view) {

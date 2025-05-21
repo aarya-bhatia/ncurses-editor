@@ -11,6 +11,7 @@
 #include "InsertMode.h"
 #include "CommandMode.h"
 #include "NormalMode.h"
+#include "FilePickerMode.h"
 
 void clear_screen() { clear(); refresh(); }
 
@@ -115,6 +116,10 @@ void Editor::change_mode(Mode mode)
         editor_mode = new CommandMode;
         editor_mode->editor = this;
     }
+    else if (mode == FILE_PICKER_MODE)
+    {
+        editor_mode = new FilePickerMode(this);
+    }
 }
 
 void Editor::command(const std::string& command)
@@ -126,6 +131,11 @@ void Editor::command(const std::string& command)
     {
         log_warn("quit flag set");
         quit = true;
+    }
+    else if (command == "Ex")
+    {
+        change_mode(FILE_PICKER_MODE);
+        return;
     }
     else if (command.substr(0, 5) == "open ")
     {
@@ -202,6 +212,8 @@ void Editor::command(const std::string& command)
     {
         log_warn("no such command: %s", command.c_str());
     }
+
+    change_mode(NORMAL_MODE);
 }
 
 void Editor::show() {

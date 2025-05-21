@@ -7,7 +7,6 @@ void CommandMode::handle_event(unsigned c)
     {
     case CTRL_ENTER:
         editor->command(mode_line);
-        editor->change_mode(NORMAL_MODE);
         break;
 
     case CTRL_BACKSPACE:

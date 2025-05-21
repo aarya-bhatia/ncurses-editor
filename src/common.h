@@ -61,7 +61,8 @@ enum Mode
 {
     NORMAL_MODE,
     INSERT_MODE,
-    COMMAND_MODE
+    COMMAND_MODE,
+    FILE_PICKER_MODE,
 };
 
 static std::map<Mode, const char*> mode_names = {

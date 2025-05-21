@@ -64,4 +64,5 @@ private:
     friend struct InsertMode;
     friend struct CommandMode;
     friend struct NormalMode;
+    friend struct FilePickerMode;
 };
