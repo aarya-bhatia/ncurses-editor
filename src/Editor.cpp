@@ -5,41 +5,15 @@
 #include "FileSubscriber.h"
 #include "FileFactory.h"
 #include "FileUpdateHandler.h"
+#include "StatusWindow.h"
+#include "ConsoleWindow.h"
 #include "ViewContainer.h"
 
-Window* new_content(File* file, Dimension d) {
-    Window* w = new ViewContainer(d);
-    w->set_file_view(new FileView(file, d));
-    return w;
-}
-
-void clear_screen() {
-    clear();
-    refresh();
-}
-
-void init(Editor& editor, Dimension d)
-{
-    log_debug("init editor");
-    editor.bounds = d;
-
-    if (!editor.status_window || editor.status_window->bounds != d) {
-        delete editor.status_window;
-        editor.status_window = new StatusWindow(editor, Dimension(d.x, d.y + d.height - 2, d.width, 1));
-    }
-
-    if (!editor.console_window || editor.console_window->bounds != d) {
-        delete editor.console_window;
-        editor.console_window = new ConsoleWindow(editor, Dimension(d.x, d.y + d.height - 1, d.width, 1));
-    }
-
-    editor.window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
-    editor.window_manager.init();
-}
+void clear_screen() { clear(); refresh(); }
 
 Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
-    init(*this, d);
+    _init(d);
     file_update_handler = new FileUpdateHandler(*this);
 }
 
@@ -54,10 +28,50 @@ Editor::~Editor()
     }
 }
 
+void Editor::_init(Dimension d)
+{
+    log_debug("init editor");
+    bounds = d;
+
+    if (!status_window || status_window->bounds != d) {
+        delete status_window;
+        status_window = new StatusWindow(*this, Dimension(d.x, d.y + d.height - 2, d.width, 1));
+    }
+
+    if (!console_window || console_window->bounds != d) {
+        delete console_window;
+        console_window = new ConsoleWindow(*this, Dimension(d.x, d.y + d.height - 1, d.width, 1));
+    }
+
+    window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
+    window_manager.init();
+}
+
+
+FileView* Editor::get_focused_file_view() {
+    Window* content = window_manager.get_current_tab()->get_focused_node()->get_content();
+    if (!content) {
+        return nullptr;
+    }
+
+    ViewContainer* container = dynamic_cast<ViewContainer*>(content);
+    if (!container) {
+        return nullptr;
+    }
+
+    FileView* view = dynamic_cast<FileView*>(container->get_view());
+    return view;
+}
+
+File* Editor::get_focused_file() {
+    FileView* file_view = get_focused_file_view();
+    return file_view ? file_view->get_file() : nullptr;
+}
+
 void Editor::resize(Dimension d)
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
-    init(*this, d);
+    _init(d);
     window_manager.redraw();
 }
 
@@ -112,7 +126,6 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
-        current_tab->set_split_adj_content(new_content(file, Dimension()));
         window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
@@ -120,7 +133,6 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
-        current_tab->set_split_adj_content(new_content(file, Dimension()));
         window_manager.redraw();
     }
     else if (command == "right")
@@ -328,13 +340,6 @@ void Editor::draw()
     console_window->draw();
 }
 
-FileView* Editor::open_file_view(File* file)
-{
-    WindowTab* current_tab = window_manager.get_current_tab();
-    current_tab->set_focused_node_content(new_content(file, current_tab->get_focused_node_bounds()));
-    return current_tab->get_focused_node_content()->get_file_view();
-}
-
 void Editor::open(const std::vector<std::string>& filenames)
 {
     for (const std::string& filename : filenames)
@@ -345,9 +350,14 @@ void Editor::open(const std::vector<std::string>& filenames)
 
     if (!filenames.empty()) {
         File* file = get_file(filenames.back());
-        if (file) {
-            open_file_view(file);
+        if (!file) {
+            return;
         }
+
+        Dimension d = window_manager.get_current_tab()->get_focused_bounds();
+        ViewContainer* container = new ViewContainer(d);
+        container->set_view(new FileView(file, container->get_view_bounds()));
+        window_manager.get_current_tab()->get_focused_node()->set_content((Window*)container);
     }
 }
 

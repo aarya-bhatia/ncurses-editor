@@ -65,7 +65,7 @@ int main(int argc, const char** argv)
     Editor editor(Dimension(0, 0, COLS, LINES));
     editor.open(filenames);
 
-    while (!editor.quit)
+    while (!editor.ok())
     {
         if (resized)
         {

@@ -20,29 +20,13 @@ public:
 
     ~WindowTab() { _destroy(); }
 
-    void accept(Visitor* v) {
-        if (v) _accept(_root_node, v);
-    }
+    WindowNode* get_focused_node() { return _focused_node; }
 
     Dimension get_bounds() const { return _bounds; }
+    Dimension get_focused_bounds() const { return _focused_node->bounds; }
 
-    Dimension get_focused_node_bounds() const { return _focused_node->bounds; }
-
-    bool set_split_adj_content(Window* content) {
-        if (_focused_node->sibling()) {
-            _focused_node->sibling()->set_content(content);
-            return true;
-        }
-
-        return false;
-    }
-
-    Window* get_focused_node_content() {
-        return _focused_node->content;
-    }
-
-    void set_focused_node_content(Window* content) {
-        _focused_node->set_content(content);
+    void accept(Visitor* v) {
+        if (v) _accept(_root_node, v);
     }
 
     void redraw() {

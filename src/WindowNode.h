@@ -6,15 +6,16 @@
 #include "log.h"
 #include "Window.h"
 
+#include "ViewContainer.h"
+
 struct WindowNode
 {
     Dimension bounds;
     std::vector<WindowNode*> children;
     WindowNode* parent = nullptr;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
-
-    Window* content = nullptr;
     bool focused = false;
+    Window* content = nullptr;
 
     WindowNode(Dimension bounds, WindowNode* parent = nullptr) : bounds(bounds), parent(parent) {
         log_debug("init window node %s", bounds.debug_string().c_str());
@@ -25,7 +26,12 @@ struct WindowNode
         for (WindowNode* child : children) {
             delete child;
         }
+
+        delete content;
     }
+
+    void set_content(Window* c) { delete content; content = c; }
+    Window* get_content() { return content; }
 
     WindowNode* sibling() const {
         if (!parent) {
@@ -36,17 +42,6 @@ struct WindowNode
         if (parent->children[1] == this) return parent->children[0];
 
         return nullptr;
-    }
-
-    void set_content(Window* _content) {
-        assert(_content);
-        if (content == _content) { return; }
-        delete content;
-        content = _content;
-        if (_content->get_bounds() != bounds) {
-            _content->resize(bounds);
-        }
-        if (focused) { content->focus(); }
     }
 
     void focus() { focused = true; if (content)content->focus(); }

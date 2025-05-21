@@ -5,7 +5,7 @@
 #include <vector>
 #include "log.h"
 
-struct Editor;
+class Editor;
 
 struct StatusWindow
 {

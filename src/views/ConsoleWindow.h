@@ -4,7 +4,7 @@
 #include <string>
 #include "log.h"
 
-struct Editor;
+class Editor;
 
 struct ConsoleWindow
 {
