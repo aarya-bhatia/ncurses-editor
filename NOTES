@@ -1,6 +1,6 @@
-- store file views in file manager so we can restore file state when switching back to it.
-- impl close tabs
-- fix split dimensions for odd sizes
-- dont redraw cursor if unchanged to avoid flicker
-- update status line - include tab info
-- fix window focus issue on splits - debugger
+- TODO store file views in file manager so we can restore file state when switching back to it.
+- TODO impl close tabs
+- TODO fix split dimensions for odd sizes
+- TODO dont redraw cursor if unchanged to avoid flicker
+- DONE update status line - include tab info
+- DONE fix window focus issue on splits - debugger

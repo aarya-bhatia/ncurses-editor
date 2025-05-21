@@ -15,30 +15,24 @@ bool FileView::scroll_to_ensure_cursor_visible()
 {
     Cursor& cursor = file->cursor;
 
-    // adjust horizontal this->scroll
     if (cursor.x - this->scroll.dx < 0)
     {
-        // log_debug("this->scrolling left");
         this->scroll.dx = cursor.x;
         return true;
     }
     else if (cursor.x - this->scroll.dx >= width())
     {
-        // log_debug("this->scrolling right");
         this->scroll.dx = cursor.x - width() + 1;
         return true;
     }
 
-    // adjust vertical this->scroll
     if (cursor.y - this->scroll.dy < 0)
     {
-        // log_debug("this->scrolling up");
         this->scroll.dy = cursor.y;
         return true;
     }
     else if (cursor.y - this->scroll.dy >= height())
     {
-        // log_debug("this->scrolling down");
         this->scroll.dy = cursor.y - height() + 1;
         return true;
     }
@@ -51,7 +45,7 @@ void FileView::draw_content() {
         return;
     }
 
-    // TODO: uncomment this if (!redraw) { return; }
+    if (!should_redraw) { return; }
     redraw_count += 1;
 
     window.clear();
@@ -79,17 +73,12 @@ void FileView::draw() {
     // log_debug("drawing file view %s", bounds.debug_string().c_str());
 
     if (focused && scroll_to_ensure_cursor_visible()) {
-        // log_debug("scrolling to ensure cursor is visible");
         should_redraw = true;
-    }
-    else {
-        // log_debug("not scrolling as cursor is visible");
     }
 
     draw_content();
 
     if (focused) {
-        // log_debug("drawing cursor in focused file window %s", bounds.debug_string().c_str());
         draw_cursor();
     }
 }
@@ -127,7 +116,6 @@ void FileView::draw_cursor()
 {
     int cy = bounds.y + file->cursor.y - scroll.dy;
     int cx = bounds.x + file->cursor.x - scroll.dx;
-    // log_debug("drawing cursor at Ln %d Col %d", cy, cx);
     move(cy, cx);
 }
 
