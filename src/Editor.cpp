@@ -1,5 +1,3 @@
-#include "StatusWindow.h"
-#include "ConsoleWindow.h"
 #include "Editor.h"
 #include <string.h>
 #include "log.h"
@@ -7,6 +5,8 @@
 #include "FileSubscriber.h"
 #include "FileFactory.h"
 #include "FileUpdateHandler.h"
+#include "StatusWindow.h"
+#include "ConsoleWindow.h"
 #include "ViewContainer.h"
 #include "InsertMode.h"
 #include "CommandMode.h"
@@ -77,8 +77,7 @@ void Editor::resize(Dimension d)
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
     _init(d);
-
-    editor_mode->resize(d);
+    window_manager.redraw();
 }
 
 void Editor::handle_event(unsigned c)
@@ -115,9 +114,6 @@ void Editor::change_mode(Mode mode)
     {
         editor_mode = new CommandMode;
         editor_mode->editor = this;
-    }
-    else {
-        log_fatal("undefined mode: %d", mode);
     }
 }
 
@@ -209,16 +205,21 @@ void Editor::command(const std::string& command)
 }
 
 void Editor::show() {
-    editor_mode->show();
+    window_manager.show();
     status_window->show();
     console_window->show();
 }
 
 void Editor::draw()
 {
-    editor_mode->draw();
+    window_manager.draw();
     status_window->draw();
     console_window->draw();
+
+    // this should not happen ideally
+    if (window_manager.get_current_tab()->get_focused_node()->get_content() == nullptr) {
+        move(0, 0);
+    }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)

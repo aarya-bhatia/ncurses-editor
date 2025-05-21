@@ -61,7 +61,6 @@ private:
     friend struct StatusWindow;
     friend struct ConsoleWindow;
     friend struct FileUpdateHandler;
-    friend struct EditorMode;
     friend struct InsertMode;
     friend struct CommandMode;
     friend struct NormalMode;
