@@ -8,6 +8,9 @@
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
 #include "ViewContainer.h"
+#include "InsertMode.h"
+#include "CommandMode.h"
+#include "NormalMode.h"
 
 void clear_screen() { clear(); refresh(); }
 
@@ -15,6 +18,8 @@ Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.wi
 {
     _init(d);
     file_update_handler = new FileUpdateHandler(*this);
+    editor_mode = new NormalMode;
+    editor_mode->editor = this;
 }
 
 Editor::~Editor()
@@ -86,17 +91,29 @@ void Editor::handle_event(unsigned c)
         quit = true;
         return;
     }
-    else if (mode == INSERT_MODE)
+    else if (editor_mode) {
+        editor_mode->handle_event(c);
+    }
+}
+
+void Editor::change_mode(Mode mode)
+{
+    delete editor_mode;
+
+    if (mode == INSERT_MODE)
     {
-        handle_insert_mode_event(c);
+        editor_mode = new InsertMode;
+        editor_mode->editor = this;
     }
     else if (mode == NORMAL_MODE)
     {
-        handle_normal_mode_event(c);
+        editor_mode = new NormalMode;
+        editor_mode->editor = this;
     }
     else if (mode == COMMAND_MODE)
     {
-        handle_command_mode_event(c);
+        editor_mode = new CommandMode;
+        editor_mode->editor = this;
     }
 }
 
@@ -186,149 +203,6 @@ void Editor::command(const std::string& command)
         log_warn("no such command: %s", command.c_str());
     }
 }
-
-void Editor::handle_insert_mode_event(unsigned c)
-{
-    auto file = get_focused_file();
-
-    switch (c)
-    {
-    case CTRL_ESCAPE:
-        if (file) {
-            file->cursor_left();
-        }
-        mode = NORMAL_MODE;
-        break;
-
-    default:
-        if (PRINTABLE(c))
-        {
-            file->insert_character(c);
-        }
-    }
-}
-
-void Editor::handle_normal_mode_two_key_seq()
-{
-    auto file = get_focused_file();
-    assert(file);
-    assert(file->normal_mode_buffer.size() == 2);
-
-    if (file->normal_mode_buffer == "gg") {
-        file->goto_line(0);
-    }
-
-    file->normal_mode_buffer = "";
-}
-
-void Editor::handle_normal_mode_event(unsigned c)
-{
-    auto file = get_focused_file();
-
-    if (!file) {
-        switch (c) {
-        case CTRL_ESCAPE:
-            statusline = "";
-            return;
-        case ':':
-            mode = COMMAND_MODE;
-            mode_line = "";
-            return;
-        default:
-            return;
-        }
-    }
-    else {
-        assert(file);
-
-        if (file->normal_mode_buffer.size() > 0) {
-            file->normal_mode_buffer += c;
-            handle_normal_mode_two_key_seq();
-            return;
-        }
-
-        switch (c)
-        {
-        case 'h':
-            file->cursor_left();
-            return;
-
-        case 'l':
-            file->cursor_right();
-            return;
-
-        case 'j':
-            file->cursor_down();
-            return;
-
-        case 'k':
-            file->cursor_up();
-            return;
-
-        case '0':
-            file->move_begin();
-            return;
-
-        case '$':
-            file->move_cursor_eol();
-            return;
-
-        case 'G':
-            file->move_cursor_eof();
-            return;
-
-        case 'g':
-            file->normal_mode_buffer += c;
-            return;
-
-        case 'i':
-            mode = INSERT_MODE;
-            return;
-
-        case CTRL_ESCAPE:
-            statusline = "";
-            file->normal_mode_buffer.clear();
-            return;
-
-        case ':':
-            mode = COMMAND_MODE;
-            mode_line = "";
-            return;
-        }
-    }
-}
-
-void Editor::handle_command_mode_event(unsigned c)
-{
-    switch (c)
-    {
-    case CTRL_ENTER:
-        mode = NORMAL_MODE;
-        command(mode_line);
-        break;
-
-    case CTRL_BACKSPACE:
-    case CTRL_DEL:
-        if (mode_line.empty())
-        {
-            mode = NORMAL_MODE;
-            break;
-        }
-        else
-        {
-            mode_line = mode_line.substr(0, mode_line.size() - 1);
-        }
-        break;
-
-    default:
-        if (PRINTABLE(c))
-        {
-            mode_line += c;
-        }
-        break;
-    }
-}
-
 
 void Editor::show() {
     window_manager.show();

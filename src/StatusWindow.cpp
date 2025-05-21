@@ -26,10 +26,7 @@ std::string StatusWindow::get_status()
 
     File* file = editor.get_focused_file();
 
-    auto mode_name = mode_names.find(editor.mode);
-    if (mode_name != mode_names.end()) {
-        left_oss << mode_name->second;
-    }
+    if (editor.editor_mode)left_oss << editor.editor_mode->name();
 
     int tabno = editor.window_manager.get_tab_index() + 1;
     int ntabs = editor.window_manager.count_tabs();

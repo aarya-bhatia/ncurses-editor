@@ -10,6 +10,7 @@
 #include "WindowNode.h"
 #include "WindowManager.h"
 #include "WindowNode.h"
+#include "EditorMode.h"
 
 struct FileUpdateHandler;
 struct StatusWindow;
@@ -18,17 +19,13 @@ struct ConsoleWindow;
 class Editor
 {
 private:
-    Mode mode = NORMAL_MODE;
     bool quit = false;
 
-    Cursor prev_cursor;
-
+    EditorMode* editor_mode = nullptr;
     Dimension bounds;
     WindowManager window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
-    std::string mode_line = "";
-    std::string statusline = "";
     FileUpdateHandler* file_update_handler;
     std::list<File*> files;
 
@@ -44,6 +41,8 @@ public:
     void show();
     void resize(Dimension d);
     void open(const std::vector<std::string>& filenames);
+
+    void change_mode(Mode mode);
 
 private:
     FileView* get_focused_file_view();
@@ -62,4 +61,7 @@ private:
     friend struct StatusWindow;
     friend struct ConsoleWindow;
     friend struct FileUpdateHandler;
+    friend struct InsertMode;
+    friend struct CommandMode;
+    friend struct NormalMode;
 };

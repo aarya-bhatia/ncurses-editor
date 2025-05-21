@@ -6,14 +6,10 @@ void ConsoleWindow::draw() {
 
     int ncols = getmaxx(window.get());
 
-    if (editor.mode == COMMAND_MODE)
+    if (editor.editor_mode)
     {
-        std::string tmp = ":" + editor.mode_line;
+        std::string tmp = editor.editor_mode->get_console_string();
         wprintw(window.get(), tmp.substr(0, ncols).c_str());
-    }
-    else
-    {
-        wprintw(window.get(), editor.statusline.substr(0, ncols).c_str());
     }
 }
 
