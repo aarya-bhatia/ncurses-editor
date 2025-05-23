@@ -18,7 +18,9 @@ public:
 
     ViewContainer(Dimension d, File* file) {
         frame = new BorderView(d);
-        view = new FileView(file, get_view_bounds());
+        if (file) {
+            view = new FileView(file, get_view_bounds());
+        }
     }
 
     ~ViewContainer() {

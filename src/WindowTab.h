@@ -16,6 +16,11 @@ public:
         virtual void operator()(Window* content) = 0;
     };
 
+    struct Predicate {
+        virtual ~Predicate() = default;
+        virtual bool operator()(Window* content) = 0;
+    };
+
     WindowTab(Dimension d) : _bounds(d) { _init(); }
 
     ~WindowTab() { _destroy(); }
@@ -25,8 +30,8 @@ public:
     Dimension get_bounds() const { return _bounds; }
     Dimension get_focused_bounds() const { return _focused_node->bounds; }
 
-    void accept(Visitor* v) {
-        if (v) _accept(_root_node, v);
+    void accept(Visitor* v, Predicate* p = nullptr) {
+        if (v) _accept(_root_node, v, p);
     }
 
     void redraw() {
@@ -128,15 +133,19 @@ private:
         _focused_node->focus();
     }
 
-    void _accept(WindowNode* root, Visitor* v) {
+    void _accept(WindowNode* root, Visitor* v, Predicate* p) {
         if (!root) {
             return;
         }
 
         for (WindowNode* child : root->children) {
-            _accept(child, v);
+            _accept(child, v, p);
         }
 
-        if (root->content) (*v)(root->content);
+        if (root->content) {
+            if (!p || (*p)(root->content)) {
+                (*v)(root->content);
+            }
+        }
     }
 };

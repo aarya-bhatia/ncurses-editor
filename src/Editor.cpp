@@ -4,10 +4,10 @@
 #include "FileView.h"
 #include "FileSubscriber.h"
 #include "FileFactory.h"
+#include "FileViewFactory.h"
 #include "FileUpdateHandler.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
-#include "ViewContainer.h"
 #include "InsertMode.h"
 #include "CommandMode.h"
 #include "NormalMode.h"
@@ -56,17 +56,7 @@ void Editor::_init(Dimension d)
 
 FileView* Editor::get_focused_file_view() {
     Window* content = window_manager.get_current_tab()->get_focused_node()->get_content();
-    if (!content) {
-        return nullptr;
-    }
-
-    ViewContainer* container = dynamic_cast<ViewContainer*>(content);
-    if (!container) {
-        return nullptr;
-    }
-
-    FileView* view = dynamic_cast<FileView*>(container->get_view());
-    return view;
+    return FileViewFactory::get_file_view(content);
 }
 
 File* Editor::get_focused_file() {
@@ -153,7 +143,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
-        current_tab->get_focused_node()->sibling()->set_content(new ViewContainer(Dimension()));
+        current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
         window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
@@ -161,7 +151,7 @@ void Editor::command(const std::string& command)
         clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
-        current_tab->get_focused_node()->sibling()->set_content(new ViewContainer(Dimension()));
+        current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
         window_manager.redraw();
     }
     else if (command == "right")
@@ -184,7 +174,7 @@ void Editor::command(const std::string& command)
     {
         clear_screen();
         window_manager.tab_new();
-        window_manager.get_current_tab()->get_focused_node()->set_content(new ViewContainer(Dimension()));
+        window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
     }
     else if (command == "tabprev")
     {
@@ -249,9 +239,8 @@ void Editor::open(const std::vector<std::string>& filenames)
         }
 
         Dimension d = window_manager.get_current_tab()->get_focused_bounds();
-        ViewContainer* container = new ViewContainer(d);
-        container->set_view(new FileView(file, container->get_view_bounds()));
-        window_manager.get_current_tab()->get_focused_node()->set_content((Window*)container);
+        Window* content = FileViewFactory::create_content_window(file, d);
+        window_manager.get_current_tab()->get_focused_node()->set_content(content);
     }
 }
 
