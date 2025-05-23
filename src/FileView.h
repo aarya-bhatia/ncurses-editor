@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ncurses.h>
 #include "File.h"
 #include "FileSubscriber.h"
 #include "Window.h"

@@ -51,6 +51,7 @@ void Editor::_init(Dimension d)
 
     window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
     window_manager.init();
+    window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
 }
 
 

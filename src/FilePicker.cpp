@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include "dirent.h"
 #include "Editor.h"
+#include "FileViewFactory.h"
 
 FilePickerMode::FilePickerMode(Editor* editor)
 {
@@ -43,8 +44,9 @@ FilePickerMode::FilePickerMode(Editor* editor)
 
     _file->add_subscriber((FileSubscriber*)editor->file_update_handler);
 
-    Window* new_content = new ViewContainer(Dimension(), _file);
+    Window* new_content = FileViewFactory::create_content_window(_file);
     editor->window_manager.get_current_tab()->get_focused_node()->set_content(new_content);
+    editor->window_manager.redraw();
 }
 
 FilePickerMode::~FilePickerMode()
