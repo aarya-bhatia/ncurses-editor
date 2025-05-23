@@ -4,7 +4,7 @@
 #include "Editor.h"
 #include "FileViewFactory.h"
 
-FilePickerMode::FilePickerMode(Editor* editor)
+FilePickerMode::FilePickerMode(Editor* editor) : _normal(editor)
 {
     this->editor = editor;
 
@@ -58,6 +58,9 @@ void FilePickerMode::handle_event(unsigned c)
 {
     switch (c)
     {
+    case 'j':
+    case 'k':
+        _normal.handle_event(c);
     default:
         break;
     }

@@ -3,6 +3,10 @@
 
 struct CommandMode : public EditorMode
 {
+    CommandMode(Editor* editor) {
+        this->editor = editor;
+    }
+
     std::string mode_line = "";
 
     void handle_event(unsigned c);

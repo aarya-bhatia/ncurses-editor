@@ -19,7 +19,7 @@ Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.wi
 {
     _init(d);
     file_update_handler = new FileUpdateHandler(*this);
-    editor_mode = new NormalMode;
+    editor_mode = new NormalMode(this);
     editor_mode->editor = this;
 }
 
@@ -94,18 +94,15 @@ void Editor::change_mode(Mode mode)
 
     if (mode == INSERT_MODE)
     {
-        editor_mode = new InsertMode;
-        editor_mode->editor = this;
+        editor_mode = new InsertMode(this);
     }
     else if (mode == NORMAL_MODE)
     {
-        editor_mode = new NormalMode;
-        editor_mode->editor = this;
+        editor_mode = new NormalMode(this);
     }
     else if (mode == COMMAND_MODE)
     {
-        editor_mode = new CommandMode;
-        editor_mode->editor = this;
+        editor_mode = new CommandMode(this);
     }
     else if (mode == FILE_PICKER_MODE)
     {
