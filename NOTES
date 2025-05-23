@@ -5,6 +5,9 @@ Core
 - TODO dont redraw cursor if unchanged to avoid flicker
 - DONE update status line - include tab info
 - DONE fix window focus issue on splits - debugger
+- TODO optimize ncurses window rendering 
+    - int doupdate(void);
+    - int wnoutrefresh(WINDOW *win);
 
 Features
 - TODO enable new screen to select an open file buffer and set in current node
