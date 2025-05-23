@@ -42,6 +42,10 @@ struct BorderView : public Window {
     void unfocus() {
     }
 
+    void clear() {
+        frame.clear();
+    }
+
     File* get_file() { return file; }
 
     void redraw() {

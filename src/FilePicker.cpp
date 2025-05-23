@@ -56,12 +56,20 @@ FilePickerMode::~FilePickerMode()
 
 void FilePickerMode::handle_event(unsigned c)
 {
+    std::string filename = _file->get_current_line();
+
     switch (c)
     {
+    case CTRL_ENTER:
+        log_info("opening file: %s", filename.c_str());
+        if (!filename.empty()) {
+            editor->open({ filename });
+            editor->change_mode(NORMAL_MODE);
+        }
+        return;
     case 'j':
     case 'k':
         _normal.handle_event(c);
-    default:
-        break;
+        return;
     }
 }

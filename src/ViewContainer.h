@@ -101,4 +101,10 @@ public:
     {
         if (view) view->partial_draw_character(position);
     }
+
+    void clear() override
+    {
+        frame->clear();
+        if (view) view->clear();
+    }
 };

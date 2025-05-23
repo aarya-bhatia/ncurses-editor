@@ -60,6 +60,10 @@
         "sstream": "cpp",
         "stack": "cpp",
         "ostream": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "__assert": "cpp",
+        "atomic": "cpp",
+        "filesystem": "cpp",
+        "system_error": "cpp"
     }
 }

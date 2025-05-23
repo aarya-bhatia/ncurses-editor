@@ -53,4 +53,9 @@ struct File
     void move_begin();
 
     void insert_character(int c);
+
+    std::string get_current_line() {
+        const std::list<char>& it = *(cursor.line);
+        return { it.begin(), it.end() };
+    }
 };
