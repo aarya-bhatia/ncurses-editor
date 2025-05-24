@@ -13,7 +13,7 @@ void CommandMode::handle_event(unsigned c)
     case CTRL_DEL:
         if (mode_line.empty())
         {
-            editor->change_mode(NORMAL_MODE);
+            editor->restore_mode();
             break;
         }
         else

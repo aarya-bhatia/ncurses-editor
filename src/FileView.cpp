@@ -42,8 +42,8 @@ void FileView::draw() {
     }
 
     // full render only when dirty
-    if (dirty) {
-        // dirty = false;
+    if (true || dirty) { // TODO: remove boolean
+        dirty = false;
 
         // fill buffer with blanks
         werase(win);

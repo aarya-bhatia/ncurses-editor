@@ -17,6 +17,8 @@ struct BorderView : public Window {
 
     void resize(Dimension d)
     {
+        // log_debug("file view resized to %s", d.debug_string().c_str());
+
         werase(win);
         wnoutrefresh(win);
 
@@ -27,7 +29,7 @@ struct BorderView : public Window {
     void draw()
     {
         if (dirty) {
-            // dirty = false;
+            // dirty = false; // TODO: Uncomment this
             box(win, '|', '-');
         }
 
@@ -39,7 +41,6 @@ private:
         if (d.width > 0 && d.height > 0) {
             win = newwin(d.height, d.width, d.y, d.x);
             dirty = true;
-            log_debug("border view dirty %s", d.debug_string().c_str());
         }
     }
 

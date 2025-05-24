@@ -71,7 +71,8 @@ void Editor::handle_event(unsigned c)
 
 void Editor::change_mode(Mode mode)
 {
-    delete editor_mode;
+    delete prev_editor_mode;
+    prev_editor_mode = editor_mode;
 
     if (mode == INSERT_MODE)
     {
@@ -96,7 +97,13 @@ void Editor::command(const std::string& command)
     auto file = get_focused_file();
     log_debug("Got command: %s", command.c_str());
 
-    if (command == "q" || command == "quit")
+    if (command == "rw") {
+        resize(Dimension(bounds.x, bounds.y, bounds.width - 1, bounds.height));
+    }
+    else if (command == "rW") {
+        resize(Dimension(bounds.x, bounds.y, bounds.width + 1, bounds.height));
+    }
+    else if (command == "q" || command == "quit")
     {
         log_warn("quit flag set");
         quit = true;
@@ -177,7 +184,7 @@ void Editor::command(const std::string& command)
         log_warn("no such command: %s", command.c_str());
     }
 
-    change_mode(NORMAL_MODE);
+    restore_mode();
 }
 
 void Editor::draw()

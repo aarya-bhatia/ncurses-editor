@@ -1,5 +1,4 @@
 #include "FilePickerMode.h"
-#include <ncurses.h>
 #include "dirent.h"
 #include "Editor.h"
 #include "FileViewFactory.h"
@@ -66,8 +65,7 @@ void FilePickerMode::handle_event(unsigned c)
             editor->change_mode(NORMAL_MODE);
         }
         return;
-    case 'j':
-    case 'k':
+    default:
         _normal.handle_event(c);
         return;
     }

@@ -11,7 +11,7 @@ void InsertMode::handle_event(unsigned c)
         if (file) {
             file->cursor_left();
         }
-        editor->change_mode(NORMAL_MODE);
+        editor->restore_mode();
         break;
 
     default:

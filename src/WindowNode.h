@@ -83,19 +83,19 @@ struct WindowNode
 
     void resize(Dimension d)
     {
-        log_info("resize node %s", d.debug_string().c_str());
+        log_info("Resized node %p to %s", this, d.debug_string().c_str());
         bounds = d;
 
-        if (content != nullptr) {
+        if (layout == NORMAL && content != nullptr) {
             content->resize(d);
         }
-
-        for (WindowNode* child : children)
-        {
-            Dimension child_d = child->bounds;
-            child_d.width *= d.width / bounds.width;
-            child_d.height *= d.height / bounds.height;
-            child->resize(child_d);
+        else if (layout == VSPLIT) {
+            children[0]->resize(Dimension(d.x, d.y, d.width / 2, d.height));
+            children[1]->resize(Dimension(d.x + d.width / 2, d.y, d.width - d.width / 2, d.height));
+        }
+        else if (layout == HSPLIT) {
+            children[0]->resize(Dimension(d.x, d.y, d.width, d.height / 2));
+            children[1]->resize(Dimension(d.x, d.y + d.height / 2, d.width, d.height - d.height / 2));
         }
     }
 
@@ -108,7 +108,7 @@ struct WindowNode
         layout = HSPLIT;
 
         Dimension d1(bounds.x, bounds.y, bounds.width, bounds.height / 2);
-        Dimension d2(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height / 2);
+        Dimension d2(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height - bounds.height / 2);
 
         log_info("Split node %s to nodes %s and %s",
             bounds.debug_string().c_str(),
@@ -134,7 +134,7 @@ struct WindowNode
         layout = VSPLIT;
 
         Dimension d1(bounds.x, bounds.y, bounds.width / 2, bounds.height);
-        Dimension d2(bounds.x + bounds.width / 2, bounds.y, bounds.width / 2, bounds.height);
+        Dimension d2(bounds.x + bounds.width / 2, bounds.y, bounds.width - bounds.width / 2, bounds.height);
 
         log_info("Split node %s to nodes %s and %s",
             bounds.debug_string().c_str(),

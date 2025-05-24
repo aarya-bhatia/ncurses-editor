@@ -21,7 +21,7 @@ void StatusWindow::resize(Dimension bounds)
 std::string StatusWindow::get_status()
 {
     std::ostringstream left_oss;
-    std::ostringstream right_oss;
+    // std::ostringstream right_oss;
 
     File* file = editor.get_focused_file();
 
@@ -33,27 +33,33 @@ std::string StatusWindow::get_status()
 
     if (file)
     {
-        left_oss << " | " << file->filename << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
+        if (!file->filename.empty()) {
+            left_oss << " | " << file->filename;
+        }
+
+        left_oss << " | " << "Ln:" << file->cursor.y << " Col:" << file->cursor.x;
 
         if (!file->normal_mode_buffer.empty()) {
-            right_oss << file->normal_mode_buffer;
+            left_oss << " | " << file->normal_mode_buffer;
         }
     }
     else
     {
-        right_oss << "no file";
+        left_oss << " | no file";
     }
 
     std::string left_str = left_oss.str();
-    std::string right_str = right_oss.str();
+    // std::string right_str = right_oss.str();
 
-    size_t space_count = 0;
+    // size_t space_count = 0;
 
-    if (bounds.width > left_str.size() + right_str.size()) {
-        space_count = bounds.width - left_str.size() - right_str.size();
-        return left_str + std::string(space_count, ' ') + right_str;
-    }
-    else {
-        return (left_str + right_str).substr(0, bounds.width);
-    }
+    // if (bounds.width > left_str.size() + right_str.size()) {
+    //     space_count = bounds.width - left_str.size() - right_str.size();
+    //     return left_str + std::string(space_count, ' ') + right_str;
+    // }
+    // else {
+    //     return (left_str + right_str).substr(0, bounds.width);
+    // }
+
+    return left_str.substr(0, bounds.width);
 }

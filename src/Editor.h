@@ -21,6 +21,7 @@ class Editor
 private:
     bool quit = false;
 
+    EditorMode* prev_editor_mode = nullptr;
     EditorMode* editor_mode = nullptr;
     Dimension bounds;
     WindowManager window_manager;
@@ -43,6 +44,11 @@ public:
     void open(const std::vector<std::string>& filenames);
 
     void change_mode(Mode mode);
+
+    void restore_mode() {
+        editor_mode = prev_editor_mode;
+        prev_editor_mode = nullptr;
+    }
 
 private:
     FileView* get_focused_file_view();

@@ -70,6 +70,7 @@ public:
     }
 
     void resize(Dimension d) {
+        bounds = d;
         for (auto& tab : tabs) {
             tab->resize(d);
         }
