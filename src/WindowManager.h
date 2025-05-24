@@ -19,7 +19,6 @@ public:
 
     void init() {
         if (current_tab != -1) { return; }
-        log_debug("init window manager");
         WindowTab* tab = new WindowTab(bounds);
         tabs.push_back(tab);
         current_tab = 0;
@@ -39,8 +38,6 @@ public:
         else {
             current_tab = 0;
         }
-
-        redraw();
     }
 
     void tab_prev() {
@@ -50,8 +47,6 @@ public:
         else {
             current_tab = tabs.size() - 1;
         }
-
-        redraw();
     }
 
     WindowTab* get_current_tab() {
@@ -71,18 +66,6 @@ public:
     void draw() {
         if (current_tab != -1) {
             tabs[current_tab]->draw();
-        }
-    }
-
-    void show() {
-        if (current_tab != -1) {
-            tabs[current_tab]->show();
-        }
-    }
-
-    void redraw() {
-        if (current_tab != -1) {
-            tabs[current_tab]->redraw();
         }
     }
 

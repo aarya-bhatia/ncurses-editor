@@ -1,21 +1,39 @@
 #pragma once
 
-#include "NcursesWindow.h"
+#include <ncurses.h>
 #include <string>
 #include "log.h"
-
-class Editor;
+#include "Editor.h"
 
 struct ConsoleWindow
 {
     Editor& editor;
-    Dimension bounds;
-    NcursesWindow window;
+    WINDOW* win = NULL;
 
-    ConsoleWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {
+    ConsoleWindow(Editor& editor, Dimension d) : editor(editor) {
+        this->win = newwin(d.height, d.width, d.y, d.x);
     }
 
-    void draw();
-    void show();
-    void resize(Dimension bounds);
+    void draw() {
+        werase(win);
+
+        int ncols = getmaxx(win);
+
+        if (editor.editor_mode)
+        {
+            std::string tmp = editor.editor_mode->get_console_string();
+            mvwprintw(win, 0, 0, tmp.substr(0, ncols).c_str());
+        }
+
+        wnoutrefresh(win);
+
+    }
+
+    void resize(Dimension d)
+    {
+        werase(win);
+        wnoutrefresh(win);
+        delwin(win);
+        this->win = newwin(d.height, d.width, d.y, d.x);
+    }
 };

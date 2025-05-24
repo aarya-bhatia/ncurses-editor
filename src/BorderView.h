@@ -1,54 +1,50 @@
 #pragma once
 
 #include "Window.h"
-#include "NcursesWindow.h"
+#include <ncurses.h>
 
 struct BorderView : public Window {
-    Dimension bounds;
-    NcursesWindow frame;
-    bool should_redraw = true;
+    WINDOW* win = NULL;
+    bool dirty = true;
 
-    File* file = nullptr;
+    BorderView(Dimension d) {
+        _init(d);
+    }
 
-    BorderView(Dimension d) : bounds(d), frame(bounds) {}
-
-    Dimension get_bounds() { return bounds; }
+    ~BorderView() {
+        _destroy();
+    }
 
     void resize(Dimension d)
     {
-        this->bounds = d;
-        frame = NcursesWindow(bounds);
-        should_redraw = true;
+        werase(win);
+        wnoutrefresh(win);
+
+        _destroy();
+        _init(d);
     }
 
     void draw()
     {
-        if (should_redraw) {
-            log_debug("drawing border window %s", bounds.debug_string().c_str());
-            frame.draw_border();
-            // TODO
-            should_redraw = false;
+        if (dirty) {
+            dirty = false;
+            box(win, '|', '-');
+        }
+
+        wnoutrefresh(win);
+    }
+
+private:
+    void _init(Dimension d) {
+        if (d.width > 0 && d.height > 0) {
+            win = newwin(d.height, d.width, d.y, d.x);
+            dirty = true;
+            log_debug("border view dirty %s", d.debug_string().c_str());
         }
     }
 
-    void show()
-    {
-        frame.show();
-    }
-
-    void focus() {
-    }
-
-    void unfocus() {
-    }
-
-    void clear() {
-        frame.clear();
-    }
-
-    File* get_file() { return file; }
-
-    void redraw() {
-        should_redraw = true;
+    void _destroy() {
+        delwin(win);
+        win = NULL;
     }
 };

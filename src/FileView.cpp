@@ -2,126 +2,118 @@
 #include "log.h"
 #include <assert.h>
 
-FileView::FileView(File* file, Dimension bounds) : bounds(bounds), file(file)
+FileView::FileView(File* f, Dimension d) : file(f)
 {
-    this->scroll.dx = 0;
-    this->scroll.dy = 0;
-
-    window = NcursesWindow(bounds);
-    should_redraw = true;
+    win = newwin(d.height, d.width, d.y, d.x);
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
 {
     Cursor& cursor = file->cursor;
 
-    if (cursor.x - this->scroll.dx < 0)
+    if (cursor.x - scroll.dx < 0)
     {
-        this->scroll.dx = cursor.x;
+        scroll.dx = cursor.x;
         return true;
     }
-    else if (cursor.x - this->scroll.dx >= width())
+    else if (cursor.x - scroll.dx >= width())
     {
-        this->scroll.dx = cursor.x - width() + 1;
+        scroll.dx = cursor.x - width() + 1;
         return true;
     }
 
-    if (cursor.y - this->scroll.dy < 0)
+    if (cursor.y - scroll.dy < 0)
     {
-        this->scroll.dy = cursor.y;
+        scroll.dy = cursor.y;
         return true;
     }
-    else if (cursor.y - this->scroll.dy >= height())
+    else if (cursor.y - scroll.dy >= height())
     {
-        this->scroll.dy = cursor.y - height() + 1;
+        scroll.dy = cursor.y - height() + 1;
         return true;
     }
 
     return false;
 }
 
-void FileView::draw_content() {
-    if (!window.get()) {
-        return;
+void FileView::draw() {
+    if (focused && scroll_to_ensure_cursor_visible()) {
+        dirty = true;
     }
 
-    if (!should_redraw) { return; }
-    redraw_count += 1;
+    // full render only when dirty
+    if (dirty) {
+        dirty = false;
 
-    window.clear();
+        // fill buffer with blanks
+        werase(win);
 
-    auto line_itr = file->lines.begin();
-    std::advance(line_itr, this->scroll.dy);
-    int count_lines = 0;
-    for (; line_itr != file->lines.end() && count_lines < height(); line_itr++, count_lines++)
-    {
-        window.move(count_lines, 0);
-        auto& line = *line_itr;
-        auto col_itr = line.begin();
-        std::advance(col_itr, this->scroll.dx);
-        int count_cols = 0;
-        for (; col_itr != line.end() && count_cols < width(); col_itr++, count_cols++)
+        auto line_itr = file->lines.begin();
+        std::advance(line_itr, scroll.dy);
+        int count_lines = 0;
+
+        for (; line_itr != file->lines.end() && count_lines < height(); line_itr++, count_lines++)
         {
-            window.draw_character(count_lines, count_cols, *col_itr);
+            std::list<char>& line = *line_itr;
+            std::list<char>::iterator col_itr = line.begin();
+            std::advance(col_itr, scroll.dx);
+
+            int count_cols = 0;
+
+            for (; col_itr != line.end() && count_cols < width(); col_itr++, count_cols++)
+            {
+                mvwaddch(win, count_lines, count_cols, *col_itr);
+            }
         }
     }
 
-    should_redraw = false;
-}
-
-void FileView::draw() {
-    // log_debug("drawing file view %s", bounds.debug_string().c_str());
-
-    if (focused && scroll_to_ensure_cursor_visible()) {
-        should_redraw = true;
-    }
-
-    draw_content();
-
+    // move the global cursor if this is the focused view
     if (focused) {
-        draw_cursor();
+        // get absolute position of cursor
+        int cy = getbegy(win) + file->cursor.y - scroll.dy;
+        int cx = getbegx(win) + file->cursor.x - scroll.dx;
+
+        move(cy, cx);
     }
+
+    // stage changes
+    wnoutrefresh(win);
 }
 
 void FileView::partial_draw_character(Cursor position)
 {
-    log_debug("partial redraw at Ln:%d Col:%d", position.y, position.x);
+    int dpy = position.y - scroll.dy;
+    int dpx = position.x - scroll.dx;
 
-    int dpy = get_display_y(position.y);
-    int dpx = get_display_x(position.x);
     if (!is_visible(dpy, dpx)) {
         return;
     }
-    window.draw_character(dpy, dpx, *position.col);
+
+    mvwaddch(win, dpy, dpx, *position.col);
 }
 
 void FileView::partial_draw_line(Cursor position)
 {
-    log_debug("partial redraw at Ln:%d Col:%d", position.y, position.x);
+    wmove(win, position.y, position.x);
+    wclrtoeol(win);
 
-    window.clear_till_eol(position.y, position.x);
     auto col_itr = position.col;
     for (int x = position.x; x < position.line->size() && col_itr != position.line->end(); x++, col_itr++) {
-        int dpy = get_display_y(position.y);
-        int dpx = get_display_x(x);
+
+        int dpy = position.y - scroll.dy;
+        int dpx = x - scroll.dx;
+
         if (!is_visible(dpy, dpx)) {
             break;
         }
-        char ch = *col_itr;
-        window.draw_character(dpy, dpx, ch);
-    }
-}
 
-void FileView::draw_cursor()
-{
-    int cy = bounds.y + file->cursor.y - scroll.dy;
-    int cx = bounds.x + file->cursor.x - scroll.dx;
-    move(cy, cx);
+        char ch = *col_itr;
+        mvwaddch(win, dpy, dpx, ch);
+    }
 }
 
 void FileView::focus()
 {
-    log_debug("FileView::focus() %s", bounds.debug_string().c_str());
     focused = true;
 
     if (save_cursor_y < file->count_lines())
@@ -136,7 +128,6 @@ void FileView::focus()
 
 void FileView::unfocus()
 {
-    log_debug("FileView::unfocus() %s", bounds.debug_string().c_str());
     focused = false;
 
     save_cursor_x = file->cursor.x;
@@ -144,8 +135,22 @@ void FileView::unfocus()
 }
 
 void FileView::resize(Dimension d) {
-    if (bounds == d) { return; }
-    bounds = d;
-    window = NcursesWindow(d);
-    should_redraw = true;
+    int cury, curx, curh, curw;
+    getbegyx(win, cury, curx);
+    getmaxyx(win, curh, curw);
+
+    if (d.height == curh && d.width == curw && d.y == cury && d.x == curx) {
+        return;
+    }
+
+    log_debug("file view resized to %s", d.debug_string().c_str());
+
+    // erase the contents on screen
+    werase(win);
+    wnoutrefresh(win);
+    delwin(win);
+
+    // new window at given position
+    win = newwin(d.height, d.width, d.y, d.x);
+    dirty = true;
 }

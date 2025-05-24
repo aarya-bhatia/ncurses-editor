@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NcursesWindow.h"
+#include <ncurses.h>
 #include <string>
 #include <vector>
 #include "log.h"
@@ -11,14 +11,14 @@ struct StatusWindow
 {
     Editor& editor;
     Dimension bounds;
-    NcursesWindow window;
+    WINDOW *win = NULL;
 
-    StatusWindow(Editor& editor, Dimension bounds) : editor(editor), bounds(bounds), window(bounds) {
+    StatusWindow(Editor& editor, Dimension d) : editor(editor), bounds(d) {
+        win = newwin(d.height, d.width, d.y, d.x);
     }
 
     std::string get_status();
 
     void draw();
-    void show();
     void resize(Dimension bounds);
 };

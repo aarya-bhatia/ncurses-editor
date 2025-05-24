@@ -9,7 +9,6 @@ File::File(FileID _id, const std::string& _filename) :
     id(_id)
 {
     filename = !_filename.empty() ? _filename : "untitled-" + std::to_string(id);
-    log_debug("new file name:%s id:%d", filename.c_str(), id);
 
     lines.push_back({});
     cursor.x = 0;

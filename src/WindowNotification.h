@@ -6,7 +6,6 @@ using Notification = WindowTab::Visitor;
 
 struct FileReloadNotification : public Notification {
     void operator()(Window* content_window) {
-        content_window->redraw();
     }
 };
 

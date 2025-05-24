@@ -17,10 +17,12 @@ void clear_screen() { clear(); refresh(); }
 
 Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
-    _init(d);
+    status_window = new StatusWindow(*this, Dimension(d.x, d.y + d.height - 2, d.width, 1));
+    console_window = new ConsoleWindow(*this, Dimension(d.x, d.y + d.height - 1, d.width, 1));
     file_update_handler = new FileUpdateHandler(*this);
     editor_mode = new NormalMode(this);
-    editor_mode->editor = this;
+    window_manager.init();
+    window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
 }
 
 Editor::~Editor()
@@ -33,27 +35,6 @@ Editor::~Editor()
         delete file;
     }
 }
-
-void Editor::_init(Dimension d)
-{
-    log_debug("init editor");
-    bounds = d;
-
-    if (!status_window || status_window->bounds != d) {
-        delete status_window;
-        status_window = new StatusWindow(*this, Dimension(d.x, d.y + d.height - 2, d.width, 1));
-    }
-
-    if (!console_window || console_window->bounds != d) {
-        delete console_window;
-        console_window = new ConsoleWindow(*this, Dimension(d.x, d.y + d.height - 1, d.width, 1));
-    }
-
-    window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
-    window_manager.init();
-    window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
-}
-
 
 FileView* Editor::get_focused_file_view() {
     Window* content = window_manager.get_current_tab()->get_focused_node()->get_content();
@@ -68,8 +49,10 @@ File* Editor::get_focused_file() {
 void Editor::resize(Dimension d)
 {
     log_info("resizing screen to ln:%d col:%d", LINES, COLS);
-    _init(d);
-    window_manager.redraw();
+    this->bounds = d;
+    status_window->resize(Dimension(d.x, d.y + d.height - 2, d.width, 1));
+    console_window->resize(Dimension(d.x, d.y + d.height - 1, d.width, 1));
+    window_manager.resize(Dimension(d.x, d.y, d.width, d.height - 2));
 }
 
 void Editor::handle_event(unsigned c)
@@ -142,7 +125,6 @@ void Editor::command(const std::string& command)
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
         current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
-        window_manager.redraw();
     }
     else if (command == "vs" || command == "vsplit")
     {
@@ -150,7 +132,6 @@ void Editor::command(const std::string& command)
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
         current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
-        window_manager.redraw();
     }
     else if (command == "right")
     {
@@ -202,12 +183,6 @@ void Editor::command(const std::string& command)
     }
 
     change_mode(NORMAL_MODE);
-}
-
-void Editor::show() {
-    window_manager.show();
-    status_window->show();
-    console_window->show();
 }
 
 void Editor::draw()

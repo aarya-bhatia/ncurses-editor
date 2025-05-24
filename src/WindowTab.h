@@ -34,16 +34,8 @@ public:
         if (v) _accept(_root_node, v, p);
     }
 
-    void redraw() {
-        _root_node->redraw();
-    }
-
     void draw() {
         _root_node->draw();
-    }
-
-    void show() {
-        _root_node->show();
     }
 
     void resize(Dimension d) {

@@ -4,19 +4,18 @@
 
 void StatusWindow::draw()
 {
-    wclear(window.get());
-    wprintw(window.get(), get_status().c_str());
-}
-
-void StatusWindow::show()
-{
-    wrefresh(window.get());
+    werase(win);
+    mvwprintw(win, 0, 0, get_status().c_str());
+    wnoutrefresh(win);
 }
 
 void StatusWindow::resize(Dimension bounds)
 {
+    werase(win);
+    wnoutrefresh(win);
+    delwin(win);
     this->bounds = bounds;
-    this->window = NcursesWindow(bounds);
+    this->win = newwin(bounds.height, bounds.width, bounds.y, bounds.x);
 }
 
 std::string StatusWindow::get_status()

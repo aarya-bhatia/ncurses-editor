@@ -84,16 +84,18 @@ struct WindowNode
     void resize(Dimension d)
     {
         log_info("resize node %s", d.debug_string().c_str());
+
+        // Must resize outer most window before children
+        if (content != nullptr) {
+            content->resize(d);
+        }
+
         for (WindowNode* child : children)
         {
             Dimension child_d = child->bounds;
             child_d.width *= d.width / bounds.width;
             child_d.height *= d.height / bounds.height;
             child->resize(child_d);
-        }
-
-        if (content != nullptr) {
-            content->resize(d);
         }
 
         bounds = d;
@@ -160,24 +162,6 @@ struct WindowNode
         }
 
         for (WindowNode* child : children) { child->draw(); }
-    }
-
-    void show()
-    {
-        if (content) {
-            content->show();
-        }
-
-        for (WindowNode* child : children) { child->show(); }
-    }
-
-    void redraw()
-    {
-        if (content) {
-            content->redraw();
-        }
-
-        for (WindowNode* child : children) { child->redraw(); }
     }
 
     int count_nodes()

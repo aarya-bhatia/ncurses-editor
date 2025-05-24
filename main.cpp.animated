@@ -62,31 +62,53 @@ int main(int argc, const char** argv)
     }
 
     Editor editor(Dimension(0, 0, COLS, LINES));
-    editor.open(filenames);
 
-    while (!editor.ok())
-    {
-        if (resized)
-        {
-            log_info("window resize detected!");
-            resized = false;
-            endwin();
-            refresh();                 // Restart curses mode
-            clear();                   // Clear screen
-            editor.resize(Dimension(0, 0, COLS, LINES));
-        }
+    editor.open({"test.txt"});
+    editor.draw();
+    doupdate();
+    sleep(1);
+    editor.command("sp");
+    editor.draw();
+    doupdate();
+    sleep(1);
+    editor.command("right");
+    editor.draw();
+    doupdate();
+    sleep(1);
+    editor.command("Ex");
+    editor.draw();
+    doupdate();
+    sleep(1);
+    editor.command("q");
+    editor.draw();
+    doupdate();
+    sleep(1);
 
-        editor.draw();
-        doupdate(); // flush changes to screen
+    // editor.open(filenames);
 
-        int ch = getch();
+    // while (!editor.ok())
+    // {
+    //     if (resized)
+    //     {
+    //         log_info("window resize detected!");
+    //         resized = false;
+    //         endwin();
+    //         refresh();                 // Restart curses mode
+    //         clear();                   // Clear screen
+    //         editor.resize(Dimension(0, 0, COLS, LINES));
+    //     }
 
-        if (ch == CTRL_C) {
-            break;
-        }
+    //     editor.draw();
+    //     doupdate(); // flush changes to screen
 
-        editor.handle_event(ch);
-    }
+    //     int ch = getch();
+
+    //     if (ch == CTRL_C) {
+    //         break;
+    //     }
+
+    //     editor.handle_event(ch);
+    // }
 
     cleanup();
     return 0;
