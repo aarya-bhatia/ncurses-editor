@@ -43,7 +43,7 @@ void FileView::draw() {
 
     // full render only when dirty
     if (dirty) {
-        dirty = false;
+        // dirty = false;
 
         // fill buffer with blanks
         werase(win);
@@ -135,11 +135,7 @@ void FileView::unfocus()
 }
 
 void FileView::resize(Dimension d) {
-    int cury, curx, curh, curw;
-    getbegyx(win, cury, curx);
-    getmaxyx(win, curh, curw);
-
-    if (d.height == curh && d.width == curw && d.y == cury && d.x == curx) {
+    if (get_bounds() == d) {
         return;
     }
 

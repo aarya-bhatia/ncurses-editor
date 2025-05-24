@@ -9,10 +9,6 @@ struct Window
 
     virtual void draw() = 0;
     virtual void resize(Dimension d) = 0;
-
     virtual void focus() {}
     virtual void unfocus() {}
-
-    virtual void partial_draw_character(Cursor position) {}
-    virtual void partial_draw_line(Cursor position) {}
 };

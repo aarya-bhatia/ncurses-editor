@@ -9,16 +9,12 @@ struct ViewContainer : public Window
 private:
     Dimension d;
     BorderView* frame = nullptr;
-    Window* view = nullptr;
+    FileView* view = nullptr;
     bool focused = false;
 
 public:
-    ViewContainer(Dimension d) {
+    ViewContainer(Dimension d = Dimension(), File* file = nullptr) {
         this->d = d;
-        frame = new BorderView(d);
-    }
-
-    ViewContainer(Dimension d, File* file) {
         frame = new BorderView(d);
         if (file) {
             view = new FileView(file, get_view_bounds());
@@ -30,22 +26,14 @@ public:
         delete view;
     }
 
+    FileView* get_file_view() {
+        return view;
+    }
+
     Dimension get_view_bounds() {
-        if (d.width >= 2 && d.height >= 2) {
-            return Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2);
-        }
-        else {
-            return Dimension();
-        }
+        return (d.width >= 2 && d.height >= 2) ?
+            Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2) : Dimension();
     }
-
-    void set_view(Window* _view) {
-        delete view;
-        view = _view;
-        if(_view) _view->resize(get_view_bounds());
-    }
-
-    Window* get_view() { return view; }
 
     void draw() override {
         frame->draw(); // frame must be drawn before content so that content does not get overriden
@@ -75,15 +63,5 @@ public:
         focused = false;
         frame->unfocus();
         if (view) view->unfocus();
-    }
-
-    void partial_draw_line(Cursor position) override
-    {
-        if (view) view->partial_draw_line(position);
-    }
-
-    void partial_draw_character(Cursor position) override
-    {
-        if (view) view->partial_draw_character(position);
     }
 };

@@ -19,6 +19,14 @@ struct FileView : public Window
     void partial_draw_line(Cursor position);
     void focus();
     void unfocus();
+    void set_dirty() { dirty = true; }
+
+    Dimension get_bounds() const {
+        int cury, curx, curh, curw;
+        getbegyx(win, cury, curx);
+        getmaxyx(win, curh, curw);
+        return Dimension(curx, cury, curw, curh);
+    }
 
 private:
 
@@ -27,7 +35,7 @@ private:
 
     bool scroll_to_ensure_cursor_visible();
 
-    WINDOW *win = NULL;
+    WINDOW* win = NULL;
     File* file = nullptr; // shared ptr
     Scroll scroll;
     bool dirty = true;

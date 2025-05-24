@@ -13,8 +13,6 @@
 #include "NormalMode.h"
 #include "FilePickerMode.h"
 
-void clear_screen() { clear(); refresh(); }
-
 Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
     status_window = new StatusWindow(*this, Dimension(d.x, d.y + d.height - 2, d.width, 1));
@@ -121,14 +119,12 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
-        clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
         current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
     }
     else if (command == "vs" || command == "vsplit")
     {
-        clear_screen();
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
         current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
@@ -151,7 +147,6 @@ void Editor::command(const std::string& command)
     }
     else if (command == "tabnew")
     {
-        clear_screen();
         window_manager.tab_new();
         window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
     }

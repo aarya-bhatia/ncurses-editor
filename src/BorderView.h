@@ -27,7 +27,7 @@ struct BorderView : public Window {
     void draw()
     {
         if (dirty) {
-            dirty = false;
+            // dirty = false;
             box(win, '|', '-');
         }
 

@@ -84,8 +84,8 @@ struct WindowNode
     void resize(Dimension d)
     {
         log_info("resize node %s", d.debug_string().c_str());
+        bounds = d;
 
-        // Must resize outer most window before children
         if (content != nullptr) {
             content->resize(d);
         }
@@ -97,8 +97,6 @@ struct WindowNode
             child_d.height *= d.height / bounds.height;
             child->resize(child_d);
         }
-
-        bounds = d;
     }
 
     void close_tab();

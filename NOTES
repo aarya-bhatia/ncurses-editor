@@ -8,6 +8,8 @@ Core
 - TODO optimize ncurses window rendering 
     - int doupdate(void);
     - int wnoutrefresh(WINDOW *win);
+- TODO modify save cursor in FileView on window notifications.
+- TODO status bar colors - add bg color of blue
 
 Features
 - TODO enable new screen to select an open file buffer and set in current node

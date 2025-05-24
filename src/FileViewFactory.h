@@ -16,10 +16,6 @@ struct FileViewFactory {
         if (!container) {
             return nullptr;
         }
-        Window* view = container->get_view();
-        if (!view) {
-            return nullptr;
-        }
-        return dynamic_cast<FileView*>(view);
+        return container->get_file_view();
     }
 };
