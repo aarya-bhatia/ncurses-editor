@@ -26,6 +26,9 @@ public:
 
     ~WindowTab() { _destroy(); }
 
+    Window* get_focused_content() { return _focused_node->content; }
+    void set_focused_content(Window* content) { _focused_node->set_content(content); }
+
     WindowNode* get_focused_node() { return _focused_node; }
 
     Dimension get_bounds() const { return _bounds; }

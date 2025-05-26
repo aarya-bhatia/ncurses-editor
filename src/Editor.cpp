@@ -34,7 +34,7 @@ Editor::~Editor()
 }
 
 FileView* Editor::get_focused_file_view() {
-    Window* content = window_manager.get_current_tab()->get_focused_node()->get_content();
+    Window* content = window_manager.get_focused_content();
     return FileViewFactory::get_file_view(content);
 }
 
@@ -103,7 +103,7 @@ void Editor::command(const std::string& command)
         resize(Dimension(bounds.x, bounds.y, bounds.width + 1, bounds.height));
     }
     else if (command == "close") {
-        window_manager.get_current_tab()->close_focused_node();
+        window_manager.close_focused_node();
     }
     else if (command == "q" || command == "quit")
     {
@@ -128,29 +128,27 @@ void Editor::command(const std::string& command)
     }
     else if (command == "sp" || command == "split")
     {
-        WindowTab* current_tab = window_manager.get_current_tab();
-        current_tab->splith();
+        window_manager.splith();
     }
     else if (command == "vs" || command == "vsplit")
     {
-        WindowTab* current_tab = window_manager.get_current_tab();
-        current_tab->splitv();
+        window_manager.splitv();
     }
     else if (command == "right")
     {
-        window_manager.get_current_tab()->focus_right();
+        window_manager.focus_right();
     }
     else if (command == "left")
     {
-        window_manager.get_current_tab()->focus_left();
+        window_manager.focus_left();
     }
     else if (command == "top" || command == "up")
     {
-        window_manager.get_current_tab()->focus_top();
+        window_manager.focus_top();
     }
     else if (command == "bottom" || command == "down")
     {
-        window_manager.get_current_tab()->focus_bottom();
+        window_manager.focus_bottom();
     }
     else if (command == "tabnew")
     {
@@ -193,7 +191,7 @@ void Editor::draw()
     console_window->draw();
 
     // this should not happen ideally
-    if (window_manager.get_current_tab()->get_focused_node()->get_content() == nullptr) {
+    if (window_manager.get_focused_content() == nullptr) {
         move(0, 0);
     }
 }
@@ -216,9 +214,8 @@ void Editor::open(File* file)
 {
     if (!file) { return; }
 
-    Dimension d = window_manager.get_current_tab()->get_focused_bounds();
-    Window* content = FileViewFactory::create_content_window(d, file);
-    window_manager.get_current_tab()->get_focused_node()->set_content(content);
+    Window* content = FileViewFactory::create_content_window(window_manager.get_focused_bounds(), file);
+    window_manager.set_focused_content(content);
 }
 
 File* Editor::add_file(const std::string& filename) {

@@ -14,7 +14,46 @@ public:
     WindowManager(Dimension d) : bounds(d) { init(); }
     ~WindowManager() { _destroy(); }
 
+    Dimension get_bounds() const { return bounds; }
+
+    Dimension get_focused_bounds() const {
+        return tabs[current_tab]->get_focused_bounds();
+    }
+
+    Window* get_focused_content() { return tabs[current_tab]->get_focused_content(); }
+
+    void set_focused_content(Window* content) { return tabs[current_tab]->set_focused_content(content); }
+
+    void close_focused_node() {
+        tabs[current_tab]->close_focused_node();
+    }
+
+    bool splith() {
+        return tabs[current_tab]->splith();
+    }
+
+    bool splitv() {
+        return tabs[current_tab]->splitv();
+    }
+
+    bool focus_left() {
+        return tabs[current_tab]->focus_left();
+    }
+
+    bool focus_top() {
+        return tabs[current_tab]->focus_top();
+    }
+
+    bool focus_right() {
+        return tabs[current_tab]->focus_right();
+    }
+
+    bool focus_bottom() {
+        return tabs[current_tab]->focus_bottom();
+    }
+
     int count_tabs() const { return tabs.size(); }
+
     int get_tab_index() const { return current_tab; }
 
     void init() {
