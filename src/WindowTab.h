@@ -2,6 +2,7 @@
 
 #include "WindowNode.h"
 #include <assert.h>
+#include "FileViewFactory.h"
 
 class WindowTab
 {
@@ -30,6 +31,33 @@ public:
     Dimension get_bounds() const { return _bounds; }
     Dimension get_focused_bounds() const { return _focused_node->bounds; }
 
+    void close_focused_node() {
+        if (_root_node == _focused_node) {
+            delete _root_node;
+            _root_node = _focused_node = nullptr;
+            _init();
+            return;
+        }
+
+        WindowNode* sibling = _focused_node->sibling();
+        Window* new_content = sibling->content;
+        sibling->content = nullptr;
+
+        WindowNode* new_focused_node = _focused_node->parent;
+
+        delete _focused_node;
+        delete sibling;
+
+        _focused_node = new_focused_node;
+
+        new_focused_node->children[0] = nullptr;
+        new_focused_node->children[1] = nullptr;
+        new_focused_node->layout = WindowNode::Layout::NORMAL;
+
+        if (new_content) new_focused_node->set_content(new_content);
+        new_focused_node->focus();
+    }
+
     void accept(Visitor* v, Predicate* p = nullptr) {
         if (v) _accept(_root_node, v, p);
     }
@@ -49,6 +77,7 @@ public:
         _focused_node->splith();
         assert(_focused_node->layout == WindowNode::Layout::HSPLIT);
         _set_focused_node(_focused_node->get_top_child());
+        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(nullptr, _focused_node->sibling()->bounds));
         return true;
     }
 
@@ -57,6 +86,7 @@ public:
         _focused_node->splitv();
         assert(_focused_node->layout == WindowNode::Layout::VSPLIT);
         _set_focused_node(_focused_node->get_left_child());
+        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(nullptr, _focused_node->sibling()->bounds));
         return true;
     }
 
@@ -123,6 +153,7 @@ private:
         _root_node->bounds = _bounds;
         _focused_node = _root_node;
         _focused_node->focus();
+        _focused_node->set_content(FileViewFactory::create_content_window(nullptr, _bounds));
     }
 
     void _accept(WindowNode* root, Visitor* v, Predicate* p) {

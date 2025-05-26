@@ -32,6 +32,7 @@ struct WindowNode
     }
 
     void set_content(Window* c) {
+        if (!c) { return; }
         delete content;
         content = c;
         content->resize(bounds);

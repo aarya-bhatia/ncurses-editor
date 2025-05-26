@@ -3,6 +3,7 @@ Todo
 - modify save cursor in FileView on window notifications.
 - enable new screen to select an open file buffer and set in current node
 - status bar colors - add bg color of blue
+- UI testing
 
 Done
 - fix split dimensions for odd sizes

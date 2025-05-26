@@ -20,7 +20,6 @@ Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.wi
     file_update_handler = new FileUpdateHandler(*this);
     editor_mode = new NormalMode(this);
     window_manager.init();
-    window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
 }
 
 Editor::~Editor()
@@ -103,6 +102,9 @@ void Editor::command(const std::string& command)
     else if (command == "rW") {
         resize(Dimension(bounds.x, bounds.y, bounds.width + 1, bounds.height));
     }
+    else if (command == "close") {
+        window_manager.get_current_tab()->close_focused_node();
+    }
     else if (command == "q" || command == "quit")
     {
         log_warn("quit flag set");
@@ -128,13 +130,11 @@ void Editor::command(const std::string& command)
     {
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splith();
-        current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
     }
     else if (command == "vs" || command == "vsplit")
     {
         WindowTab* current_tab = window_manager.get_current_tab();
         current_tab->splitv();
-        current_tab->get_focused_node()->sibling()->set_content(FileViewFactory::create_content_window());
     }
     else if (command == "right")
     {
@@ -155,7 +155,6 @@ void Editor::command(const std::string& command)
     else if (command == "tabnew")
     {
         window_manager.tab_new();
-        window_manager.get_current_tab()->get_focused_node()->set_content(FileViewFactory::create_content_window());
     }
     else if (command == "tabprev")
     {
