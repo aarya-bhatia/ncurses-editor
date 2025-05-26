@@ -217,7 +217,7 @@ void Editor::open(File* file)
     if (!file) { return; }
 
     Dimension d = window_manager.get_current_tab()->get_focused_bounds();
-    Window* content = FileViewFactory::create_content_window(file, d);
+    Window* content = FileViewFactory::create_content_window(d, file);
     window_manager.get_current_tab()->get_focused_node()->set_content(content);
 }
 

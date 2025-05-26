@@ -4,7 +4,7 @@
 #include "ViewContainer.h"
 
 struct FileViewFactory {
-    static Window* create_content_window(File* file = nullptr, Dimension d = Dimension()) {
+    static Window* create_content_window(Dimension d, File* file = nullptr) {
         return new ViewContainer(d, file);
     }
 
