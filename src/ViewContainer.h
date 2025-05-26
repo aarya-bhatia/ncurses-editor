@@ -64,4 +64,14 @@ public:
         frame->unfocus();
         if (view) view->unfocus();
     }
+
+    void hide() override {
+        frame->hide();
+        if (view) view->hide();
+    }
+
+    void show() override {
+        frame->show();
+        if (view) view->show();
+    }
 };
