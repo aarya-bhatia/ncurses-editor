@@ -13,7 +13,7 @@ private:
     bool focused = false;
 
 public:
-    ViewContainer(Dimension d = Dimension(), File* file = nullptr) {
+    ViewContainer(Dimension d, File* file = nullptr) {
         this->d = d;
         frame = new BorderView(d);
         if (file) {

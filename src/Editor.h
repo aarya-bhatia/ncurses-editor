@@ -42,6 +42,7 @@ public:
     void show();
     void resize(Dimension d);
     void open(const std::vector<std::string>& filenames);
+    void open(File*);
 
     void change_mode(Mode mode);
 

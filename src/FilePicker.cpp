@@ -43,8 +43,7 @@ FilePickerMode::FilePickerMode(Editor* editor) : _normal(editor)
 
     _file->add_subscriber((FileSubscriber*)editor->file_update_handler);
 
-    Window* new_content = FileViewFactory::create_content_window(_file);
-    editor->window_manager.get_current_tab()->get_focused_node()->set_content(new_content);
+    editor->open(_file);
 }
 
 FilePickerMode::~FilePickerMode()

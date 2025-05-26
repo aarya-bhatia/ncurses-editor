@@ -43,7 +43,7 @@ void FileView::draw() {
     }
 
     // full render only when dirty
-    if (true || dirty) { // TODO: remove boolean
+    if (dirty) {
         dirty = false;
 
         // fill buffer with blanks

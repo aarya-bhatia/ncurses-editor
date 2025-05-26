@@ -29,7 +29,7 @@ struct BorderView : public Window {
     void draw()
     {
         if (dirty) {
-            // dirty = false; // TODO: Uncomment this
+            dirty = false; // TODO: Uncomment this
             box(win, '|', '-');
         }
 
