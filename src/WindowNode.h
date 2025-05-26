@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <list>
 #include "Dimension.h"
 #include "log.h"
@@ -11,7 +12,7 @@
 struct WindowNode
 {
     Dimension bounds;
-    std::vector<WindowNode*> children;
+    std::array<WindowNode*, 2> children = { nullptr, nullptr };
     WindowNode* parent = nullptr;
     enum Layout { NORMAL, HSPLIT, VSPLIT }layout = NORMAL;
     bool focused = false;
@@ -53,9 +54,15 @@ struct WindowNode
     void focus() { focused = true; if (content)content->focus(); }
     void unfocus() { focused = false; if (content)content->unfocus(); }
 
+    bool has_children() const { return children[0] != nullptr && children[1] != nullptr; }
+
     bool splitv_allowed(int min_width = 3) {
         if (bounds.width / 2 < min_width) {
             return false;
+        }
+
+        if (!has_children()) {
+            return true;
         }
 
         for (WindowNode* child : children) {
@@ -70,6 +77,10 @@ struct WindowNode
     bool splith_allowed(int min_height = 3) {
         if (bounds.height / 2 < min_height) {
             return false;
+        }
+
+        if (!has_children()) {
+            return true;
         }
 
         for (WindowNode* child : children) {
@@ -131,13 +142,10 @@ struct WindowNode
             d1.debug_string().c_str(),
             d2.debug_string().c_str());
 
-        WindowNode* child1 = new WindowNode(d1, this);
-        WindowNode* child2 = new WindowNode(d2, this);
+        children[0] = new WindowNode(d1, this);
+        children[1] = new WindowNode(d2, this);
 
-        children.push_back(child1);
-        children.push_back(child2);
-
-        child1->content = this->content;
+        children[0]->content = this->content;
         this->content = nullptr;
 
         resize(bounds);
@@ -157,13 +165,10 @@ struct WindowNode
             d1.debug_string().c_str(),
             d2.debug_string().c_str());
 
-        WindowNode* child1 = new WindowNode(d1, this);
-        WindowNode* child2 = new WindowNode(d2, this);
+        children[0] = new WindowNode(d1, this);
+        children[1] = new WindowNode(d2, this);
 
-        children.push_back(child1);
-        children.push_back(child2);
-
-        child1->content = this->content;
+        children[0]->content = this->content;
         this->content = nullptr;
 
         resize(bounds);
@@ -175,12 +180,21 @@ struct WindowNode
             content->draw();
         }
 
+        if (!has_children()) {
+            return;
+        }
+
         for (WindowNode* child : children) { child->draw(); }
     }
 
     int count_nodes()
     {
         int ans = 1;
+
+        if (!has_children()) {
+            return ans;
+        }
+
         for (WindowNode* child : children) { ans += child->count_nodes(); }
         return ans;
     }

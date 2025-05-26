@@ -14,7 +14,7 @@ TEST_CASE("check horizontal split", MY_TEST_SUITE) {
     assert(node->splith_allowed());
     node->splith();
 
-    assert(node->children.size() == 2);
+    assert(node->has_children());
 
     Dimension bounds = node->children[0]->bounds;
     assert(bounds.x == 50);
@@ -38,7 +38,7 @@ TEST_CASE("check vertical split", MY_TEST_SUITE) {
     assert(node->splitv_allowed());
     node->splitv();
 
-    assert(node->children.size() == 2);
+    assert(node->has_children());
 
     Dimension bounds = node->children[0]->bounds;
     assert(bounds.x == 50);
@@ -99,13 +99,13 @@ TEST_CASE("multiple splits", MY_TEST_SUITE) {
     auto bottom_left = bottom_node->children[0];
     auto bottom_right = bottom_node->children[1];
 
-    REQUIRE(root.children.size() == 2);
-    REQUIRE(top_node->children.size() == 2);
-    REQUIRE(bottom_node->children.size() == 2);
-    REQUIRE(top_node->children[0]->children.size() == 0);
-    REQUIRE(top_node->children[1]->children.size() == 0);
-    REQUIRE(bottom_node->children[0]->children.size() == 0);
-    REQUIRE(bottom_node->children[1]->children.size() == 0);
+    REQUIRE(root.has_children());
+    REQUIRE(top_node->has_children());
+    REQUIRE(bottom_node->has_children());
+    REQUIRE(!top_node->children[0]->has_children());
+    REQUIRE(!top_node->children[1]->has_children());
+    REQUIRE(!bottom_node->children[0]->has_children());
+    REQUIRE(!bottom_node->children[1]->has_children());
 
     REQUIRE(top_left->bounds == Dimension(0, 0, 50, 50));
     REQUIRE(top_right->bounds == Dimension(50, 0, 50, 50));
