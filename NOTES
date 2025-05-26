@@ -1,15 +1,11 @@
-Core
-- TODO store file views in file manager so we can restore file state when switching back to it.
-- TODO impl close tabs
-- TODO fix split dimensions for odd sizes
-- TODO dont redraw cursor if unchanged to avoid flicker
-- DONE update status line - include tab info
-- DONE fix window focus issue on splits - debugger
-- TODO optimize ncurses window rendering 
-    - int doupdate(void);
-    - int wnoutrefresh(WINDOW *win);
-- TODO modify save cursor in FileView on window notifications.
-- TODO status bar colors - add bg color of blue
+Todo
+- impl close tabs
+- modify save cursor in FileView on window notifications.
+- enable new screen to select an open file buffer and set in current node
+- status bar colors - add bg color of blue
 
-Features
-- TODO enable new screen to select an open file buffer and set in current node
+Done
+- fix split dimensions for odd sizes
+- update status line - include tab info
+- fix window focus issue on splits - debugger
+- optimize ncurses window rendering 
