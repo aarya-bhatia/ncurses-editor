@@ -81,6 +81,16 @@ struct WindowNode
         return true;
     }
 
+    void get_hsplit_halves(Dimension& d1, Dimension& d2) {
+        d1 = Dimension(bounds.x, bounds.y, bounds.width, bounds.height / 2);
+        d2 = Dimension(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height - bounds.height / 2);
+    }
+
+    void get_vsplit_halves(Dimension& d1, Dimension& d2) {
+        d1 = Dimension(bounds.x, bounds.y, bounds.width / 2, bounds.height);
+        d2 = Dimension(bounds.x + bounds.width / 2, bounds.y, bounds.width - bounds.width / 2, bounds.height);
+    }
+
     void resize(Dimension d)
     {
         log_info("Resized node %p to %s", this, d.debug_string().c_str());
@@ -88,14 +98,20 @@ struct WindowNode
 
         if (layout == NORMAL && content != nullptr) {
             content->resize(d);
+            return;
         }
-        else if (layout == VSPLIT) {
-            children[0]->resize(Dimension(d.x, d.y, d.width / 2, d.height));
-            children[1]->resize(Dimension(d.x + d.width / 2, d.y, d.width - d.width / 2, d.height));
+
+        Dimension d1, d2;
+
+        if (layout == VSPLIT) {
+            get_vsplit_halves(d1, d2);
+            children[0]->resize(d1);
+            children[1]->resize(d2);
         }
         else if (layout == HSPLIT) {
-            children[0]->resize(Dimension(d.x, d.y, d.width, d.height / 2));
-            children[1]->resize(Dimension(d.x, d.y + d.height / 2, d.width, d.height - d.height / 2));
+            get_hsplit_halves(d1, d2);
+            children[0]->resize(d1);
+            children[1]->resize(d2);
         }
     }
 
@@ -107,10 +123,10 @@ struct WindowNode
 
         layout = HSPLIT;
 
-        Dimension d1(bounds.x, bounds.y, bounds.width, bounds.height / 2);
-        Dimension d2(bounds.x, bounds.y + bounds.height / 2, bounds.width, bounds.height - bounds.height / 2);
+        Dimension d1, d2;
+        get_hsplit_halves(d1, d2);
 
-        log_info("Split node %s to nodes %s and %s",
+        log_debug("Split node %s to nodes %s and %s",
             bounds.debug_string().c_str(),
             d1.debug_string().c_str(),
             d2.debug_string().c_str());
@@ -133,10 +149,10 @@ struct WindowNode
 
         layout = VSPLIT;
 
-        Dimension d1(bounds.x, bounds.y, bounds.width / 2, bounds.height);
-        Dimension d2(bounds.x + bounds.width / 2, bounds.y, bounds.width - bounds.width / 2, bounds.height);
+        Dimension d1, d2;
+        get_vsplit_halves(d1, d2);
 
-        log_info("Split node %s to nodes %s and %s",
+        log_debug("Split node %s to nodes %s and %s",
             bounds.debug_string().c_str(),
             d1.debug_string().c_str(),
             d2.debug_string().c_str());
