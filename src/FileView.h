@@ -11,14 +11,16 @@ struct FileView : public Window
 
     File* get_file() { return file; }
 
-    void draw();
-    void resize(Dimension bounds);
+    void draw() override;
+    void resize(Dimension bounds) override;
     int height() const { return getmaxy(win); }
     int width() const { return getmaxx(win); }
     void partial_draw_character(Cursor position);
     void partial_draw_line(Cursor position);
-    void focus();
-    void unfocus();
+    void focus() override;
+    void unfocus() override;
+    void hide() override;
+    void show() override;
     void set_dirty() { dirty = true; }
 
 private:

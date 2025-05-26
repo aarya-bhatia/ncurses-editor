@@ -152,3 +152,14 @@ void FileView::resize(Dimension d) {
     win = newwin(d.height, d.width, d.y, d.x);
     dirty = true;
 }
+
+void FileView::hide() {
+    log_debug("hiding file view %s", bounds.debug_string().c_str());
+    werase(win);
+    wnoutrefresh(win);
+}
+
+void FileView::show() {
+    log_debug("showing file view %s", bounds.debug_string().c_str());
+    set_dirty();
+}

@@ -32,20 +32,40 @@ public:
     }
 
     void tab_next() {
+        if (tabs.size() == 1) { return; }
+
+        if (current_tab != -1) {
+            tabs[current_tab]->hide();
+        }
+
         if (current_tab < tabs.size() - 1) {
             current_tab++;
         }
         else {
             current_tab = 0;
         }
+
+        if (current_tab != -1) {
+            tabs[current_tab]->show();
+        }
     }
 
     void tab_prev() {
+        if (tabs.size() == 1) { return; }
+
+        if (current_tab != -1) {
+            tabs[current_tab]->hide();
+        }
+
         if (current_tab > 0) {
             current_tab--;
         }
         else {
             current_tab = tabs.size() - 1;
+        }
+
+        if (current_tab != -1) {
+            tabs[current_tab]->show();
         }
     }
 
@@ -59,6 +79,9 @@ public:
     WindowTab* tab_new() {
         WindowTab* tab = new WindowTab(bounds);
         tabs.push_back(tab);
+        if (current_tab != -1) {
+            tabs[current_tab]->hide();
+        }
         current_tab = tabs.size() - 1;
         return tab;
     }

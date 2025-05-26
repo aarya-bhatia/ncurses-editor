@@ -7,8 +7,6 @@
 #include "log.h"
 #include "Window.h"
 
-#include "ViewContainer.h"
-
 struct WindowNode
 {
     Dimension bounds;
@@ -29,6 +27,18 @@ struct WindowNode
         }
 
         delete content;
+    }
+
+    void hide() {
+        if (content) content->hide();
+        if (!has_children()) return;
+        for (WindowNode* child : children) child->hide();
+    }
+
+    void show() {
+        if (content) content->show();
+        if (!has_children()) return;
+        for (WindowNode* child : children) child->show();
     }
 
     void set_content(Window* c) {

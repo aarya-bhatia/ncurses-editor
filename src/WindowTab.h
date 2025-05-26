@@ -77,7 +77,7 @@ public:
         _focused_node->splith();
         assert(_focused_node->layout == WindowNode::Layout::HSPLIT);
         _set_focused_node(_focused_node->get_top_child());
-        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(nullptr, _focused_node->sibling()->bounds));
+        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(_focused_node->sibling()->bounds));
         return true;
     }
 
@@ -86,7 +86,7 @@ public:
         _focused_node->splitv();
         assert(_focused_node->layout == WindowNode::Layout::VSPLIT);
         _set_focused_node(_focused_node->get_left_child());
-        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(nullptr, _focused_node->sibling()->bounds));
+        _focused_node->sibling()->set_content(FileViewFactory::create_content_window(_focused_node->sibling()->bounds));
         return true;
     }
 
@@ -130,6 +130,14 @@ public:
         return true;
     }
 
+    void hide() {
+        _root_node->hide();
+    }
+
+    void show() {
+        _root_node->show();
+    }
+
 private:
 
     void _set_focused_node(WindowNode* node) {
@@ -153,7 +161,7 @@ private:
         _root_node->bounds = _bounds;
         _focused_node = _root_node;
         _focused_node->focus();
-        _focused_node->set_content(FileViewFactory::create_content_window(nullptr, _bounds));
+        _focused_node->set_content(FileViewFactory::create_content_window(_bounds));
     }
 
     void _accept(WindowNode* root, Visitor* v, Predicate* p) {

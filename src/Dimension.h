@@ -70,4 +70,6 @@ struct Dimension
     Point center() const {
         return Point(x + width / 2, y + height / 2);
     }
+
+    bool empty() const { return width == 0 || height == 0; }
 };

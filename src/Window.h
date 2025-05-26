@@ -11,4 +11,6 @@ struct Window
     virtual void resize(Dimension d) = 0;
     virtual void focus() {}
     virtual void unfocus() {}
+    virtual void hide() {}
+    virtual void show() {}
 };
