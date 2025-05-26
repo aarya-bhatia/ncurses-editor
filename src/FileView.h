@@ -21,19 +21,14 @@ struct FileView : public Window
     void unfocus();
     void set_dirty() { dirty = true; }
 
-    Dimension get_bounds() const {
-        int cury, curx, curh, curw;
-        getbegyx(win, cury, curx);
-        getmaxyx(win, curh, curw);
-        return Dimension(curx, cury, curw, curh);
-    }
-
 private:
 
     // check if given coordinate is visible on screen
     bool is_visible(int y, int x) const { return y >= 0 && x >= 0 && y < height() && x < width(); }
 
     bool scroll_to_ensure_cursor_visible();
+
+    Dimension bounds;
 
     WINDOW* win = NULL;
     File* file = nullptr; // shared ptr

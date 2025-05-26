@@ -4,6 +4,7 @@
 
 FileView::FileView(File* f, Dimension d) : file(f)
 {
+    bounds = d;
     win = newwin(d.height, d.width, d.y, d.x);
 }
 
@@ -135,10 +136,11 @@ void FileView::unfocus()
 }
 
 void FileView::resize(Dimension d) {
-    if (get_bounds() == d) {
+    if (bounds == d) {
         return;
     }
 
+    bounds = d;
     log_debug("file view resized to %s", d.debug_string().c_str());
 
     // erase the contents on screen
