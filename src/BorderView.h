@@ -15,18 +15,15 @@ struct BorderView : public Window {
         _destroy();
     }
 
-    void resize(Dimension d)
+    void resize(Dimension d) override
     {
-        // log_debug("file view resized to %s", d.debug_string().c_str());
-
-        werase(win);
-        wnoutrefresh(win);
+        hide();
 
         _destroy();
         _init(d);
     }
 
-    void draw()
+    void draw() override
     {
         if (dirty) {
             dirty = false; // TODO: Uncomment this
@@ -34,6 +31,15 @@ struct BorderView : public Window {
         }
 
         wnoutrefresh(win);
+    }
+
+    void hide() override {
+        werase(win);
+        wnoutrefresh(win);
+    }
+
+    void show() override {
+        dirty = true;
     }
 
 private:
