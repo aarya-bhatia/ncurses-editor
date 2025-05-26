@@ -19,7 +19,6 @@ File::File(FileID _id, const std::string& _filename) :
 
 File::~File()
 {
-    this->subscribers.clear();
 }
 
 int File::load_file()
@@ -52,7 +51,7 @@ int File::load_file()
     cursor.col = lines.front().begin();
 
     for (auto& subscriber : subscribers) {
-        subscriber->on_file_reload(this);
+        subscriber->file_changed();
     }
 
     return 0;
@@ -195,6 +194,61 @@ void File::insert_character(int c)
     insert_position.x--;
 
     for (auto& subsciber : subscribers) {
-        subsciber->on_insert_character(this, insert_position);
+        subsciber->character_added(insert_position);
+    }
+}
+
+void File::remove_character()
+{
+    if (cursor.line->empty()) { return; }
+    cursor.col = cursor.line->erase(cursor.col);
+
+    if (cursor.x >= cursor.line->size()) {
+        cursor.x = cursor.line->empty() ? 0 : cursor.line->size() - 1;
+    }
+
+    for (auto& subscriber : subscribers) {
+        subscriber->character_removed(cursor);
+    }
+}
+
+void File::remove_line()
+{
+    cursor.line = lines.erase(cursor.line);
+
+    if (cursor.line == lines.end() && !lines.empty()) {
+        cursor.line = std::prev(lines.end());
+    }
+
+    if (lines.empty()) {
+        lines.push_back({});
+        cursor.line = lines.begin();
+    }
+
+    if (cursor.y >= lines.size()) {
+        cursor.y--;
+    }
+
+    if (cursor.x >= cursor.line->size()) {
+        cursor.x = cursor.line->empty() ? 0 : cursor.line->size() - 1;
+    }
+
+    cursor.col = cursor.line->begin();
+    std::advance(cursor.col, cursor.x);
+
+    for (auto& subscriber : subscribers) {
+        subscriber->line_removed(cursor);
+    }
+}
+
+void File::insert_line_below() {
+    auto insert_at = std::next(cursor.line);
+    cursor.line = lines.insert(insert_at, { {} });
+    cursor.col = cursor.line->begin();
+    cursor.y++;
+    cursor.x = 0;
+
+    for (auto& subscriber : subscribers) {
+        subscriber->line_added(cursor);
     }
 }

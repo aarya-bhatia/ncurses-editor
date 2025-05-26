@@ -5,7 +5,6 @@
 #include "FileSubscriber.h"
 #include "FileFactory.h"
 #include "FileViewFactory.h"
-#include "FileUpdateHandler.h"
 #include "StatusWindow.h"
 #include "ConsoleWindow.h"
 #include "InsertMode.h"
@@ -17,14 +16,12 @@ Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.wi
 {
     status_window = new StatusWindow(*this, Dimension(d.x, d.y + d.height - 2, d.width, 1));
     console_window = new ConsoleWindow(*this, Dimension(d.x, d.y + d.height - 1, d.width, 1));
-    file_update_handler = new FileUpdateHandler(*this);
     editor_mode = new NormalMode(this);
     window_manager.init();
 }
 
 Editor::~Editor()
 {
-    delete file_update_handler;
     delete status_window;
     delete console_window;
 
@@ -220,7 +217,6 @@ void Editor::open(File* file)
 
 File* Editor::add_file(const std::string& filename) {
     File* new_file = FileFactory::new_file(filename);
-    new_file->add_subscriber(file_update_handler);
     new_file->load_file();
     files.push_back(new_file);
     return new_file;

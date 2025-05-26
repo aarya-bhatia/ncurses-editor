@@ -6,6 +6,12 @@ FileView::FileView(File* f, Dimension d) : file(f)
 {
     bounds = d;
     win = newwin(d.height, d.width, d.y, d.x);
+    file->add_subscriber((FileSubscriber*)this);
+}
+
+FileView::~FileView() {
+    file->remove_subscriber((FileSubscriber*)this);
+    delwin(win);
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
@@ -51,20 +57,21 @@ void FileView::draw() {
 
         auto line_itr = file->lines.begin();
         std::advance(line_itr, scroll.dy);
-        int count_lines = 0;
 
-        for (; line_itr != file->lines.end() && count_lines < height(); line_itr++, count_lines++)
-        {
-            std::list<char>& line = *line_itr;
-            std::list<char>::iterator col_itr = line.begin();
+        int row = 0;
+        while (line_itr != file->lines.end() && row < height()) {
+            auto col_itr = line_itr->begin();
             std::advance(col_itr, scroll.dx);
 
-            int count_cols = 0;
-
-            for (; col_itr != line.end() && count_cols < width(); col_itr++, count_cols++)
-            {
-                mvwaddch(win, count_lines, count_cols, *col_itr);
+            int col = 0;
+            while (col_itr != line_itr->end() && col < width()) {
+                mvwaddch(win, row, col, *col_itr);
+                ++col_itr;
+                ++col;
             }
+
+            ++line_itr;
+            ++row;
         }
     }
 
@@ -81,7 +88,47 @@ void FileView::draw() {
     wnoutrefresh(win);
 }
 
-void FileView::partial_draw_character(Cursor position)
+void FileView::_partial_draw_file(Cursor start)
+{
+    if (!is_visible(start.y - scroll.dy, 0)) {
+        dirty = true; // needs to scroll and redraw
+        return;
+    }
+
+    log_debug("partial file draw at %s", start.to_string().c_str());
+
+    auto line_itr = start.line;
+    int row = start.y - scroll.dy;
+
+    while (line_itr != file->lines.end() && row < height())
+    {
+        auto col_itr = line_itr->begin();
+        std::advance(col_itr, scroll.dx);
+
+        wmove(win, row, 0);
+        wclrtoeol(win);
+
+        int col = 0;
+        while (col_itr != line_itr->end() && col < width())
+        {
+            mvwaddch(win, row, col, *col_itr);
+            ++col_itr;
+            ++col;
+        }
+
+        ++line_itr;
+        ++row;
+    }
+
+    while (row < height())
+    {
+        wmove(win, row, 0);
+        wclrtoeol(win);
+        ++row;
+    }
+}
+
+void FileView::_partial_draw_character(Cursor position)
 {
     int dpy = position.y - scroll.dy;
     int dpx = position.x - scroll.dx;
@@ -93,7 +140,7 @@ void FileView::partial_draw_character(Cursor position)
     mvwaddch(win, dpy, dpx, *position.col);
 }
 
-void FileView::partial_draw_line(Cursor position)
+void FileView::_partial_draw_line(Cursor position)
 {
     wmove(win, position.y, position.x);
     wclrtoeol(win);

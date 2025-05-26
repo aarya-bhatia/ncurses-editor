@@ -74,6 +74,18 @@ void NormalMode::handle_event(unsigned c)
         file->normal_mode_buffer += c;
         return;
 
+    case 'x':
+        file->remove_character();
+        return;
+
+    case 'D':
+        file->remove_line();
+        return;
+
+    case 'o':
+        file->insert_line_below();
+        return;
+
     case 'i':
         editor->change_mode(INSERT_MODE);
         return;

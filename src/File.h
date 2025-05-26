@@ -28,7 +28,30 @@ struct File
 
     void add_subscriber(FileSubscriber* subscriber)
     {
+        for (auto itr = subscribers.begin(); itr != subscribers.end(); itr++) {
+            if (*itr == subscriber) {
+                return;
+            }
+        }
+
         subscribers.push_back(subscriber);
+    }
+
+    bool remove_subscriber(FileSubscriber* subscriber)
+    {
+        for (auto itr = subscribers.begin(); itr != subscribers.end(); itr++) {
+            if (*itr == subscriber) {
+                subscribers.erase(itr);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    std::string get_current_line() {
+        const std::list<char>& it = *(cursor.line);
+        return { it.begin(), it.end() };
     }
 
     int load_file();
@@ -39,8 +62,7 @@ struct File
         return lines.size();
     }
 
-    bool _move_cursor_y(int dy);
-    bool _move_cursor_x(int dx);
+    // Motions
 
     void cursor_up();
     void cursor_down();
@@ -52,10 +74,15 @@ struct File
     void goto_column(int col);
     void move_begin();
 
-    void insert_character(int c);
+    // Editing ops
 
-    std::string get_current_line() {
-        const std::list<char>& it = *(cursor.line);
-        return { it.begin(), it.end() };
-    }
+    void remove_character();
+    void remove_line();
+    void insert_character(int c);
+    void insert_line_below();
+
+private:
+    bool _move_cursor_y(int dy);
+    bool _move_cursor_x(int dx);
+
 };

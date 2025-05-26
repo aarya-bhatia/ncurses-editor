@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Cursor.h"
-#include "Scroll.h"
 
-struct File;
 struct FileSubscriber
 {
     virtual ~FileSubscriber() = default;
-    virtual void on_file_reload(File* file) = 0;
-    virtual void on_insert_character(File* file, Cursor position) = 0;
-    virtual void on_erase_character(File* file, Cursor position) = 0;
-    virtual void on_replace_character(File* file, Cursor position) = 0;
+
+    virtual void file_changed() = 0;
+    virtual void line_added(Cursor) = 0;
+    virtual void line_removed(Cursor) = 0;
+    virtual void character_added(Cursor) = 0;
+    virtual void character_removed(Cursor) = 0;
 };

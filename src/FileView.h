@@ -1,13 +1,14 @@
 #pragma once
 
 #include "File.h"
+#include "FileSubscriber.h"
 #include "Window.h"
 #include <ncurses.h>
 
-struct FileView : public Window
+struct FileView : public Window, public FileSubscriber
 {
     FileView(File* file, Dimension d);
-    ~FileView() { delwin(win); }
+    ~FileView();
 
     File* get_file() { return file; }
 
@@ -15,15 +16,37 @@ struct FileView : public Window
     void resize(Dimension bounds) override;
     int height() const { return getmaxy(win); }
     int width() const { return getmaxx(win); }
-    void partial_draw_character(Cursor position);
-    void partial_draw_line(Cursor position);
     void focus() override;
     void unfocus() override;
     void hide() override;
     void show() override;
     void set_dirty() { dirty = true; }
 
+    void file_changed() override {
+        dirty = true;
+    }
+
+    void line_added(Cursor at)  override {
+        _partial_draw_file(at);
+    }
+
+    void line_removed(Cursor at)  override {
+        _partial_draw_file(at);
+    }
+
+    void character_added(Cursor at)  override {
+        _partial_draw_line(at);
+    }
+
+    void character_removed(Cursor at)  override {
+        _partial_draw_line(at);
+    }
+
 private:
+
+    void _partial_draw_character(Cursor position);
+    void _partial_draw_line(Cursor position);
+    void _partial_draw_file(Cursor start);
 
     // check if given coordinate is visible on screen
     bool is_visible(int y, int x) const { return y >= 0 && x >= 0 && y < height() && x < width(); }

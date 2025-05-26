@@ -2,6 +2,7 @@
 
 #include "WindowNode.h"
 #include <assert.h>
+#include <functional>
 #include "FileViewFactory.h"
 
 class WindowTab
@@ -12,16 +13,6 @@ private:
     Dimension _bounds;
 
 public:
-    struct Visitor {
-        virtual ~Visitor() = default;
-        virtual void operator()(Window* content) = 0;
-    };
-
-    struct Predicate {
-        virtual ~Predicate() = default;
-        virtual bool operator()(Window* content) = 0;
-    };
-
     WindowTab(Dimension d) : _bounds(d) { _init(); }
 
     ~WindowTab() { _destroy(); }
@@ -61,8 +52,10 @@ public:
         new_focused_node->focus();
     }
 
-    void accept(Visitor* v, Predicate* p = nullptr) {
-        if (v) _accept(_root_node, v, p);
+    void accept(std::function<void(Window*)> cb) {
+        if (cb != nullptr) {
+            _accept(_root_node, cb);
+        }
     }
 
     void draw() {
@@ -167,19 +160,15 @@ private:
         _focused_node->set_content(FileViewFactory::create_content_window(_bounds));
     }
 
-    void _accept(WindowNode* root, Visitor* v, Predicate* p) {
+    void _accept(WindowNode* root, std::function<void(Window*)> cb) {
         if (!root) {
             return;
         }
 
         for (WindowNode* child : root->children) {
-            _accept(child, v, p);
+            _accept(child, cb);
         }
 
-        if (root->content) {
-            if (!p || (*p)(root->content)) {
-                (*v)(root->content);
-            }
-        }
+        cb(root->content);
     }
 };
