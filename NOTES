@@ -1,11 +1,13 @@
 Todo
-- impl close tabs
 - modify save cursor in FileView on window notifications.
 - enable new screen to select an open file buffer and set in current node
 - status bar colors - add bg color of blue
 - UI testing
+- editing ops
+- text search
 
 Done
+- impl close tabs
 - fix split dimensions for odd sizes
 - update status line - include tab info
 - fix window focus issue on splits - debugger

@@ -202,6 +202,9 @@ void File::remove_character()
 {
     if (cursor.line->empty()) { return; }
     cursor.col = cursor.line->erase(cursor.col);
+    if (cursor.col == cursor.line->end()) {
+        cursor.col = cursor.line->empty() ? cursor.line->begin() : std::prev(cursor.col);
+    }
 
     if (cursor.x >= cursor.line->size()) {
         cursor.x = cursor.line->empty() ? 0 : cursor.line->size() - 1;
