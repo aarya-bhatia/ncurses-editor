@@ -5,6 +5,10 @@ Todo
 - UI testing
 - editing ops
 - text search
+- fix mode changing
+- copy/paste
+- copy registers
+- add line numbers
 
 Done
 - impl close tabs

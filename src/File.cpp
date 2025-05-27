@@ -256,3 +256,33 @@ void File::insert_line_below() {
         subscriber->line_added(cursor);
     }
 }
+
+void File::paste_below(std::string& line)
+{
+    std::list<char> new_line(line.begin(), line.end());
+    cursor.line = lines.insert(std::next(cursor.line), new_line);
+    cursor.col = cursor.line->begin();
+    cursor.y++;
+    cursor.x = 0;
+
+    for (auto& subscriber : subscribers) {
+        subscriber->line_added(cursor);
+    }
+}
+
+void File::paste_above(std::string& line)
+{
+    std::list<char> new_line(line.begin(), line.end());
+    cursor.line = lines.insert(cursor.line, new_line);
+    cursor.col = cursor.line->begin();
+    cursor.x = 0;
+
+    for (auto& subscriber : subscribers) {
+        subscriber->line_added(cursor);
+    }
+}
+
+std::string File::copy_line() const
+{
+    return std::string(cursor.line->begin(), cursor.line->end());
+}

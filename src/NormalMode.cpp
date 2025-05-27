@@ -10,6 +10,12 @@ void NormalMode::handle_two_key_seq()
     if (file->normal_mode_buffer == "gg") {
         file->goto_line(0);
     }
+    else if (file->normal_mode_buffer == "yy") {
+        editor->copy_buffer = file->copy_line();
+    }
+    else if (file->normal_mode_buffer == "dd") {
+        file->remove_line();
+    }
 
     file->normal_mode_buffer = "";
 }
@@ -78,8 +84,8 @@ void NormalMode::handle_event(unsigned c)
         file->remove_character();
         return;
 
-    case 'D':
-        file->remove_line();
+    case 'd':
+        file->normal_mode_buffer += c;
         return;
 
     case 'o':
@@ -88,6 +94,18 @@ void NormalMode::handle_event(unsigned c)
 
     case 'i':
         editor->change_mode(INSERT_MODE);
+        return;
+
+    case 'y':
+        file->normal_mode_buffer += c;
+        return;
+
+    case 'p':
+        if (!editor->copy_buffer.empty()) file->paste_below(editor->copy_buffer);
+        return;
+
+    case 'P':
+        if (!editor->copy_buffer.empty()) file->paste_above(editor->copy_buffer);
         return;
 
     case CTRL_ESCAPE:

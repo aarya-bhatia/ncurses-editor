@@ -41,8 +41,6 @@ FilePickerMode::FilePickerMode(Editor* editor) : _normal(editor)
     _file->cursor.line = _file->lines.begin();
     _file->cursor.col = _file->cursor.line->begin();
 
-    _file->add_subscriber((FileSubscriber*)editor->file_update_handler);
-
     editor->open(_file);
 }
 

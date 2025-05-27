@@ -11,6 +11,7 @@
 #include "CommandMode.h"
 #include "NormalMode.h"
 #include "FilePickerMode.h"
+#include "ListBufferMode.h"
 
 Editor::Editor(Dimension d) : bounds(d), window_manager(Dimension(d.x, d.y, d.width, d.height - 2))
 {
@@ -70,115 +71,25 @@ void Editor::change_mode(Mode mode)
     delete prev_editor_mode;
     prev_editor_mode = editor_mode;
 
-    if (mode == INSERT_MODE)
-    {
+    switch (mode) {
+    case INSERT_MODE:
         editor_mode = new InsertMode(this);
-    }
-    else if (mode == NORMAL_MODE)
-    {
+        return;
+    case NORMAL_MODE:
         editor_mode = new NormalMode(this);
-    }
-    else if (mode == COMMAND_MODE)
+        return;
+    case COMMAND_MODE:
     {
         editor_mode = new CommandMode(this);
-    }
-    else if (mode == FILE_PICKER_MODE)
-    {
-        editor_mode = new FilePickerMode(this);
-    }
-}
-
-void Editor::command(const std::string& command)
-{
-    auto file = get_focused_file();
-    log_debug("Got command: %s", command.c_str());
-
-    if (command == "rw") {
-        resize(Dimension(bounds.x, bounds.y, bounds.width - 1, bounds.height));
-    }
-    else if (command == "rW") {
-        resize(Dimension(bounds.x, bounds.y, bounds.width + 1, bounds.height));
-    }
-    else if (command == "close") {
-        window_manager.close_focused_node();
-    }
-    else if (command == "q" || command == "quit")
-    {
-        log_warn("quit flag set");
-        quit = true;
-    }
-    else if (command == "Ex")
-    {
-        change_mode(FILE_PICKER_MODE);
         return;
     }
-    else if (command.substr(0, 5) == "open ")
-    {
-        std::vector<std::string> filenames = splitwords(command.substr(5), " ");
-        this->open(filenames);
+    case FILE_PICKER_MODE:
+        editor_mode = new FilePickerMode(this);
+        return;
+    case LIST_BUFFER_MODE:
+        editor_mode = new ListBufferMode(this);
+        return;
     }
-    else if (command == "save")
-    {
-        if (file) {
-            file->save_file();
-        }
-    }
-    else if (command == "sp" || command == "split")
-    {
-        window_manager.splith();
-    }
-    else if (command == "vs" || command == "vsplit")
-    {
-        window_manager.splitv();
-    }
-    else if (command == "right")
-    {
-        window_manager.focus_right();
-    }
-    else if (command == "left")
-    {
-        window_manager.focus_left();
-    }
-    else if (command == "top" || command == "up")
-    {
-        window_manager.focus_top();
-    }
-    else if (command == "bottom" || command == "down")
-    {
-        window_manager.focus_bottom();
-    }
-    else if (command == "tabnew")
-    {
-        window_manager.tab_new();
-    }
-    else if (command == "tabprev")
-    {
-        window_manager.tab_prev();
-    }
-    else if (command == "tabnext")
-    {
-        window_manager.tab_next();
-    }
-    // else if (command == "close")
-    // {
-    //     focused_node->tab_window.close_tab();
-    // }
-    // else if (command == "closeall")
-    // {
-    //     focused_node->tab_window.close_all();
-    // }
-    else if (is_number(command))
-    {
-        if (file) {
-            file->goto_line(atoi(command.c_str()));
-        }
-    }
-    else
-    {
-        log_warn("no such command: %s", command.c_str());
-    }
-
-    restore_mode();
 }
 
 void Editor::draw()

@@ -9,6 +9,7 @@ struct CommandMode : public EditorMode
 
     std::string mode_line = "";
 
+    void command(const std::string& command);
     void handle_event(unsigned c);
 
     std::string name() { return "COMMAND"; }

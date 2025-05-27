@@ -12,7 +12,6 @@
 #include "WindowNode.h"
 #include "EditorMode.h"
 
-struct FileUpdateHandler;
 struct StatusWindow;
 struct ConsoleWindow;
 
@@ -27,8 +26,9 @@ private:
     WindowManager window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
-    FileUpdateHandler* file_update_handler;
     std::list<File*> files;
+
+    std::string copy_buffer = "";
 
 public:
     Editor(Dimension d);
@@ -36,7 +36,6 @@ public:
 
     bool ok() const { return quit; }
 
-    void command(const std::string& command);
     void handle_event(unsigned c);
     void draw();
     void show();
@@ -72,4 +71,5 @@ private:
     friend struct CommandMode;
     friend struct NormalMode;
     friend struct FilePickerMode;
+    friend struct ListBufferMode;
 };

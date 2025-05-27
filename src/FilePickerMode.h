@@ -5,7 +5,7 @@
 
 struct FilePickerMode : public EditorMode
 {
-    File* _file;
+    File* _file = nullptr;
     NormalMode _normal;
 
     FilePickerMode(Editor* editor);

@@ -15,6 +15,8 @@ struct File
     std::list<std::list<char>> lines;
     Cursor cursor;
 
+    std::function<bool(unsigned)> event_handler;
+
     std::vector<FileSubscriber*> subscribers;
     std::string normal_mode_buffer = "";
 
@@ -80,6 +82,11 @@ struct File
     void remove_line();
     void insert_character(int c);
     void insert_line_below();
+
+    void paste_below(std::string& line);
+    void paste_above(std::string& line);
+
+    std::string copy_line() const;
 
 private:
     bool _move_cursor_y(int dy);
