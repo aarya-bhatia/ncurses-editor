@@ -1,15 +1,13 @@
-#pragma once
-#include "EditorMode.h"
-#include "NormalMode.h"
-#include "File.h"
+// #pragma once
+// #include "EditorMode.h"
+// #include "File.h"
 
-struct FilePickerMode : public EditorMode
-{
-    File* _file = nullptr;
-    NormalMode _normal;
+// struct FilePickerMode : public EditorMode
+// {
+//     File* _file = nullptr;
 
-    FilePickerMode(Editor* editor);
-    ~FilePickerMode();
+//     FilePickerMode(Editor* editor);
+//     ~FilePickerMode();
 
-    void handle_event(unsigned c);
-};
+//     void handle_event(unsigned c);
+// };

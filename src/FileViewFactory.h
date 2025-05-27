@@ -2,9 +2,13 @@
 
 #include "FileView.h"
 #include "ViewContainer.h"
+#include "FileFactory.h"
 
 struct FileViewFactory {
     static Window* create_content_window(Dimension d, File* file = nullptr) {
+        if (!file) {
+            file = FileFactory::new_file();
+        }
         return new ViewContainer(d, file);
     }
 

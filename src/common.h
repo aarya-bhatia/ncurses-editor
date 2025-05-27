@@ -57,15 +57,6 @@ enum
     C_CONTROL = 0x1000
 };
 
-enum Mode
-{
-    NORMAL_MODE,
-    INSERT_MODE,
-    COMMAND_MODE,
-    FILE_PICKER_MODE,
-    LIST_BUFFER_MODE,
-};
-
 int char_type(char c);
 
 std::list<std::string> readlines(const char* filename);

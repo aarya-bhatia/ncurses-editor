@@ -20,13 +20,19 @@ class Editor
 private:
     bool quit = false;
 
-    EditorMode* prev_editor_mode = nullptr;
-    EditorMode* editor_mode = nullptr;
     Dimension bounds;
     WindowManager window_manager;
     StatusWindow* status_window = nullptr;
     ConsoleWindow* console_window = nullptr;
     std::list<File*> files;
+
+    std::string mode_line = "";
+    enum class Mode
+    {
+        Normal,
+        Insert,
+        Command,
+    } editor_mode = Mode::Normal;
 
     std::string copy_buffer = "";
 
@@ -43,33 +49,26 @@ public:
     void open(const std::vector<std::string>& filenames);
     void open(File*);
 
-    void change_mode(Mode mode);
+    std::string mode_name() const;
 
-    void restore_mode() {
-        editor_mode = prev_editor_mode;
-        prev_editor_mode = nullptr;
-    }
+    void change_mode(Mode mode);
+    void command(const std::string& command);
+
+    std::string get_console_string() const { return editor_mode == Mode::Command ? ":" + mode_line : ""; }
 
 private:
+    void handle_insert_mode_event(unsigned c);
+    void handle_normal_mode_event(unsigned c);
+    void handle_command_mode_event(unsigned c);
+
     FileView* get_focused_file_view();
     File* get_focused_file();
 
     File* add_file(const std::string& filename);
     File* get_file(const std::string& filename);
 
-    void handle_command_mode_event(unsigned c);
-    void handle_insert_mode_event(unsigned c);
-    void handle_normal_mode_event(unsigned c);
-    void handle_normal_mode_two_key_seq();
-
     void _init(Dimension);
 
     friend struct StatusWindow;
     friend struct ConsoleWindow;
-    friend struct FileUpdateHandler;
-    friend struct InsertMode;
-    friend struct CommandMode;
-    friend struct NormalMode;
-    friend struct FilePickerMode;
-    friend struct ListBufferMode;
 };

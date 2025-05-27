@@ -19,14 +19,9 @@ struct ConsoleWindow
 
         int ncols = getmaxx(win);
 
-        if (editor.editor_mode)
-        {
-            std::string tmp = editor.editor_mode->get_console_string();
-            mvwprintw(win, 0, 0, tmp.substr(0, ncols).c_str());
-        }
-
+        std::string tmp = editor.get_console_string();
+        mvwprintw(win, 0, 0, tmp.substr(0, ncols).c_str());
         wnoutrefresh(win);
-
     }
 
     void resize(Dimension d)
