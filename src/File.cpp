@@ -217,6 +217,7 @@ void File::remove_character()
 
 void File::remove_line()
 {
+    assert(!lines.empty());
     cursor.line = lines.erase(cursor.line);
 
     if (cursor.line == lines.end() && !lines.empty()) {
