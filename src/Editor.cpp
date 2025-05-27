@@ -1,6 +1,7 @@
 #include "Editor.h"
 #include <string.h>
 #include "log.h"
+#include "dirent.h"
 #include "FileView.h"
 #include "FileSubscriber.h"
 #include "FileFactory.h"
@@ -55,6 +56,11 @@ void Editor::handle_event(unsigned c)
     if (c == CTRL_C)
     {
         quit = true;
+        return;
+    }
+
+    File* file = get_focused_file();
+    if (file->event_handler && file->event_handler(c)) {
         return;
     }
 
@@ -307,6 +313,64 @@ void Editor::handle_command_mode_event(unsigned c) {
     }
 }
 
+void Editor::new_file_picker_window() {
+    File* _file = new File();
+    DIR* dirp = opendir(".");
+    if (!dirp) {
+        perror("opendir");
+        return;
+    }
+
+    _file->lines.clear();
+
+    struct dirent* e;
+    while ((e = readdir(dirp)) != nullptr)
+    {
+        if (e->d_type == DT_REG)
+        {
+            std::string name(e->d_name);
+            log_debug("listing: %s", name.c_str());
+            std::list<char> chars(name.begin(), name.end());
+            _file->lines.push_back(chars);
+        }
+    }
+
+    closedir(dirp);
+
+    if (_file->lines.empty())
+    {
+        _file->lines.push_back({});
+    }
+
+    _file->cursor.x = 0;
+    _file->cursor.y = 0;
+    _file->cursor.line = _file->lines.begin();
+    _file->cursor.col = _file->cursor.line->begin();
+
+    _file->event_handler = [this](unsigned c) -> bool {
+        File* file = this->get_focused_file();
+        std::string filename = file->get_current_line();
+        switch (c)
+        {
+        case CTRL_ENTER:
+            log_info("opening file: %s", filename.c_str());
+            if (!filename.empty()) {
+                this->open({ filename });
+                delete file;
+                file = nullptr;
+            }
+            return true;
+        default: return false;
+        }
+        };
+
+    open(_file);
+}
+
+void Editor::new_list_buffers_window() {
+
+}
+
 void Editor::command(const std::string& command) {
     auto file = get_focused_file();
     log_debug("Got command: %s", command.c_str());
@@ -327,7 +391,7 @@ void Editor::command(const std::string& command) {
     }
     else if (command == "Ex")
     {
-        // change_mode(FILE_PICKER_MODE); TODO
+        new_file_picker_window();
     }
     else if (command == "ls")
     {

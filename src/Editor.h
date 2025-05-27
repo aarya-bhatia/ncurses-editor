@@ -61,6 +61,9 @@ private:
     void handle_normal_mode_event(unsigned c);
     void handle_command_mode_event(unsigned c);
 
+    void new_file_picker_window();
+    void new_list_buffers_window();
+
     FileView* get_focused_file_view();
     File* get_focused_file();
 

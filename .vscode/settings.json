@@ -64,6 +64,7 @@
         "__assert": "cpp",
         "atomic": "cpp",
         "filesystem": "cpp",
-        "system_error": "cpp"
+        "system_error": "cpp",
+        "__config": "cpp"
     }
 }
