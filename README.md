@@ -9,6 +9,8 @@ A terminal-based text editor built in C++ using the `ncurses` library, inspired 
 ## Build
 
 ```sh
+git clone https://github.com/aarya-bhatia/ncurses-editor.git 
+cd ncurses-editor
 make
 ```
 
@@ -51,8 +53,6 @@ bin/test
 | Key           | Action                      |
 |---------------|-----------------------------|
 | `<Esc>`       | Exit insert mode            |
-| `<Backspace>` | Delete previous character   |
-| `<Enter>`     | Insert new line             |
 
 ---
 
@@ -60,14 +60,20 @@ bin/test
 
 | Command             | Description                          |
 |---------------------|--------------------------------------|
+| `:q[uit]`            | Exit program |
 | `<Esc>`             | Exit command mode                    |
 | `<Enter>`           | Execute command                      |
 | `:<line>`           | Jump to specified line               |
-| `:next` / `:prev`   | Switch to next or previous file      |
-| `:open <filename>`  | Open a file if it exists             |
+| `:sp`, `:vs`           | create horizontal/vertical split               |
+| `:right`, `:left`, `:top`, `:bottom`           | navigate to window pane |
+| `:tabnext` / `:tabprev`   | Switch to next or previous tab      |
+| `:edit <filename>` / `:open <filename>`  | Open a file if it exists             |
 | `:close`            | Close current file                   |
-| `:closeall`         | Close all files                      |
-| `:ls`               | Log open files (TODO: popup display) |
+| `:tabclose`            | Close current tab                   |
+| `:save`            | Save current file to disk.                   |
+| `:tabnew`            | Open and switch to new tab.                   |
+| `:copy`            | Copy current line                   |
+| `:Ex`            | Open file explorer in buffer                   |
 
 ---
 
@@ -81,14 +87,15 @@ bin/test
 | `l`       | Move right                                 |
 | `0`       | Jump to start of line                      |
 | `$`       | Jump to end of line                        |
-| `f<char>` | Jump to next occurrence of character       |
 | `i`       | Enter insert mode                          |
-| `I`       | Insert at beginning of line                |
-| `a`       | Insert after cursor                        |
-| `A`       | Insert at end of line                      |
 | `:`       | Enter command mode                         |
 | `G`       | Go to end of file                          |
-| `g`       | Go to start of file                        |
+| `gg`       | Go to start of file                        |
+| `yy`       | Copy the current line                        |
+| `p`       | Paste copied line below                        |
+| `x`       | Erase character at cursor                        |
+| `o`       | Insert line below cursor                        |
+| `dd`       | Delete current line                        |
 
 ---
 
