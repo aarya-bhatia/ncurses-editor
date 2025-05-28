@@ -84,6 +84,12 @@ void FileView::_draw_file_content(WINDOW* win)
     }
 }
 
+void FileView::get_absolute_cursor(int& y, int& x)
+{
+    y = getbegy(win) + file->cursor.y - scroll.dy;
+    x = getbegx(win) + file->cursor.x - scroll.dx;
+}
+
 void FileView::draw() {
     if (focused && scroll_to_ensure_cursor_visible()) {
         dirty = true;
@@ -94,14 +100,7 @@ void FileView::draw() {
         _draw_file_content(win);
     }
 
-    // move the global cursor if this is the focused view
-    if (focused) {
-        // get absolute position of cursor
-        int cy = getbegy(win) + file->cursor.y - scroll.dy;
-        int cx = getbegx(win) + file->cursor.x - scroll.dx;
-
-        move(cy, cx);
-    }
+    dirty = false;
 
     // stage changes
     wnoutrefresh(win);

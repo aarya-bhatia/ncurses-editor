@@ -36,10 +36,6 @@ public:
     void draw() override {
         frame->draw(); // frame must be drawn before content so that content does not get overriden
         view->draw();
-
-        if (focused) { // when no content view and focused window, move cursor top left
-            move(d.y + 1, d.x + 1);
-        }
     }
 
     void resize(Dimension d)override {

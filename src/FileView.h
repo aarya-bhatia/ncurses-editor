@@ -21,6 +21,7 @@ struct FileView : public Window, public FileSubscriber
     void hide() override;
     void show() override;
     void set_dirty() { dirty = true; }
+    void get_absolute_cursor(int& y, int& x);
 
     void file_changed() override {
         dirty = true;

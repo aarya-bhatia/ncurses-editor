@@ -88,6 +88,11 @@ void Editor::draw()
     if (window_manager.get_focused_content() == nullptr) {
         move(0, 0);
     }
+    else {
+        int y, x;
+        FileViewFactory::get_file_view(window_manager.get_focused_content())->get_absolute_cursor(y, x);
+        move(y, x);
+    }
 }
 
 void Editor::open(const std::vector<std::string>& filenames)
