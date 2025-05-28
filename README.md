@@ -20,6 +20,12 @@ make
 bin/editor [<filename1> [<filename2>...] ]
 ```
 
+## Screenshots
+
+![screenshot 1](./assets/Screenshot 2025-05-27 at 11.20.53 PM.png)
+
+![screenshot 2](./assets/Screenshot 2025-05-27 at 11.21.31 PM.png)
+
 ## Insert mode
 - `<esc>`: exit insert mode
 - `<backspace>`: behave like usual backspace key to remove char
