@@ -58,6 +58,7 @@ struct LineNumberView : public Window, public FileSubscriber
     }
 
     void resize(Dimension d) {
+        bounds = d;
         hide();
         delwin(win);
         win = newwin(d.height, d.width, d.y, d.x);

@@ -46,6 +46,7 @@ public:
         else {
             show_lines = false;
             file_view_bounds = Dimension(d.x + 1, d.y + 1, d.width - 2, d.height - 2);
+            delete line_view; line_view = NULL;
         }
     }
 
