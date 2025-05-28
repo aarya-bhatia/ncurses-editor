@@ -187,6 +187,12 @@ void Editor::handle_normal_mode_event(unsigned c) {
         else if (file->normal_mode_buffer == "dd") {
             file->remove_line();
         }
+        else if (file->normal_mode_buffer == " ws") {
+            window_manager.splith();
+        }
+        else if (file->normal_mode_buffer == " wv") {
+            window_manager.splitv();
+        }
         else if (file->normal_mode_buffer == " wl") {
             window_manager.focus_right();
         }
