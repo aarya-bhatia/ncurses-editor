@@ -34,22 +34,26 @@ bool FileView::scroll_to_ensure_cursor_visible()
     if (cursor.x - scroll.dx < 0)
     {
         scroll.dx = cursor.x;
+        dirty = true;
         return true;
     }
     else if (cursor.x - scroll.dx >= width())
     {
         scroll.dx = cursor.x - width() + 1;
+        dirty = true;
         return true;
     }
 
     if (cursor.y - scroll.dy < 0)
     {
         scroll.dy = cursor.y;
+        dirty = true;
         return true;
     }
     else if (cursor.y - scroll.dy >= height())
     {
         scroll.dy = cursor.y - height() + 1;
+        dirty = true;
         return true;
     }
 
@@ -91,9 +95,9 @@ void FileView::get_absolute_cursor(int& y, int& x)
 }
 
 void FileView::draw() {
-    if (focused && scroll_to_ensure_cursor_visible()) {
-        dirty = true;
-    }
+    // if (focused && scroll_to_ensure_cursor_visible()) {
+    //     dirty = true;
+    // }
 
     // full render only when dirty
     if (dirty) {

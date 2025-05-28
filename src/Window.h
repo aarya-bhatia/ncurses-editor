@@ -13,4 +13,6 @@ struct Window
     virtual void unfocus() {}
     virtual void hide() {}
     virtual void show() {}
+
+    // virtual bool resize_allowed(Dimension d) { return true; }
 };

@@ -6,9 +6,9 @@ struct FileSubscriber
 {
     virtual ~FileSubscriber() = default;
 
-    virtual void file_changed() = 0;
-    virtual void line_added(Cursor) = 0;
-    virtual void line_removed(Cursor) = 0;
-    virtual void character_added(Cursor) = 0;
-    virtual void character_removed(Cursor) = 0;
+    virtual void file_changed() {}
+    virtual void line_added(Cursor) {}
+    virtual void line_removed(Cursor) {}
+    virtual void character_added(Cursor) {}
+    virtual void character_removed(Cursor) {}
 };

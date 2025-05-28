@@ -43,6 +43,10 @@ struct FileView : public Window, public FileSubscriber
         _partial_draw_line(at);
     }
 
+    Scroll get_scroll() const { return scroll; }
+
+    bool scroll_to_ensure_cursor_visible();
+
 private:
 
     void _draw_file_content(WINDOW* win);
@@ -56,8 +60,6 @@ private:
 
     // check if given coordinate is visible on screen
     bool is_visible(int y, int x) const { return y >= 0 && x >= 0 && y < height() && x < width(); }
-
-    bool scroll_to_ensure_cursor_visible();
 
 private:
     Dimension bounds;
