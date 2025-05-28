@@ -22,9 +22,9 @@ bin/editor [<filename1> [<filename2>...] ]
 
 ## Screenshots
 
-![screenshot 1](./assets/Screenshot 2025-05-27 at 11.20.53 PM.png)
+![screenshot 1](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.20.53%E2%80%AFPM.png))
 
-![screenshot 2](./assets/Screenshot 2025-05-27 at 11.21.31 PM.png)
+![screenshot 2](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.21.31%E2%80%AFPM.png))
 
 ## Insert mode
 - `<esc>`: exit insert mode
