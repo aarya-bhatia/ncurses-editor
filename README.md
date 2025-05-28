@@ -26,6 +26,10 @@ bin/main [<filename1> [<filename2>...]]
 bin/test
 ```
 
+## Logs
+
+Program will create and append logs to the file `stderr.log` in the project directory. View logs in another terminal with `tail -f stderr.log`.
+
 ---
 
 ## Features (In Progress)
