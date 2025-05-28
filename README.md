@@ -20,11 +20,22 @@ make
 bin/editor [<filename1> [<filename2>...] ]
 ```
 
+## Current Features
+
+- Tiling window management with binary tree
+- Tab management
+- file buffer management
+- Handles resize gracefully
+- Fast: Lazily redraw parts of window
+- Vim-like - Insert/Command/Normal mode support
+- chord-like Keybindings
+- support custom file event handlers to use as plugins - For example, the `:Ex` command will list files in a directory and open them on selection.
+
 ## Screenshots
 
-![screenshot 1](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.20.53%E2%80%AFPM.png))
+![screenshot 1](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.20.53%E2%80%AFPM.png)
 
-![screenshot 2](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.21.31%E2%80%AFPM.png))
+![screenshot 2](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.21.31%E2%80%AFPM.png)
 
 ## Insert mode
 - `<esc>`: exit insert mode
