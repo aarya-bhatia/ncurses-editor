@@ -1,84 +1,120 @@
-Project is in progress...
+# Ncurses Text Editor (WIP)
 
-# Text Editor
+**Status: In Progress**
 
-In progress.
+A terminal-based text editor built in C++ using the `ncurses` library, inspired by **Vim**. Designed to be lightweight, modular, and efficient—with tiling windows, multiple buffers, and Vim-like modal editing.
 
-This is a terminal-based application made in C++ using the
-ncurses library. It is inspired by the vim text
-editor.
+---
 
 ## Build
 
-```
+```sh
 make
 ```
 
 ## Run
 
-```
-bin/editor [<filename1> [<filename2>...] ]
+```sh
+bin/main [<filename1> [<filename2>...]]
 ```
 
-## Current Features
+## Test
 
-- Tiling window management with binary tree
-- Tab management
-- file buffer management
-- Handles resize gracefully
-- Fast: Lazily redraw parts of window
-- Vim-like - Insert/Command/Normal mode support
-- chord-like Keybindings
-- support custom file event handlers to use as plugins - For example, the `:Ex` command will list files in a directory and open them on selection.
+```sh
+bin/test
+```
+
+---
+
+## Features (In Progress)
+
+- Tiling window management using a binary tree layout
+- Tab and buffer management for multiple open files
+- Vim-style modal editing: Insert, Normal, and Command modes
+- Lazy redraw: only update modified parts of the screen
+- Graceful terminal resizing
+- Plugin-like file event handlers (e.g., `:Ex` to explore files)
+- Chord-style keybindings for navigation and actions
+- Modular and extensible architecture
+
+---
 
 ## Screenshots
 
-![screenshot 1](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.20.53%E2%80%AFPM.png)
+![Screenshot 1](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.20.53%E2%80%AFPM.png)  
+![Screenshot 2](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.21.31%E2%80%AFPM.png)
 
-![screenshot 2](https://github.com/aarya-bhatia/ncurses-editor/blob/main/assets/Screenshot%202025-05-27%20at%2011.21.31%E2%80%AFPM.png)
+---
 
-## Insert mode
-- `<esc>`: exit insert mode
-- `<backspace>`: behave like usual backspace key to remove char
-- `<enter>`: behave like usual enter key to add another line
+## Insert Mode
 
-## Command mode
-- `<esc>`: exit mode without running command
-- `<enter>`: exit mode and run command
-- `:<line>`: go to line
-- `:next`: open next file
-- `:prev`: open prev file
-- `:open <filename>`: open and load file if exists
-- `:close`: close current file
-- `:closeall`: close all files
-- `:ls`: print open files to log file - TODO show files in a popup
+| Key           | Action                      |
+|---------------|-----------------------------|
+| `<Esc>`       | Exit insert mode            |
+| `<Backspace>` | Delete previous character   |
+| `<Enter>`     | Insert new line             |
 
-## Normal mode
-- `h`: move left
-- `j`: move down
-- `k`: move up
-- `l`: move right
-- `0`: jump to start of line
-- `$`: jump to end of line
-- `f<char>`: jump to next occurrence of character
-- `i`: change to insert mode
-- `:`: change to command mode
-- `I`: start insert mode at start of line
-- `a`: start insert mode after cursor (append)
-- `A`: start insert mode at end of line
-- `G`: go to end of file
-- `g`: go to start of file
+---
 
-## Tasks
-- TODO core: add logic to update specific lines after inserts/deletes in editor class.
-- TODO core: read filenames from args on launch
-- TODO core: open and edit multiple files
-- TODO feat: show line numbers
-- DONE core: auto-scroll when jumping cursor goes off-screen
-- TODO core: handle empty buffer
-- TODO feat: command mode - run external commands on current line
-- TODO feat: visual mode
-- TODO idea: impl popup to show longer info messages to user
-- TODO feat: keep user command history
-- TODO improv: add colors
-- TODO core: use buffer ids instead of filenames
+## Command Mode
+
+| Command             | Description                          |
+|---------------------|--------------------------------------|
+| `<Esc>`             | Exit command mode                    |
+| `<Enter>`           | Execute command                      |
+| `:<line>`           | Jump to specified line               |
+| `:next` / `:prev`   | Switch to next or previous file      |
+| `:open <filename>`  | Open a file if it exists             |
+| `:close`            | Close current file                   |
+| `:closeall`         | Close all files                      |
+| `:ls`               | Log open files (TODO: popup display) |
+
+---
+
+## Normal Mode
+
+| Key       | Action                                     |
+|-----------|--------------------------------------------|
+| `h`       | Move left                                  |
+| `j`       | Move down                                  |
+| `k`       | Move up                                    |
+| `l`       | Move right                                 |
+| `0`       | Jump to start of line                      |
+| `$`       | Jump to end of line                        |
+| `f<char>` | Jump to next occurrence of character       |
+| `i`       | Enter insert mode                          |
+| `I`       | Insert at beginning of line                |
+| `a`       | Insert after cursor                        |
+| `A`       | Insert at end of line                      |
+| `:`       | Enter command mode                         |
+| `G`       | Go to end of file                          |
+| `g`       | Go to start of file                        |
+
+---
+
+## Credits
+
+- [ncurses](https://github.com/mirror/ncurses) for terminal rendering
+- [Catch2](https://github.com/catchorg/Catch2) for unit testing
+
+---
+
+## Roadmap / TODO
+
+### Core
+
+- [x] Auto-scroll when cursor jumps off-screen
+- [ ] Efficient line redraw after inserts/deletes
+- [ ] Handle empty buffer states
+- [ ] Read filenames from command-line arguments
+- [ ] Open and edit multiple files
+- [ ] Use buffer IDs instead of filenames
+
+### Features
+
+- [ ] Line number display
+- [ ] Run external shell commands on current line
+- [ ] Visual mode
+- [ ] Popup UI for long messages
+- [ ] Command history
+- [ ] Color support
