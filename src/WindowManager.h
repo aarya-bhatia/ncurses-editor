@@ -70,6 +70,26 @@ public:
         }
     }
 
+    void tab_close() {
+        delete tabs[current_tab];
+        tabs[current_tab] = nullptr;
+
+        if (tabs.size() == 1) {
+            tabs = {};
+            current_tab = -1;
+            init();
+            return;
+        }
+
+        tabs.erase(tabs.begin() + current_tab);
+
+        if (current_tab >= tabs.size()) {
+            --current_tab;
+        }
+
+        tabs[current_tab]->show();
+    }
+
     void tab_next() {
         if (tabs.size() == 1) { return; }
 

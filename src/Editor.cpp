@@ -217,6 +217,9 @@ void Editor::handle_normal_mode_event(unsigned c) {
         else if (file->normal_mode_buffer == " tp") {
             window_manager.tab_prev();
         }
+        else if (file->normal_mode_buffer == " tc") {
+            window_manager.tab_close();
+        }
         else if (file->normal_mode_buffer == " w") {
             return;
         }
@@ -456,6 +459,10 @@ void Editor::command(const std::string& command) {
     else if (command == "tabnext")
     {
         window_manager.tab_next();
+    }
+    else if (command == "tabclose")
+    {
+        window_manager.tab_close();
     }
     else if (command == "copy")
     {
