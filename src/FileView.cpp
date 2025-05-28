@@ -206,7 +206,7 @@ void FileView::resize(Dimension d) {
     }
 
     bounds = d;
-    log_debug("file view resized to %s", d.debug_string().c_str());
+    // log_debug("file view resized to %s", d.debug_string().c_str());
 
     // erase the contents on screen
     werase(win);

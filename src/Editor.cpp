@@ -39,7 +39,6 @@ File* Editor::get_focused_file() {
 
 void Editor::resize(Dimension d)
 {
-    log_info("resizing screen to ln:%d col:%d", LINES, COLS);
     this->bounds = d;
     status_window->resize(Dimension(d.x, d.y + d.height - 2, d.width, 1));
     console_window->resize(Dimension(d.x, d.y + d.height - 1, d.width, 1));

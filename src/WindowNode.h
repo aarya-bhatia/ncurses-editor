@@ -17,7 +17,7 @@ struct WindowNode
     Window* content = nullptr;
 
     WindowNode(Dimension bounds, WindowNode* parent = nullptr) : bounds(bounds), parent(parent) {
-        log_debug("init window node %s", bounds.debug_string().c_str());
+        log_debug("init window node %p with bounds %s", bounds.debug_string().c_str());
     }
 
     ~WindowNode()

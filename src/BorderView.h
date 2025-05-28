@@ -17,7 +17,6 @@ struct BorderView : public Window {
 
     void resize(Dimension d) override
     {
-        log_debug("resizing border view to %s", d.debug_string().c_str());
         hide();
         _destroy();
         _init(d);

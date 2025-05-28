@@ -152,7 +152,7 @@ private:
 
     void _init() {
         if (_focused_node) { return; }
-        log_debug("init window tab %p", this);
+        log_debug("init window tab %p with bounds %s", this, _bounds.debug_string().c_str());
         _root_node = new WindowNode(_bounds, nullptr);
         _root_node->bounds = _bounds;
         _focused_node = _root_node;
