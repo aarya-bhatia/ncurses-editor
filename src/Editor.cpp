@@ -59,7 +59,7 @@ void Editor::handle_event(unsigned c)
     }
 
     File* file = get_focused_file();
-    if (file->event_handler && file->event_handler(c)) {
+    if (file && file->event_handler && file->event_handler(c)) {
         return;
     }
 
@@ -109,7 +109,7 @@ void Editor::open(const std::vector<std::string>& filenames)
 }
 
 void Editor::open(File* file)
-{
+{ // TODO: add file if not exists.
     if (!file) { return; }
 
     Window* content = FileViewFactory::create_content_window(window_manager.get_focused_bounds(), file);
@@ -189,6 +189,9 @@ void Editor::handle_normal_mode_event(unsigned c) {
         }
         else if (file->normal_mode_buffer == " ws") {
             window_manager.splith();
+        }
+        else if (file->normal_mode_buffer == " wc") {
+            window_manager.close_focused_node();
         }
         else if (file->normal_mode_buffer == " wv") {
             window_manager.splitv();
@@ -407,7 +410,7 @@ void Editor::command(const std::string& command) {
     {
         // change_mode(LIST_BUFFER_MODE); TODO
     }
-    else if (command.substr(0, 5) == "open ")
+    else if (command.substr(0, 5) == "open " || command.substr(0, 5) == "edit ")
     {
         std::vector<std::string> filenames = splitwords(command.substr(5), " ");
         open(filenames);

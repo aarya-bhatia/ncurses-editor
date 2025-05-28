@@ -137,8 +137,6 @@ struct WindowNode
         }
     }
 
-    void close_tab();
-
     void splith()
     {
         if (!splith_allowed()) { return; }
@@ -232,6 +230,16 @@ struct WindowNode
     {
         if (layout == HSPLIT) return children[1];
         return nullptr;
+    }
+
+    WindowNode* find_first_content_node()
+    {
+        switch (layout)
+        {
+        case NORMAL: return this;
+        case VSPLIT: return get_left_child()->find_first_content_node();
+        case HSPLIT: return get_top_child()->find_first_content_node();
+        }
     }
 
     WindowNode* find_left_content_node(WindowNode* orig_content_node)

@@ -33,23 +33,38 @@ public:
             return;
         }
 
+        WindowNode* grandparent = _focused_node->parent->parent;
         WindowNode* sibling = _focused_node->sibling();
-        Window* new_content = sibling->content;
-        sibling->content = nullptr;
+        WindowNode* parent = _focused_node->parent;
+        WindowNode* next_focused_node = sibling->find_first_content_node();
 
-        WindowNode* new_focused_node = _focused_node->parent;
+        _focused_node->parent->children[0] = nullptr;
+        _focused_node->parent->children[1] = nullptr;
 
+        if (!grandparent) {
+            assert(_root_node == parent);
+            _root_node = sibling;
+            sibling->parent = nullptr;
+            _root_node->resize(_bounds);
+        }
+        else {
+            sibling->parent = grandparent;
+
+            if (grandparent->children[0] == parent) {
+                grandparent->children[0] = sibling;
+            }
+            else {
+                grandparent->children[1] = sibling;
+            }
+
+            grandparent->resize(grandparent->bounds);
+        }
+
+        delete parent;
         delete _focused_node;
-        delete sibling;
 
-        _focused_node = new_focused_node;
-
-        new_focused_node->children[0] = nullptr;
-        new_focused_node->children[1] = nullptr;
-        new_focused_node->layout = WindowNode::Layout::NORMAL;
-
-        if (new_content) new_focused_node->set_content(new_content);
-        new_focused_node->focus();
+        _focused_node = next_focused_node;
+        _focused_node->focus();
     }
 
     void accept(std::function<void(Window*)> cb) {
