@@ -109,7 +109,7 @@ void Editor::open(const std::vector<std::string>& filenames)
 }
 
 void Editor::open(File* file)
-{ // TODO: add file if not exists.
+{
     if (!file) { return; }
 
     Window* content = FileViewFactory::create_content_window(window_manager.get_focused_bounds(), file);
