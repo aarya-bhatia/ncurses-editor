@@ -68,12 +68,13 @@ int main(int argc, const char** argv)
     {
         if (resized)
         {
-            log_info("window resize detected!");
             resized = false;
             endwin();
             refresh();                 // Restart curses mode
-            clear();                   // Clear screen
+
+            log_info("Terminal resized to %d Ln x %d Col", LINES, COLS);
             editor.resize(Dimension(0, 0, COLS, LINES));
+            refresh();
         }
 
         editor.draw();

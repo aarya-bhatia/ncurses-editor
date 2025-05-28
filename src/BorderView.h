@@ -17,8 +17,8 @@ struct BorderView : public Window {
 
     void resize(Dimension d) override
     {
+        log_debug("resizing border view to %s", d.debug_string().c_str());
         hide();
-
         _destroy();
         _init(d);
     }
@@ -26,7 +26,7 @@ struct BorderView : public Window {
     void draw() override
     {
         if (dirty) {
-            dirty = false; // TODO: Uncomment this
+            dirty = false;
             box(win, '|', '-');
         }
 
@@ -34,6 +34,7 @@ struct BorderView : public Window {
     }
 
     void hide() override {
+        if (!win) { return; }
         werase(win);
         wnoutrefresh(win);
     }
@@ -51,6 +52,7 @@ private:
     }
 
     void _destroy() {
+        if (!win) { return; }
         delwin(win);
         win = NULL;
     }

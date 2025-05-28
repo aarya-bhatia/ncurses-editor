@@ -44,15 +44,21 @@ struct FileView : public Window, public FileSubscriber
 
 private:
 
+    void _draw_file_content(WINDOW* win);
+
     void _partial_draw_character(Cursor position);
     void _partial_draw_line(Cursor position);
     void _partial_draw_file(Cursor start);
+
+    void _init(Dimension d);
+    void _destroy();
 
     // check if given coordinate is visible on screen
     bool is_visible(int y, int x) const { return y >= 0 && x >= 0 && y < height() && x < width(); }
 
     bool scroll_to_ensure_cursor_visible();
 
+private:
     Dimension bounds;
 
     WINDOW* win = NULL;

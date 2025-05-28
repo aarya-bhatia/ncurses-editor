@@ -2,16 +2,29 @@
 #include "log.h"
 #include <assert.h>
 
+void FileView::_init(Dimension d)
+{
+    if (d.width > 0 && d.height > 0) {
+        win = newwin(d.height, d.width, d.y, d.x);
+    }
+}
+
+void FileView::_destroy() {
+    if (!win) { return; }
+    delwin(win);
+    win = NULL;
+}
+
 FileView::FileView(File* f, Dimension d) : file(f)
 {
     bounds = d;
-    win = newwin(d.height, d.width, d.y, d.x);
     file->add_subscriber((FileSubscriber*)this);
+    _init(d);
 }
 
 FileView::~FileView() {
     file->remove_subscriber((FileSubscriber*)this);
-    delwin(win);
+    _destroy();
 }
 
 bool FileView::scroll_to_ensure_cursor_visible()
@@ -43,6 +56,34 @@ bool FileView::scroll_to_ensure_cursor_visible()
     return false;
 }
 
+
+void FileView::_draw_file_content(WINDOW* win)
+{
+    werase(win);
+
+    auto line_itr = file->lines.begin();
+    std::advance(line_itr, scroll.dy);
+
+    int win_width, win_height;
+    getmaxyx(win, win_height, win_width);
+
+    int row = 0;
+    while (line_itr != file->lines.end() && row < win_height) {
+        auto col_itr = line_itr->begin();
+        std::advance(col_itr, scroll.dx);
+
+        int col = 0;
+        while (col_itr != line_itr->end() && col < win_width) {
+            mvwaddch(win, row, col, *col_itr);
+            ++col_itr;
+            ++col;
+        }
+
+        ++line_itr;
+        ++row;
+    }
+}
+
 void FileView::draw() {
     if (focused && scroll_to_ensure_cursor_visible()) {
         dirty = true;
@@ -50,29 +91,7 @@ void FileView::draw() {
 
     // full render only when dirty
     if (dirty) {
-        dirty = false;
-
-        // fill buffer with blanks
-        werase(win);
-
-        auto line_itr = file->lines.begin();
-        std::advance(line_itr, scroll.dy);
-
-        int row = 0;
-        while (line_itr != file->lines.end() && row < height()) {
-            auto col_itr = line_itr->begin();
-            std::advance(col_itr, scroll.dx);
-
-            int col = 0;
-            while (col_itr != line_itr->end() && col < width()) {
-                mvwaddch(win, row, col, *col_itr);
-                ++col_itr;
-                ++col;
-            }
-
-            ++line_itr;
-            ++row;
-        }
+        _draw_file_content(win);
     }
 
     // move the global cursor if this is the focused view
@@ -193,10 +212,10 @@ void FileView::resize(Dimension d) {
     // erase the contents on screen
     werase(win);
     wnoutrefresh(win);
-    delwin(win);
+    _destroy();
 
     // new window at given position
-    win = newwin(d.height, d.width, d.y, d.x);
+    _init(d);
     dirty = true;
 }
 
