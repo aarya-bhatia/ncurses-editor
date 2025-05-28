@@ -72,7 +72,7 @@ Program will create and append logs to the file `stderr.log` in the project dire
 | `:right`, `:left`, `:top`, `:bottom`           | navigate to window pane |
 | `:tabnext` / `:tabprev`   | Switch to next or previous tab      |
 | `:edit <filename>` / `:open <filename>`  | Open a file if it exists             |
-| `:close`            | Close current file                   |
+| `:close`            | Close current window                   |
 | `:tabclose`            | Close current tab                   |
 | `:save`            | Save current file to disk.                   |
 | `:tabnew`            | Open and switch to new tab.                   |
@@ -100,6 +100,11 @@ Program will create and append logs to the file `stderr.log` in the project dire
 | `x`       | Erase character at cursor                        |
 | `o`       | Insert line below cursor                        |
 | `dd`       | Delete current line                        |
+| `<space>w` + hjkl       | Navigate to window split in left/down/top/right direction.                        |
+| `<space>wc`       | Close window |
+| `<space>t` + pn       | Navigate to previous/next tab |
+| `<space>te`       | Open new tab |
+| `<space>tc`       | Close tab |
 
 ---
 
