@@ -9,6 +9,10 @@ Todo
 - copy/paste
 - copy registers
 - add line numbers
+- switch to file in different tabs
+- visual mode
+- run external commands
+- readonly file
 
 Done
 - impl close tabs

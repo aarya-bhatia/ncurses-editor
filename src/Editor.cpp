@@ -155,6 +155,10 @@ void Editor::handle_insert_mode_event(unsigned c) {
         break;
 
     default:
+        if (file->readonly) {
+            break;
+        }
+
         if (PRINTABLE(c))
         {
             file->insert_character(c);
@@ -384,6 +388,43 @@ void Editor::new_file_picker_window() {
 }
 
 void Editor::new_list_buffers_window() {
+    File* _file = FileFactory::new_file();
+    _file->readonly = true;
+    _file->lines.clear();
+
+    for (File* file : files) {
+        std::string s = file->filename;
+        _file->lines.emplace_back(s.begin(), s.end());
+    }
+
+    if (_file->lines.empty())
+    {
+        _file->lines.push_back({});
+    }
+
+    _file->cursor.x = 0;
+    _file->cursor.y = 0;
+    _file->cursor.line = _file->lines.begin();
+    _file->cursor.col = _file->cursor.line->begin();
+
+    _file->event_handler = [this](unsigned c) -> bool {
+        File* file = this->get_focused_file();
+        std::string filename = file->get_current_line();
+        switch (c)
+        {
+        case CTRL_ENTER:
+            log_info("opening buffer: %s", filename.c_str());
+            if (!filename.empty()) {
+                this->open({ filename });
+                delete file;
+                file = nullptr;
+            }
+            return true;
+        default: return false;
+        }
+        };
+
+    open(_file);
 
 }
 
@@ -411,7 +452,7 @@ void Editor::command(const std::string& command) {
     }
     else if (command == "ls")
     {
-        // change_mode(LIST_BUFFER_MODE); TODO
+        new_list_buffers_window();
     }
     else if (command.substr(0, 5) == "open " || command.substr(0, 5) == "edit ")
     {

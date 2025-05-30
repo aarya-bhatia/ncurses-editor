@@ -20,6 +20,8 @@ struct File
     std::vector<FileSubscriber*> subscribers;
     std::string normal_mode_buffer = "";
 
+    bool readonly = false;
+
     File(FileID _id = 0, const std::string& _filename = "");
     ~File();
 
