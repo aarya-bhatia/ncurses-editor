@@ -239,6 +239,7 @@ struct WindowNode
         case NORMAL: return this;
         case VSPLIT: return get_left_child()->find_first_content_node();
         case HSPLIT: return get_top_child()->find_first_content_node();
+        default: return nullptr;
         }
     }
 

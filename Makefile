@@ -1,12 +1,28 @@
+MACHINE=$(shell uname -s)
+
+ifeq ($(MACHINE), Darwin)
+CC=clang
+CXX=clang++
+else
+CC=gcc
+CXX=g++
+endif
+
+CFLAGS=-std=c99 -Wall -pedantic -g -MMD -MP
+CXXFLAGS=-std=c++11 -Wall -pedantic -g -MMD -MP
+
+RM=rm -rf
+
 OBJDIR=.obj
 BINDIR=bin
 SRCDIR=src
-CFLAGS=-c -Wall -Werror -pedantic -g -D_GNU_SOURCE -MMD -MP
 LDFLAGS=-lncurses -lm
 
 INCLUDE_DIRS=$(shell find src -type d)
 INCLUDES := $(patsubst %, -I%, $(INCLUDE_DIRS))
+
 CFLAGS += $(INCLUDES)
+CXXFLAGS += $(INCLUDES)
 
 SRC_FILES=$(shell find src -type f -name "*.cpp" -o -name "*.c")
 SRC_OBJS=$(SRC_FILES:%=$(OBJDIR)/%.o)
@@ -24,22 +40,22 @@ test: $(BINDIR)/test
 
 $(BINDIR)/main: $(MAIN_OBJ) $(SRC_OBJS)
 	mkdir -p $(dir $@)
-	g++ $^ $(LDFLAGS) -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@
 	
 $(BINDIR)/test: $(TEST_OBJS) $(SRC_OBJS)
 	mkdir -p $(dir $@)
-	g++ $^ $(LDFLAGS) -o $@
+	$(CXX) $^ $(LDFLAGS) -o $@
 
 $(OBJDIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
-	gcc -std=c99 $(CFLAGS) $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR)/%.cpp.o: %.cpp
 	mkdir -p $(dir $@)
-	g++ -std=c++11 $(CFLAGS) $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	/bin/rm -rf $(OBJDIR) $(BINDIR) vgcore*
+	$(RM) $(OBJDIR) $(BINDIR) vgcore* *.dYSM
 
 .PHONY: clean main test
 

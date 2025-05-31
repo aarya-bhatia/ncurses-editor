@@ -5,6 +5,7 @@
 #include "Cursor.h"
 #include "Scroll.h"
 #include "FileSubscriber.h"
+#include <functional>
 
 typedef unsigned int FileID;
 

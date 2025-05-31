@@ -5,7 +5,7 @@
 void StatusWindow::draw()
 {
     werase(win);
-    mvwprintw(win, 0, 0, get_status().c_str());
+    mvwprintw(win, 0, 0, "%s", get_status().c_str());
     wnoutrefresh(win);
 }
 

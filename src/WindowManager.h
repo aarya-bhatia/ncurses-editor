@@ -65,9 +65,11 @@ public:
 
     void _destroy() {
         log_debug("destroying window manager");
-        for (auto& tab : tabs) {
+        for (WindowTab* tab : tabs) {
             delete tab;
         }
+
+        tabs.clear();
     }
 
     void tab_close() {

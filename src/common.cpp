@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <assert.h>
+#include <algorithm>
 
 int char_type(char c)
 {

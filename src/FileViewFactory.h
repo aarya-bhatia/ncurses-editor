@@ -7,7 +7,7 @@
 struct FileViewFactory {
     static Window* create_content_window(Dimension d, File* file = nullptr) {
         if (!file) {
-            file = FileFactory::new_file();
+            file = FileFactory::new_file(); // TODO: How to free this file?
         }
         return new ViewContainer(d, file);
     }

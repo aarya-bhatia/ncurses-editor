@@ -21,6 +21,7 @@ struct LineNumberView : public Window, public FileSubscriber
 
     ~LineNumberView() {
         file->remove_subscriber((FileSubscriber*)this);
+        delwin(win);
     }
 
     void file_changed() {

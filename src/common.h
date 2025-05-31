@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <map>
+#include <vector>
 
 #define CTRL_A 1
 #define CTRL_B 2

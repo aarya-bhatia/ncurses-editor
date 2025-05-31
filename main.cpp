@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include "Editor.h"
 #include <memory>
+#include <signal.h>
 
 bool resized = false;
 
