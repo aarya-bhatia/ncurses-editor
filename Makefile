@@ -24,10 +24,10 @@ INCLUDES := $(patsubst %, -I%, $(INCLUDE_DIRS))
 CFLAGS += $(INCLUDES)
 CXXFLAGS += $(INCLUDES)
 
-SRC_FILES=$(shell find src -type f -name "*.cpp" -o -name "*.c")
+SRC_FILES=$(shell find src/core -type f -name "*.cpp" -o -name "*.c")
 SRC_OBJS=$(SRC_FILES:%=$(OBJDIR)/%.o)
 
-MAIN_FILE=main.cpp
+MAIN_FILE=src/main.cpp
 MAIN_OBJ=$(OBJDIR)/$(MAIN_FILE).o
 
 TEST_SRC_FILES=$(shell find tests -type f -name "*.cpp")
